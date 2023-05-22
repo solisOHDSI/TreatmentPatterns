@@ -4,13 +4,16 @@
 \alias{createCohortSettings}
 \title{Create cohort settings.}
 \usage{
-createCohortSettings(targetCohorts, eventCohorts)
+createCohortSettings(targetCohorts, eventCohorts, exitCohorts = NULL)
 }
 \arguments{
-\item{targetCohorts}{Data frame containing the study population of interest
+\item{targetCohorts}{(\link[base]{data.frame}) containing the study population of interest
 cohortId = "Unique ID number", cohortName = "Descriptive name cohort".}
 
-\item{eventCohorts}{Data frame containing the events of interest
+\item{eventCohorts}{(\link[base]{data.frame}) containing the events of interest
+cohortId = "Unique ID number", cohortName = "Descriptive name cohort".}
+
+\item{exitCohorts}{(\link[base]{data.frame}) containing the exit events of interest
 cohortId = "Unique ID number", cohortName = "Descriptive name cohort".}
 }
 \value{
@@ -29,5 +32,9 @@ cohortSettings <- createCohortSettings(
     cohortName = c("a")),
   eventCohorts = data.frame(
     cohortId = c(2, 3),
-    cohortName = c("b", "c")))
+    cohortName = c("b", "c")),
+  exitCohorts = data.frame(
+    cohortId = c(4),
+    cohortName = c("d")
+  )
 }

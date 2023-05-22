@@ -7,7 +7,7 @@
 checkAddPathwaySettings(env)
 }
 \arguments{
-\item{env}{Environment containging all the function environment variables.}
+\item{env}{(\link[base]{environment}) containing all the function environment variables.}
 }
 \value{
 TRUE if all assertions pass
