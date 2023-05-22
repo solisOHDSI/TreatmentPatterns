@@ -29,12 +29,15 @@ checkCohorts <- function(cohorts) {
 #' while creating cohorts with i.e. CohortGenerator.
 #'
 #' @param targetCohorts
-#'     Data frame containing the study population of interest
-#'     cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
+#' (\link[base]{data.frame}) containing the study population of interest
+#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
 #'
 #' @param eventCohorts
-#'     Data frame containing the events of interest
-#'     cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
+#' (\link[base]{data.frame}) containing the events of interest
+#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
+#' @param exitCohorts 
+#' (\link[base]{data.frame}) containing the exit events of interest
+#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
 #'
 #' @return
 #'     Object cohortSettings.
@@ -48,13 +51,17 @@ checkCohorts <- function(cohorts) {
 #'     cohortName = c("a")),
 #'   eventCohorts = data.frame(
 #'     cohortId = c(2, 3),
-#'     cohortName = c("b", "c")))
-createCohortSettings <- function(targetCohorts, eventCohorts) {
-  if (checkCohorts(targetCohorts) && checkCohorts(eventCohorts)) {
-    targetCohorts$cohortType <- "target"
-    eventCohorts$cohortType <- "event"
-    cohortsToCreate <- rbind(targetCohorts, eventCohorts)
-  }
+#'     cohortName = c("b", "c")),
+#'   exitCohorts = data.frame(
+#'     cohortId = c(4),
+#'     cohortName = c("d")
+#'   )
+createCohortSettings <- function(targetCohorts, eventCohorts, exitCohorts = NULL) {
+  targetCohorts$cohortType <- "target"
+  eventCohorts$cohortType <- "event"
+  exitCohorts$cohortType <- "exit"
+  
+  cohortsToCreate <- rbind(targetCohorts, eventCohorts, exitCohorts)
 
   cohortsToCreate$cohortId <- as.integer(cohortsToCreate$cohortId)
 
