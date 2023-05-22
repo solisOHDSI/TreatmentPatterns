@@ -5,10 +5,11 @@
 #' integer and character. Also checks if the dataframe columns have the correct
 #' name.
 #'
-#' @param env Environment containging all the function environment variables.
+#' @param env (\link[base]{environment})\cr
+#' Environment containging all the function environment variables.
 #'
-#' @return TRUE if all assertions pass
-#'
+#' @return (\link[base]{logical})\cr
+#' TRUE if all assertions pass
 #'
 #' @examples \dontrun{
 #'   checkPathwaySettings(
@@ -41,7 +42,8 @@ checkPathwaySettings <- function(env) {
 #'
 #' Create pathway settings.
 #'
-#' @param cohortSettings cohortSettings object
+#' @param cohortSettings (\link[TreatmentPatterns]{createCohortSettings})\cr
+#' cohortSettings object
 #' @param ...
 #'   Any addPathwaySettings parameter:
 #'   1. studyName
@@ -60,11 +62,8 @@ checkPathwaySettings <- function(env) {
 #'   14. groupCombinations
 #'   15. addNoPaths
 #'
-#' @importFrom data.table transpose
-#' @importFrom dplyr filter
-#' @importFrom utils globalVariables
-#'
-#' @return Object pathwaySettings.
+#' @return (\link[TreatmentPatterns]{createPathwaySettings})
+#' S3 pathwaySettings object.
 #'
 #' @export
 #' @examples
@@ -99,11 +98,15 @@ createPathwaySettings <- function(cohortSettings, ...) {
 
     eventCohorts <- cohortSettings$cohortsToCreate %>%
       dplyr::filter(cohortType == "event")
+    
+    exitCohorts <- cohortSettings$cohortsToCreate %>%
+      dplyr::filter(cohortType == "exit")
 
     # Create default pathwaySettings template
     pathwaySettingsDefault <- addPathwaySettings(
       targetCohortId = targetCohorts$cohortId,
       eventCohortIds = eventCohorts$cohortId,
+      exitCohortIds = exitCohorts$cohortId,
       ...)
 
     # Transpose

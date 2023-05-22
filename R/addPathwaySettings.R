@@ -2,7 +2,8 @@
 #'
 #' Asserts that parameters fall within specified bounds.
 #'
-#' @param env Environment containging all the function environment variables.
+#' @param env
+#' (\link[base]{environment}) containing all the function environment variables.
 #'
 #' @return TRUE if all assertions pass
 #'
@@ -29,6 +30,12 @@ checkAddPathwaySettings <- function(env) {
                            unique = TRUE,
                            null.ok = FALSE)
 
+  # eventCohortIds
+  checkmate::assertNumeric(x = env$exitCohortIds,
+                           min.len = 0,
+                           unique = TRUE,
+                           null.ok = TRUE)
+  
   # includeTreatments
   checkmate::assertCharacter(x = env$includeTreatments,
                              len = 1)
@@ -129,74 +136,76 @@ checkAddPathwaySettings <- function(env) {
 #' Defines and returns a data.frame specifying different parameters how to
 #' compute the existing pathways in the function call.
 #'
-#' @param studyName
-#'     Name identifying the set of study parameters. Default value is
-#'     "name_unknown".
+#' @param studyName (\link[base]{character}: "nameUnknown")\cr
+#' Name identifying the set of study parameters.
 #'
-#' @param targetCohortId
-#'     Target cohort ID of current study settings.
+#' @param targetCohortId (\link[base]{c}) of (\link[base]{numeric})\cr
+#' Vector of target cohort ID of current study settings.
 #'
-#' @param eventCohortIds
-#'     Event cohort IDs of current study settings.
+#' @param eventCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' Vector event cohort IDs of current study settings.
+#' 
+#' @param exitCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' Vector exit cohort IDs of current study settings.
 #'
-#' @param includeTreatments
-#'     Include treatments starting ('startDate') or ending ('endDate') after
-#'     target cohort start date. Default value is "startDate".
+#' @param includeTreatments (\link[base]{character}: "startDate") ["startDate", "endDate"]\cr
+#' Include treatments starting "startDate" or ending "endDate" after target
+#' cohort start date.
 #'
-#' @param periodPriorToIndex
-#'     Number of days prior to the index date of the target cohort that event
-#'     cohorts are allowed to start. Default value is 0.
+#' @param periodPriorToIndex (\link[base]{numeric}: 0)\cr
+#' Number of days prior to the index date of the
+#' target cohort that event cohorts are allowed to start.
 #'
-#' @param minEraDuration
-#'     Minimum time an event era should last to be included in analysis.
-#'     Default value is 0.
+#' @param minEraDuration (\link[base]{numeric}: 0)\cr
+#' Minimum time an event era should last to be
+#' included in analysis.
 #'
-#' @param splitEventCohorts
-#'     Specify event cohort ID's to split in acute (< X days) and therapy
-#'     (>= X days).
+#' @param splitEventCohorts (\link[base]{character}: "")\cr
+#' Specify event cohort ID's to split in acute
+#' (< X days) and therapy (>= X days).
 #'
-#' @param splitTime
-#'     Specify number of days (X) at which each of the split event cohorts
-#'     should be split in acute and therapy. Default value is 30.
+#' @param splitTime (\link[base]{numeric}: 30)\cr
+#' Specify number of days (X) at which each of the split event cohorts should
+#' be split in acute and therapy.
 #'
-#' @param eraCollapseSize
-#'     Window of time between which two eras of the same event cohort are
-#'     collapsed into one era. Default value is 30.
+#' @param eraCollapseSize (\link[base]{numeric}: 30)\cr
+#' Window of time between which two eras of the same event cohort are collapsed
+#' into one era.
 #'
-#' @param combinationWindow
-#'     Window of time two event cohorts need to overlap to be considered a
-#'     combination treatment. Default value is 30.
+#' @param combinationWindow (\link[base]{numeric}: 30)\cr
+#' Window of time two event cohorts need to overlap to be considered a
+#' combination treatment.
 #'
-#' @param minPostCombinationDuration
-#'     Minimum time an event era before or after a generated combination
-#'     treatment should last to be included in analysis. Default value is 30.
+#' @param minPostCombinationDuration (\link[base]{numeric}: 30)\cr
+#' Minimum time an event era before or after a generated combination treatment
+#' should last to be included in analysis.
 #'
-#' @param filterTreatments
-#'     Select first occurrence of ("First") / changes between ("Changes') / all
-#'     event cohorts ("All"). Default value is "First".
+#' @param filterTreatments (\link[base]{character}: "First") ["First", "Changes", "All"]\cr
+#' Select first occurrence of ("First"); changes between ("Changes'); all event
+#' cohorts ("All").
 #'
-#' @param maxPathLength
-#'     Maximum number of steps included in treatment pathway (max 5). Default
-#'     value is 5.
+#' @param maxPathLength (\link[base]{numeric}: 5)\cr
+#' Maximum number of steps included in treatment pathway. Up to 5 is supported.
 #'
-#' @param minCellCount
-#'     Minimum number of persons with a specific treatment pathway for the
-#'     pathway to be included in analysis. Default value is 5.
+#' @param minCellCount (\link[base]{numeric}: 5)\cr
+#' Minimum number of persons with a specific treatment pathway for the pathway
+#' to be included in analysis.
 #'
-#' @param minCellMethod
-#'     Select to completely remove / sequentially adjust (by removing last step
-#'     as often as necessary) treatment pathways below minCellCount. Default
-#'     value is "Remove".
+#' @param minCellMethod (\link[base]{character}: "Remove") ["Remove"]\cr
+#' Select to completely remove / sequentially adjust (by removing last step
+#' as often as necessary) treatment pathways below minCellCount.
 #'
-#' @param groupCombinations
-#'     Select to group all non-fixed combinations in one category 'other’ in
-#'     the sunburst plot. Default value is 10.
+#' @param groupCombinations (\link[base]{numeric}: 10)\cr
+#' Select to group all non-fixed combinations in one category 'other’ in the
+#' sunburst plot.
 #'
-#' @param addNoPaths
-#'     Select to include untreated persons without treatment pathway in the
-#'     sunburst plot. Default value is FALSE.
+#' @param addNoPaths (\link[base]{logical}: TRUE)\cr
+#' Select to include untreated persons without treatment pathway in the
+#' sunburst plot. Default value is FALSE. When set to TRUE the sunburst plot
+#' will show non-treated individuals as blank space.
 #'
-#' @return a data.frame containing the pathway settings
+#' @return (\link[base]{data.frame})\cr
+#' A data frame containing the pathway settings.
 #'
 #' @export
 #' @examples
@@ -207,9 +216,10 @@ checkAddPathwaySettings <- function(env) {
 #'   eventCohortIds = c(1,2,3))
 #' }
 addPathwaySettings <- function(
-    studyName = "name_unknown",
+    studyName = "nameUnknown",
     targetCohortId,
     eventCohortIds,
+    exitCohortIds,
     includeTreatments = "startDate",
     periodPriorToIndex = 0,
     minEraDuration = 0,
@@ -232,6 +242,7 @@ addPathwaySettings <- function(
       studyName = studyName,
       targetCohortId = targetCohortId,
       eventCohortIds = paste(eventCohortIds, collapse = ","),
+      exitCohortIds = paste(exitCohortIds, collapse = ","),
       includeTreatments = includeTreatments,
       periodPriorToIndex = periodPriorToIndex,
       minEraDuration = minEraDuration,

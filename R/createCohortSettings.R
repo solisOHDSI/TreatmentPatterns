@@ -3,9 +3,11 @@
 #' Checks the validity of targetCohorts and eventCohorts parameters of
 #' createCohortSettings
 #'
-#' @param cohorts eventCohorts or targetCohorts
+#' @param cohorts (\link[base]{data.frame})\cr
+#' Data frame of specified cohorts.
 #'
-#' @return TRUE if checkmate checks pass
+#' @return (\link[base]{logical})\cr
+#' TRUE if checkmate checks pass.
 checkCohorts <- function(cohorts) {
   # Check validity of data.frame inputs
   checkmate::assert(
@@ -28,18 +30,18 @@ checkCohorts <- function(cohorts) {
 #' and event cohorts. The cohortId and cohortName are the ID and Name specified
 #' while creating cohorts with i.e. CohortGenerator.
 #'
-#' @param targetCohorts
-#' (\link[base]{data.frame}) containing the study population of interest
-#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
-#' @param eventCohorts
-#' (\link[base]{data.frame}) containing the events of interest
-#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
-#' @param exitCohorts 
-#' (\link[base]{data.frame}) containing the exit events of interest
-#' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
+#' @param targetCohorts (\link[base]{data.frame})\cr
+#' containing the study population of interest cohortId = "Unique ID number",
+#' cohortName = "Descriptive name cohort".
+#' @param eventCohorts (\link[base]{data.frame})\cr
+#' containing the events of interest cohortId = "Unique ID number",
+#' cohortName = "Descriptive name cohort".
+#' @param exitCohorts (\link[base]{data.frame})\cr
+#' containing the exit events of interest cohortId = "Unique ID number",
+#' cohortName = "Descriptive name cohort".
 #'
-#' @return
-#'     Object cohortSettings.
+#' @return (\link[TreatmentPatterns]{createCohortSettings})\cr
+#' S3 cohortSettings object.
 #'
 #' @export
 #'
@@ -53,7 +55,7 @@ checkCohorts <- function(cohorts) {
 #'     cohortName = c("b", "c")),
 #'   exitCohorts = data.frame(
 #'     cohortId = c(4),
-#'     cohortName = c("d")
+#'     cohortName = c("d"))
 #'   )
 createCohortSettings <- function(targetCohorts, eventCohorts, exitCohorts = NULL) {
   targetCohorts$cohortType <- "target"
