@@ -31,7 +31,6 @@ checkCohorts <- function(cohorts) {
 #' @param targetCohorts
 #' (\link[base]{data.frame}) containing the study population of interest
 #' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
-#'
 #' @param eventCohorts
 #' (\link[base]{data.frame}) containing the events of interest
 #' cohortId = "Unique ID number", cohortName = "Descriptive name cohort".
