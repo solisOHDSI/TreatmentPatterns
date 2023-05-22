@@ -219,7 +219,7 @@ addPathwaySettings <- function(
     studyName = "nameUnknown",
     targetCohortId,
     eventCohortIds,
-    exitCohortIds,
+    exitCohortIds = NULL,
     includeTreatments = "startDate",
     periodPriorToIndex = 0,
     minEraDuration = 0,
@@ -237,12 +237,18 @@ addPathwaySettings <- function(
 
   check <- checkAddPathwaySettings(environment())
 
+  if (is.null(exitCohortIds)) {
+    exits <- NULL
+  } else {
+    exits <- paste(exitCohortIds, collapse = ",")
+  }
+  
   if (check) {
     settings <- data.frame(
       studyName = studyName,
       targetCohortId = targetCohortId,
       eventCohortIds = paste(eventCohortIds, collapse = ","),
-      exitCohortIds = paste(exitCohortIds, collapse = ","),
+      exitCohortIds = exits,
       includeTreatments = includeTreatments,
       periodPriorToIndex = periodPriorToIndex,
       minEraDuration = minEraDuration,

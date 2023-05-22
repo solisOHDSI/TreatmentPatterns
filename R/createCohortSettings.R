@@ -60,7 +60,9 @@ checkCohorts <- function(cohorts) {
 createCohortSettings <- function(targetCohorts, eventCohorts, exitCohorts = NULL) {
   targetCohorts$cohortType <- "target"
   eventCohorts$cohortType <- "event"
-  exitCohorts$cohortType <- "exit"
+  if (!is.null(exitCohorts)) {
+    exitCohorts$cohortType <- "exit"
+  }
   
   cohortsToCreate <- rbind(targetCohorts, eventCohorts, exitCohorts)
 
