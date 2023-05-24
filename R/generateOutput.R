@@ -30,7 +30,7 @@ generateOutput <- function(saveSettings) {
       tempFolder = saveSettings$tempFolder,
       databaseName = saveSettings$databaseName,
       studyName = settings[1, i],
-      minCellCount = settings[14, i]
+      minCellCount = settings[15, i]
     ))
 
     treatmentPathways <- objList
@@ -60,7 +60,7 @@ generateOutput <- function(saveSettings) {
         studyName = settings[1, i],
         eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
         groupCombinations = TRUE,
-        minCellCount = settings[14, i]
+        minCellCount = settings[15, i]
       ))
 
       objList <- append(objList, doMinCellCount(
@@ -70,9 +70,9 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        groupCombinations = settings[16, i],
-        minCellCount = settings[14, i],
-        minCellMethod = settings[15, i]
+        groupCombinations = settings[17, i],
+        minCellCount = settings[15, i],
+        minCellMethod = settings[16, i]
       ))
 
       objList <- append(objList, lapply(treatmentPathways, function(pathway) {
@@ -83,7 +83,7 @@ generateOutput <- function(saveSettings) {
           databaseName = saveSettings$databaseName,
           studyName = settings[1, i],
           eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
-          addNoPaths = settings[17, i]
+          addNoPaths = settings[18, i]
         )
       }))
     }

@@ -208,6 +208,7 @@ checkAddPathwaySettings <- function(env) {
 #' A data frame containing the pathway settings.
 #'
 #' @export
+#'
 #' @examples
 #' \dontrun{
 #' pathwaySettings <- addPathwaySettings(

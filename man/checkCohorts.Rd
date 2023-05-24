@@ -7,10 +7,12 @@
 checkCohorts(cohorts)
 }
 \arguments{
-\item{cohorts}{eventCohorts or targetCohorts}
+\item{cohorts}{(\link[base]{data.frame})\cr
+Data frame of specified cohorts.}
 }
 \value{
-TRUE if checkmate checks pass
+(\link[base]{logical})\cr
+TRUE if checkmate checks pass.
 }
 \description{
 Checks the validity of targetCohorts and eventCohorts parameters of

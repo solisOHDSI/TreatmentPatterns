@@ -8,7 +8,7 @@ addPathwaySettings(
   studyName = "nameUnknown",
   targetCohortId,
   eventCohortIds,
-  exitCohortIds,
+  exitCohortIds = NULL,
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,

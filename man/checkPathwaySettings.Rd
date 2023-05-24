@@ -7,9 +7,11 @@
 checkPathwaySettings(env)
 }
 \arguments{
-\item{env}{Environment containging all the function environment variables.}
+\item{env}{(\link[base]{environment})\cr
+Environment containging all the function environment variables.}
 }
 \value{
+(\link[base]{logical})\cr
 TRUE if all assertions pass
 }
 \description{

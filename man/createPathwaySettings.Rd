@@ -7,7 +7,8 @@
 createPathwaySettings(cohortSettings, ...)
 }
 \arguments{
-\item{cohortSettings}{cohortSettings object}
+\item{cohortSettings}{(\link[TreatmentPatterns]{createCohortSettings})\cr
+cohortSettings object}
 
 \item{...}{Any addPathwaySettings parameter:
 1. studyName
@@ -27,7 +28,8 @@ createPathwaySettings(cohortSettings, ...)
 15. addNoPaths}
 }
 \value{
-Object pathwaySettings.
+(\link[TreatmentPatterns]{createPathwaySettings})
+S3 pathwaySettings object.
 }
 \description{
 Create pathway settings.
