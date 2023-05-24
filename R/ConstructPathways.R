@@ -115,9 +115,12 @@ constructPathways <- function(dataSettings,
 
     eventCohortIds <- pathwaySettings[
       pathwaySettings$param == "eventCohortIds", s]
-
     eventCohortIds <- unlist(strsplit(eventCohortIds, split = c(";|,")))
 
+    exitCohortIds <- pathwaySettings[
+      pathwaySettings$param == "exitCohortIds", s]
+    exitCohortIds <- unlist(strsplit(exitCohortIds, split = c(";|,")))
+    
     # Analysis settings
     includeTreatments <- pathwaySettings[
       pathwaySettings$param == "includeTreatments", s]
@@ -163,8 +166,17 @@ constructPathways <- function(dataSettings,
         currentCohorts,
         targetCohortId,
         eventCohortIds,
+        exitCohortIds,
         periodPriorToIndex,
-        includeTreatments)
+        includeTreatments
+      )
+      
+      exitHistory <- treatmentHistory %>%
+        filter(type == "exit") %>%
+        select(-"type")
+      
+      treatmentHistory <- treatmentHistory %>%
+        filter(type == "event")
 
       # Apply pathway settings to create treatment pathways
       ParallelLogger::logInfo(paste(
@@ -198,7 +210,15 @@ constructPathways <- function(dataSettings,
       treatmentHistory <- doFilterTreatments(
         treatmentHistory,
         filterTreatments)
-
+      
+      # TODO add exitCohorts
+      # print(str(treatmentHistory))
+      # print(str(exitHistory))
+      exitHistory$event_cohort_id <- as.character(exitHistory$event_cohort_id)
+      treatmentHistory <- dplyr::bind_rows(
+        treatmentHistory,
+        exitHistory)
+      
       if (nrow(treatmentHistory) != 0) {
         # Add event_seq number to determine order of treatments in pathway
         ParallelLogger::logInfo("Adding drug sequence number.")
@@ -238,7 +258,7 @@ constructPathways <- function(dataSettings,
         treatmentHistory$event_cohort_name <- unlist(
           treatmentHistory$event_cohort_name)
       }
-
+      
       # Save the processed treatment history
       write.csv(treatmentHistory, file.path(
         tempFolders,
@@ -326,29 +346,48 @@ constructPathways <- function(dataSettings,
 
 #' doCreateTreatmentHistory
 #'
-#' @param currentCohorts
-#'     Dataframe with target and event cohorts of current study settings.
-#' @param targetCohortId
-#'     Target cohort ID of current study settings.
-#' @param eventCohortIds
-#'     Event cohort IDs of current study settings.
-#' @param periodPriorToIndex
-#'     Number of days prior to the index date of the target cohort that event
-#'     cohorts are allowed to start
-#' @param includeTreatments
-#'     Include treatments starting ('startDate') or ending ('endDate') after
-#'     target cohort start date
+#' @param currentCohorts (\link[base]{data.frame})\cr
+#' \enumerate{
+#'   \item (\link[base]{numeric}) cohort_id
+#'   \item (\link[base]{numeric}) person_id
+#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) start_date
+#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) end_date
+#' }
+#' 
+#' @param targetCohortId (\link[base]{c}) of (\link[base]{numeric})\cr
+#' targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param eventCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' eventCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param exitCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' exitCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param periodPriorToIndex (\link[base]{numeric})\cr
+#' periodPriorToIndex from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param includeTreatments (\link[base]{character})\cr
+#' includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.
 #'
-#' @return currentCohorts
-#'     Updated dataframe, including only event cohorts after
-#'     target cohort start date and with added index year, duration, gap same
-#'     columns.
+#' @return (\link[base]{data.frame})\cr
+#' \enumerate{
+#'   \item (\link[base]{numeric}) person_id
+#'   \item (\link[base]{numeric}) index_year
+#'   \item (\link[base]{numeric}) event_cohort_id
+#'   \item (\link[base]{date}) event_start_date
+#'   \item (\link[base]{date}) event_end_date
+#'   \item (\link[base]{character}) type
+#'   \item (\link[base]{difftime}) duration_era
+#'   \item (\link[base]{difftime}) gap_same
+#' }
 doCreateTreatmentHistory <- function(
     currentCohorts,
     targetCohortId,
     eventCohortIds,
+    exitCohortIds,
     periodPriorToIndex,
     includeTreatments) {
+  
   checkmate::assert(checkmate::check_data_frame(
     currentCohorts,
     min.cols = 4,
@@ -359,26 +398,45 @@ doCreateTreatmentHistory <- function(
 
   checkmate::assert(checkmate::checkCharacter(targetCohortId, len = 1))
   checkmate::assert(checkmate::checkCharacter(eventCohortIds))
+  # checkmate::assert(checkmate::checkCharacter(exitCohortIds, null.ok = TRUE))
   checkmate::assert(checkmate::checkInt(periodPriorToIndex))
 
   # Add index year column based on start date target cohort
-  targetCohort <- currentCohorts[
+  targetCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% targetCohortId, , ]
 
-  targetCohort$index_year <- as.numeric(format(targetCohort$start_date, "%Y"))
+  targetCohorts$index_year <- as.numeric(format(targetCohorts$start_date, "%Y"))
 
   # Select event cohorts for target cohort and merge with start/end date and
   # index year
   eventCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% eventCohortIds, , ]
+  
+  exitCohorts <- currentCohorts[
+    currentCohorts$cohort_id %in% exitCohortIds, , ]
 
+  targetCohorts <- targetCohorts %>%
+    mutate(type = "target")
+  
+  eventCohorts <- eventCohorts %>%
+    mutate(type = "event")
+  
+  exitCohorts <- exitCohorts %>%
+    mutate(type = "exit")
+  
+  eventCohorts <- dplyr::bind_rows(
+    eventCohorts,
+    exitCohorts
+  )
+  
   currentCohorts <- merge(
     x = eventCohorts,
-    y = targetCohort,
+    y = targetCohorts,
     by = c("person_id"),
     all.x = TRUE,
-    allow.cartesian = TRUE)
-
+    allow.cartesian = TRUE
+  )
+  
   # Only keep event cohorts starting (startDate) or ending (endDate) after
   # target cohort start date
   if (includeTreatments == "startDate") {
@@ -412,15 +470,15 @@ doCreateTreatmentHistory <- function(
         currentCohorts$start_date.x <
         currentCohorts$end_date.y, ]
   }
-
+  
   # Remove unnecessary columns
   currentCohorts <- currentCohorts[
     , c("person_id", "index_year", "cohort_id.x",
-        "start_date.x", "end_date.x")]
-
+        "start_date.x", "end_date.x", "type.x")]
+  
   colnames(currentCohorts) <- c(
     "person_id", "index_year", "event_cohort_id",
-    "event_start_date", "event_end_date")
+    "event_start_date", "event_end_date", "type")
 
   # Calculate duration and gap same
   currentCohorts[,
@@ -443,14 +501,15 @@ doCreateTreatmentHistory <- function(
 #'
 #' Filters the treatmentHistory based on the specified minimum era duration
 #'
-#' @param treatmentHistory
-#'     Dataframe with event cohorts of the target cohort in different rows.
-#' @param minEraDuration
-#'     Minimum time an event era should last to be included in analysis.
+#' @param treatmentHistory (\link[base]{data.frame})\cr
+#' See \link[TreatmentPatterns]{doCreateTreatmentHistory}.
+#' 
+#' @param minEraDuration (\link[base]{numeric})\cr
+#' minEraDuration from \link[TreatmentPatterns]{addPathwaySettings}.
 #'
-#' @return treatmentHistory
-#'     Updated dataframe, rows with duration <
-#'     minEraDuration filtered out.
+#' @return (\link[base]{data.frame})
+#' Updated treatmentHistory dataframe, rows with duration < minEraDuration
+#' filtered out.
 #' @examples
 #' \dontrun{
 #' th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
@@ -470,7 +529,7 @@ doEraDuration <- function(treatmentHistory, minEraDuration) {
     len = 1,
     null.ok = FALSE
   )
-
+  
   treatmentHistory <- treatmentHistory[duration_era >= minEraDuration, ]
   ParallelLogger::logInfo(print(
     paste0("After minEraDuration: ", nrow(treatmentHistory))))
