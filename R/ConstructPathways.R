@@ -121,6 +121,8 @@ constructPathways <- function(dataSettings,
       pathwaySettings$param == "exitCohortIds", s]
     exitCohortIds <- unlist(strsplit(exitCohortIds, split = c(";|,")))
     
+    print(exitCohortIds)
+    
     # Analysis settings
     includeTreatments <- pathwaySettings[
       pathwaySettings$param == "includeTreatments", s]
@@ -156,10 +158,10 @@ constructPathways <- function(dataSettings,
     # cohort
     selectPeople <- fullCohorts$person_id[
       fullCohorts$cohort_id == targetCohortId]
-
+    
     currentCohorts <- fullCohorts[
       fullCohorts$person_id %in% selectPeople, ]
-
+    
     if (nrow(currentCohorts) != 0) {
       # Preprocess the target/event cohorts to create treatment history
       treatmentHistory <- doCreateTreatmentHistory(
@@ -1134,7 +1136,7 @@ addLabels <- function(treatmentHistory, outputFolder) {
   # convenrt event_cohort_id to character
   labels["cohortId"] <- as.character(labels[, "cohortId"])
 
-  labels <- labels[labels$cohortType == "event", c("cohortId", "cohortName")]
+  labels <- labels[labels$cohortType == "event" | labels$cohortType == "exit", c("cohortId", "cohortName")]
   colnames(labels) <- c("event_cohort_id", "event_cohort_name")
 
   treatmentHistory <- merge(

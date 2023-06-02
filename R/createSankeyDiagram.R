@@ -73,6 +73,13 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #' @export
 #'
 #' @returns NULL
+#' 
+#' @examples \dontrun{
+#'   creaeSankeyDiagram(
+#'     data = read.csv("freqPerYear.csv"),
+#'     groupCombinations = FALSE,
+#'     outputFolder = "output")
+#' }
 createSankeyDiagram <- function(
     data,
     outputFolder,
@@ -114,6 +121,6 @@ createSankeyDiagram <- function(
   
   writeLines(
     text = plot$html$chart,
-    con = normalizePath(paste0(outputFolder, fileName), mustWork = FALSE)
+    con = normalizePath(paste0(outputFolder, "/", fileName), mustWork = FALSE)
   )
 }

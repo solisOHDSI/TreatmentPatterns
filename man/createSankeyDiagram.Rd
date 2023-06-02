@@ -24,3 +24,11 @@ the sunburst plot.}
 \description{
 createSankeyDiagram
 }
+\examples{
+\dontrun{
+  creaeSankeyDiagram(
+    data = read.csv("freqPerYear.csv"),
+    groupCombinations = FALSE,
+    outputFolder = "output")
+}
+}

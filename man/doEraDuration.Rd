@@ -7,14 +7,16 @@
 doEraDuration(treatmentHistory, minEraDuration)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{treatmentHistory}{(\link[base]{data.frame})\cr
+See \link[TreatmentPatterns]{doCreateTreatmentHistory}.}
 
-\item{minEraDuration}{Minimum time an event era should last to be included in analysis.}
+\item{minEraDuration}{(\link[base]{numeric})\cr
+minEraDuration from \link[TreatmentPatterns]{addPathwaySettings}.}
 }
 \value{
-treatmentHistory
-    Updated dataframe, rows with duration <
-    minEraDuration filtered out.
+(\link[base]{data.frame})
+Updated treatmentHistory dataframe, rows with duration < minEraDuration
+filtered out.
 }
 \description{
 Filters the treatmentHistory based on the specified minimum era duration

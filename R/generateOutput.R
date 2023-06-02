@@ -39,7 +39,7 @@ generateOutput <- function(saveSettings) {
       # Write WithYear and NoYear files
       outputTreatedPatients(
         data = treatmentPathways[[1]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "percentageGroupsTreatedNoYear.csv"
@@ -47,7 +47,7 @@ generateOutput <- function(saveSettings) {
 
       outputTreatedPatients(
         data = treatmentPathways[[2]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "PercentageGroupsTreatedWithYear.csv"
@@ -58,7 +58,7 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         minCellCount = settings[15, i]
       ))
@@ -82,7 +82,7 @@ generateOutput <- function(saveSettings) {
           outputFolder = saveSettings$outputFolder,
           databaseName = saveSettings$databaseName,
           studyName = settings[1, i],
-          eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+          eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
           addNoPaths = settings[18, i]
         )
       }))
