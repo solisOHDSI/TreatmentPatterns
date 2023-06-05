@@ -1,28 +1,3 @@
-#' checkCohorts
-#'
-#' Checks the validity of targetCohorts and eventCohorts parameters of
-#' createCohortSettings
-#'
-#' @param cohorts (\link[base]{data.frame})\cr
-#' Data frame of specified cohorts.
-#'
-#' @return (\link[base]{logical})\cr
-#' TRUE if checkmate checks pass.
-checkCohorts <- function(cohorts) {
-  # Check validity of data.frame inputs
-  checkmate::assert(
-    checkmate::checkSubset(
-      x = names(cohorts),
-      choices = c("cohortId", "cohortName")),
-    checkmate::checkDataFrame(
-      cohorts,
-      any.missing = FALSE,
-      types = c("numeric", "character")),
-    combine = "and"
-  )
-  return(TRUE)
-}
-
 #' Create cohort settings.
 #'
 #' Create a cohortsSettings object, containing information about the target
@@ -58,6 +33,25 @@ checkCohorts <- function(cohorts) {
 #'     cohortName = c("d"))
 #'   )
 createCohortSettings <- function(targetCohorts, eventCohorts, exitCohorts = NULL) {
+  errorMessages <- checkmate::makeAssertCollection()
+  
+  checkmate::assertSubset(
+    names(targetCohorts), choices = c("cohortId", "cohortName"), add = errorMessages)
+  checkmate::assertDataFrame(
+    targetCohorts, any.missing = FALSE, types = c("numeric", "character"), add = errorMessages)
+  
+  checkmate::assertSubset(
+    names(eventCohorts), choices = c("cohortId", "cohortName"), add = errorMessages)
+  checkmate::assertDataFrame(
+    eventCohorts, any.missing = FALSE, types = c("numeric", "character"), add = errorMessages)
+  
+  checkmate::assertSubset(
+    names(exitCohorts), choices = c("cohortId", "cohortName"), add = errorMessages)
+  checkmate::assertDataFrame(
+    exitCohorts, any.missing = FALSE, null.ok = TRUE, types = c("numeric", "character"), add = errorMessages)
+  
+  checkmate::reportAssertions(collection = errorMessages)
+  
   targetCohorts$cohortType <- "target"
   eventCohorts$cohortType <- "event"
   if (!is.null(exitCohorts)) {
