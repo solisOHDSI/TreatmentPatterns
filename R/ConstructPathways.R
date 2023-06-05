@@ -72,12 +72,15 @@ constructPathways <- function(dataSettings,
     connection,
     dataSettings$cohortTable,
     dataSettings$resultSchema,
-    dataSettings$connectionDetails$dbms))
+    dataSettings$connectionDetails$dbms
+  ))
 
-  colnames(fullCohorts) <- c("cohort_id",
-                              "person_id",
-                              "start_date",
-                              "end_date")
+  colnames(fullCohorts) <- c(
+    "cohort_id",
+    "person_id",
+    "start_date",
+    "end_date"
+  )
 
   # Save pathway settings
   pathwaySettings <- pathwaySettings$all_settings
@@ -94,65 +97,83 @@ constructPathways <- function(dataSettings,
     row.names = FALSE)
 
   # For all different pathway settings
-  settings <- colnames(pathwaySettings)[grepl("analysis",
-                                              colnames(pathwaySettings))]
+  settings <- colnames(pathwaySettings)[
+    grepl("analysis", colnames(pathwaySettings))
+  ]
 
   for (s in settings) {
     studyName <- pathwaySettings[pathwaySettings$param == "studyName", s]
 
     # Check if directories exist and create if necessary
     tempFolders <- file.path(saveSettings$tempFolder, studyName)
-    if (!file.exists(tempFolders))
-      dir.create(tempFolders,
-                 recursive = TRUE)
-
-    ParallelLogger::logInfo(print(paste0("Constructing treatment pathways: ",
-                                         studyName)))
+    if (!file.exists(tempFolders)) {
+      dir.create(tempFolders, recursive = TRUE)
+    }
+    
+    ParallelLogger::logInfo(print(paste0(
+      "Constructing treatment pathways: ",
+      studyName
+    )))
 
     # Select cohorts included
     targetCohortId <- pathwaySettings[
-      pathwaySettings$param == "targetCohortId", s]
+      pathwaySettings$param == "targetCohortId", s
+    ]
 
     eventCohortIds <- pathwaySettings[
-      pathwaySettings$param == "eventCohortIds", s]
+      pathwaySettings$param == "eventCohortIds", s
+    ]
+    
     eventCohortIds <- unlist(strsplit(eventCohortIds, split = c(";|,")))
 
     exitCohortIds <- pathwaySettings[
-      pathwaySettings$param == "exitCohortIds", s]
+      pathwaySettings$param == "exitCohortIds", s
+    ]
+    
     exitCohortIds <- unlist(strsplit(exitCohortIds, split = c(";|,")))
     
     print(exitCohortIds)
     
     # Analysis settings
     includeTreatments <- pathwaySettings[
-      pathwaySettings$param == "includeTreatments", s]
+      pathwaySettings$param == "includeTreatments", s
+    ]
 
     periodPriorToIndex <- as.integer(pathwaySettings[
-      pathwaySettings$param == "periodPriorToIndex", s])
+      pathwaySettings$param == "periodPriorToIndex", s
+    ])
 
     minEraDuration <- as.integer(pathwaySettings[
-      pathwaySettings$param == "minEraDuration", s])
+      pathwaySettings$param == "minEraDuration", s
+    ])
 
     splitEventCohorts <- pathwaySettings[
-      pathwaySettings$param == "splitEventCohorts", s]
+      pathwaySettings$param == "splitEventCohorts", s
+    ]
 
     splitTime <- pathwaySettings[
-      pathwaySettings$param == "splitTime", s]
+      pathwaySettings$param == "splitTime", s
+    ]
 
     eraCollapseSize <- as.integer(pathwaySettings[
-      pathwaySettings$param == "eraCollapseSize", s])
+      pathwaySettings$param == "eraCollapseSize", s
+    ])
 
     combinationWindow <- as.integer(pathwaySettings[
-      pathwaySettings$param == "combinationWindow", s])
+      pathwaySettings$param == "combinationWindow", s
+    ])
 
     minPostCombinationDuration <- as.integer(pathwaySettings[
-      pathwaySettings$param == "minPostCombinationDuration", s])
+      pathwaySettings$param == "minPostCombinationDuration", s
+    ])
 
     filterTreatments <-  pathwaySettings[
-      pathwaySettings$param == "filterTreatments", s]
+      pathwaySettings$param == "filterTreatments", s
+    ]
 
     maxPathLength <- as.integer(pathwaySettings[
-      pathwaySettings$param == "maxPathLength", s])
+      pathwaySettings$param == "maxPathLength", s
+    ])
 
     # Select subset of full cohort including only data for the current target
     # cohort
@@ -213,9 +234,6 @@ constructPathways <- function(dataSettings,
         treatmentHistory,
         filterTreatments)
       
-      # TODO add exitCohorts
-      # print(str(treatmentHistory))
-      # print(str(exitHistory))
       exitHistory$event_cohort_id <- as.character(exitHistory$event_cohort_id)
       treatmentHistory <- dplyr::bind_rows(
         treatmentHistory,

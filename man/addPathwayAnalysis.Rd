@@ -4,7 +4,13 @@
 \alias{addPathwayAnalysis}
 \title{addPathwayAnalysis}
 \usage{
-addPathwayAnalysis(pathwaySettings, targetCohortIds, eventCohortIds, ...)
+addPathwayAnalysis(
+  pathwaySettings,
+  targetCohortIds,
+  eventCohortIds,
+  exitCohortIds = NULL,
+  ...
+)
 }
 \arguments{
 \item{pathwaySettings}{A pathwaySettings object}

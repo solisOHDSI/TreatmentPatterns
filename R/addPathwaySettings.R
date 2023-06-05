@@ -1,136 +1,3 @@
-#' checkAddPathwaySettings
-#'
-#' Asserts that parameters fall within specified bounds.
-#'
-#' @param env
-#' (\link[base]{environment}) containing all the function environment variables.
-#'
-#' @return TRUE if all assertions pass
-#'
-#' @examples
-#' \dontrun{
-#' TreatmentPatterns:::checkAddPathwaySettings(env)
-#'}
-checkAddPathwaySettings <- function(env) {
-
-  # studyName
-  checkmate::assertCharacter(x = env$studyName,
-                             len = 1,
-                             null.ok = FALSE)
-
-  # targetCohortId
-  checkmate::assertNumeric(x = env$targetCohortId,
-                           min.len = 1,
-                           unique = TRUE,
-                           null.ok = FALSE)
-
-  # eventCohortIds
-  checkmate::assertNumeric(x = env$eventCohortIds,
-                           min.len = 1,
-                           unique = TRUE,
-                           null.ok = FALSE)
-
-  # eventCohortIds
-  checkmate::assertNumeric(x = env$exitCohortIds,
-                           min.len = 0,
-                           unique = TRUE,
-                           null.ok = TRUE)
-  
-  # includeTreatments
-  checkmate::assertCharacter(x = env$includeTreatments,
-                             len = 1)
-
-  checkmate::assertSubset(x = env$includeTreatments,
-                          choices = c("startDate", "endDate"))
-
-  # periodPriorToIndex
-  checkmate::assertNumeric(x = env$periodPriorToIndex,
-                           # lower = 0, # Can it be negative?
-                           len = 1,
-                           finite = TRUE,
-                           null.ok = FALSE)
-
-  # minEraDuration
-  checkmate::assertNumeric(x = env$minEraDuration,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # splitEventCohorts
-  checkmate::assertCharacter(x = env$splitEventCohorts,
-                             len = 1)
-
-  # splitTime
-  checkmate::assertNumeric(x = env$splitTime,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # eraCollapseSize
-  checkmate::assertNumeric(x = env$eraCollapseSize,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # combinationWindow
-  checkmate::assertNumeric(x = env$combinationWindow,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # minPostCombinationDuration
-  checkmate::assertNumeric(x = env$minPostCombinationDuration,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # filterTreatments
-  checkmate::assertCharacter(x = env$filterTreatments,
-                             len = 1)
-
-  checkmate::assertSubset(x = env$filterTreatments,
-                          choices = c("First", "Changes", "All"))
-
-  # maxPathLength
-  checkmate::assertNumeric(x = env$maxPathLength,
-                           lower = 0,
-                           upper = 5,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # minCellCount
-  checkmate::assertNumeric(x = env$minCellCount,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # minCellMethod
-  # Not used in ConstructPathways.R
-  checkmate::assertCharacter(x = env$minCellMethod,
-                             len = 1)
-
-  # groupCombinations
-  checkmate::assertNumeric(x = env$groupCombinations,
-                           lower = 0,
-                           finite = TRUE,
-                           len = 1,
-                           null.ok = FALSE)
-
-  # addNoPaths
-  checkmate::assertLogical(x = env$addNoPaths,
-                           any.missing = FALSE,
-                           len = 1)
-
-  return(TRUE)
-}
-
 #' addPathwaySettings
 #'
 #' Defines and returns a data.frame specifying different parameters how to
@@ -236,7 +103,52 @@ addPathwaySettings <- function(
     groupCombinations = 10,
     addNoPaths = TRUE) {
 
-  check <- checkAddPathwaySettings(environment())
+  # Assertions
+  errorMessages <- checkmate::makeAssertCollection()
+  
+  checkmate::assertCharacter(
+    studyName, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    targetCohortId, min.len = 1, unique = TRUE, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    eventCohortIds, min.len = 1, unique = TRUE, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    exitCohortIds, min.len = 0, unique = TRUE, null.ok = TRUE, add = errorMessages)
+  checkmate::assertCharacter(
+    includeTreatments, len = 1, add = errorMessages)
+  checkmate::assertSubset(
+    includeTreatments, choices = c("startDate", "endDate"), add = errorMessages)
+  checkmate::assertNumeric(
+    periodPriorToIndex, len = 1, finite = TRUE, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    minEraDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertCharacter(
+    splitEventCohorts, len = 1, add = errorMessages)
+  checkmate::assertNumeric(
+    splitTime, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    eraCollapseSize, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    combinationWindow, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    minPostCombinationDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertCharacter(
+    filterTreatments, len = 1, add = errorMessages)
+  checkmate::assertSubset(
+    filterTreatments, choices = c("First", "Changes", "All"), add = errorMessages)
+  checkmate::assertNumeric(
+    maxPathLength, lower = 0, upper = 5, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertNumeric(
+    minCellCount, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  # Not used in ConstructPathways.R
+  checkmate::assertCharacter(
+    minCellMethod, len = 1, add = errorMessages)
+  checkmate::assertNumeric(
+    groupCombinations, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+  checkmate::assertLogical(
+    addNoPaths, any.missing = FALSE, len = 1, add = errorMessages)
+  
+  checkmate::reportAssertions(collection = errorMessages)
 
   if (is.null(exitCohortIds)) {
     exits <- NULL
@@ -244,28 +156,26 @@ addPathwaySettings <- function(
     exits <- paste(exitCohortIds, collapse = ",")
   }
   
-  if (check) {
-    settings <- data.frame(
-      studyName = studyName,
-      targetCohortId = targetCohortId,
-      eventCohortIds = paste(eventCohortIds, collapse = ","),
-      exitCohortIds = exits,
-      includeTreatments = includeTreatments,
-      periodPriorToIndex = periodPriorToIndex,
-      minEraDuration = minEraDuration,
-      splitEventCohorts = splitEventCohorts,
-      splitTime = splitTime,
-      eraCollapseSize = eraCollapseSize,
-      combinationWindow = combinationWindow,
-      minPostCombinationDuration = minPostCombinationDuration,
-      filterTreatments = filterTreatments,
-      maxPathLength = maxPathLength,
-      minCellCount = minCellCount,
-      minCellMethod = minCellMethod,
-      groupCombinations = groupCombinations,
-      addNoPaths = addNoPaths
-    )
-
-    return(settings)
-  }
+  settings <- data.frame(
+    studyName = studyName,
+    targetCohortId = targetCohortId,
+    eventCohortIds = paste(eventCohortIds, collapse = ","),
+    exitCohortIds = paste(exits, collapse = ","),
+    includeTreatments = includeTreatments,
+    periodPriorToIndex = periodPriorToIndex,
+    minEraDuration = minEraDuration,
+    splitEventCohorts = splitEventCohorts,
+    splitTime = splitTime,
+    eraCollapseSize = eraCollapseSize,
+    combinationWindow = combinationWindow,
+    minPostCombinationDuration = minPostCombinationDuration,
+    filterTreatments = filterTreatments,
+    maxPathLength = maxPathLength,
+    minCellCount = minCellCount,
+    minCellMethod = minCellMethod,
+    groupCombinations = groupCombinations,
+    addNoPaths = addNoPaths
+  )
+  
+  return(settings)
 }
