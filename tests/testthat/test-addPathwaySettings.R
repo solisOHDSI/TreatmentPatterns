@@ -12,15 +12,15 @@ test_that("Blind parameters", {
   expect_type(result, "list")
   expect_equal(class(result), "data.frame")
   expect_equal(nrow(result), 1)
-  expect_equal(ncol(result), 17)
+  expect_equal(ncol(result), 18)
   expect_equal(colnames(result),
-               c("studyName", "targetCohortId", "eventCohortIds",
+               c("studyName", "targetCohortId", "eventCohortIds", "exitCohortIds",
                  "includeTreatments", "periodPriorToIndex", "minEraDuration",
                  "splitEventCohorts", "splitTime", "eraCollapseSize",
                  "combinationWindow", "minPostCombinationDuration",
                  "filterTreatments", "maxPathLength", "minCellCount",
                  "minCellMethod", "groupCombinations", "addNoPaths"))
-  expect_equal(result$studyName, "name_unknown")
+  expect_equal(result$studyName, "nameUnknown")
   expect_equal(result$targetCohortId, 1)
   expect_equal(result$eventCohortIds, "2")
   expect_equal(result$includeTreatments, "startDate")
@@ -112,14 +112,13 @@ test_that("studyName", {
 })
 
 test_that("includeTreatments", {
-  # chr
   expect_error(
     addPathwaySettings(
       targetCohortId = 1,
       eventCohortIds = 2,
       includeTreatments = "2"
     ),
-    "Must be a subset of \\{'startDate','endDate'\\}"
+    "\\{'startDate','endDate'\\}"
   )
 })
 
@@ -215,7 +214,7 @@ test_that("filterTreatments", {
       eventCohortIds = 2,
       filterTreatments = "2"
     ),
-    "Must be a subset of \\{'First','Changes','All'\\}"
+    "\\{'First','Changes','All'\\}"
   )
 })
 
@@ -263,7 +262,7 @@ test_that("groupCombinations", {
       eventCohortIds = 2,
       groupCombinations = "2"
     ),
-    "Must be of type 'numeric', not 'character'"
+    "Variable 'groupCombinations': Must be of type 'numeric'.+'character'."
   )
 })
 

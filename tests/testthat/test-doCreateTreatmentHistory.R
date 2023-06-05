@@ -3,10 +3,6 @@ library(testthat)
 
 source(system.file(
   package = "TreatmentPatterns",
-  "examples", "SettingObjects", "createDummySettings.R"))
-
-source(system.file(
-  package = "TreatmentPatterns",
   "testing",
   "testParams.R"))
 
@@ -19,6 +15,17 @@ test_that("minimal", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
+    periodPriorToIndex = periodPriorToIndex,
+    includeTreatments = includeTreatments), "data.frame")
+})
+
+test_that("death", {
+  expect_s3_class(TreatmentPatterns:::doCreateTreatmentHistory(
+    currentCohorts = currentCohorts,
+    targetCohortId = targetCohortId,
+    eventCohortIds = eventCohortIds,
+    exitCohortIds = c(20),
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = includeTreatments), "data.frame")
 })
@@ -28,6 +35,7 @@ test_that("event cohorts", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = includeTreatments)
   expect_gt(nrow(eventCohorts), 0)
@@ -112,6 +120,7 @@ test_that("includeTreatments startDate", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = "startDate")
   extendedEventCohorts <- inner_join(
@@ -129,6 +138,7 @@ test_that("includeTreatments endDate", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = "endDate")
   extendedEventCohorts <- inner_join(
@@ -146,6 +156,7 @@ test_that("includeTreatments other", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = "other"))
 })
@@ -156,6 +167,7 @@ test_that("periodPriorToIndex", {
     currentCohorts = currentCohorts,
     targetCohortId = targetCohortId,
     eventCohortIds = eventCohortIds,
+    exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
     includeTreatments = includeTreatments)
   extendedEventCohorts <- inner_join(

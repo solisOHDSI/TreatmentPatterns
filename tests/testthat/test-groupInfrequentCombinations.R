@@ -12,11 +12,11 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_s3_class(
+  suppressWarnings(expect_s3_class(
     TreatmentPatterns:::groupInfrequentCombinations(
       data = treatmentPathways[[1]],
       groupCombinations = groupCombinations),
-    "data.frame")
+    "data.frame"))
 })
 
 

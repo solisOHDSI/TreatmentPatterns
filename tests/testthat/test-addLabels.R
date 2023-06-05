@@ -1,10 +1,6 @@
 library(TreatmentPatterns)
 library(testthat)
 
-source(list.files(system.file(
-  package = "TreatmentPatterns",
-  "examples", "SettingObjects"), full.names = TRUE))
-
 source(system.file(
   package = "TreatmentPatterns",
   "testing", "testParams.R"))
