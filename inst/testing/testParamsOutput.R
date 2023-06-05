@@ -21,6 +21,6 @@ eventCohortIds <- pathwaySettings$all_settings[3, 2]
 eventCohortIds <-
   unlist(strsplit(eventCohortIds, split = c(";|,")))
 
-groupCombinations <- pathwaySettings$all_settings[16, 2]
+groupCombinations <- pathwaySettings$all_settings[17, 2]
 
 outputFolders <- file.path(saveSettings$outputFolder, "Viral_sinusitis")

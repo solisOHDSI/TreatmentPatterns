@@ -41,6 +41,7 @@ treatmentHistory <- TreatmentPatterns:::doCreateTreatmentHistory(
   currentCohorts = currentCohorts,
   targetCohortId = targetCohortId,
   eventCohortIds = eventCohortIds,
+  exitCohortIds = NULL,
   periodPriorToIndex = periodPriorToIndex,
   includeTreatments = includeTreatments)
 
