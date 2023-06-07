@@ -5,17 +5,19 @@ source(list.files(system.file(
 TreatmentPatterns::constructPathways(
   dataSettings = dataSettings,
   pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings)
+  saveSettings = saveSettings
+)
 
 # Generate output for folder structure etc.
 TreatmentPatterns::generateOutput(saveSettings = saveSettings)
 
-treatmentPathways <- TreatmentPatterns::getPathways(
+treatmentPathways <- TreatmentPatterns:::getPathways(
   outputFolder = saveSettings$outputFolder,
   tempFolder = saveSettings$tempFolder,
   databaseName = saveSettings$databaseName,
   studyName = "Viral_Sinusitis",
-  minCellCount = 5)
+  minCellCount = 5
+)
 
 eventCohortIds <- pathwaySettings$all_settings[3, 2]
 eventCohortIds <-
