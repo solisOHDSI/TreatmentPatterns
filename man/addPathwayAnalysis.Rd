@@ -19,6 +19,8 @@ addPathwayAnalysis(
 
 \item{eventCohortIds}{Event Cohort ID's}
 
+\item{exitCohortIds}{Exit Cohort ID's}
+
 \item{...}{Optional addPathwaySettings parameters i.e. studyName. Excluding
 eventCohortId and targetCohortIds}
 }
