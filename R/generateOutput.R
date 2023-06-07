@@ -492,8 +492,8 @@ outputDurationEras <- function(
 
   result <- file[, .(
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -511,8 +511,8 @@ outputDurationEras <- function(
   resultTotalConcept <- file[, .(
     event_cohort_name = "Total treated",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -521,8 +521,8 @@ outputDurationEras <- function(
   resultFixedCombinations <- file[, .(
     event_cohort_name = "Fixed combinations",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -537,8 +537,8 @@ outputDurationEras <- function(
   resultAllCombinations <- file[, .(
     event_cohort_name = "All combinations",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -553,8 +553,8 @@ outputDurationEras <- function(
   resultMonotherapy <- file[, .(
     event_cohort_name = "Monotherapy",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -567,8 +567,8 @@ outputDurationEras <- function(
   resultTotalSeq <- file[, .(
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -578,8 +578,8 @@ outputDurationEras <- function(
     event_cohort_name = "Total treated",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -589,8 +589,8 @@ outputDurationEras <- function(
     event_cohort_name = "Fixed combinations",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -601,8 +601,8 @@ outputDurationEras <- function(
       event_cohort_name = "All combinations",
       event_seq = "Overall",
       AVG_DURATION = round(mean(duration_era), 2),
-      MEDIAN = round(median(duration_era), 2),
-      SD = round(sd(duration_era), 2),
+      MEDIAN = round(stats::median(duration_era), 2),
+      SD = round(stats::sd(duration_era), 2),
       MIN = min(duration_era),
       MAX = max(duration_era),
       COUNT = .N
@@ -612,8 +612,8 @@ outputDurationEras <- function(
     event_cohort_name = "Monotherapy",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
