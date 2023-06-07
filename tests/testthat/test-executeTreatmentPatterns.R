@@ -1,9 +1,5 @@
 library(testthat)
 
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing", "testParams.R"))
-
 test_that("void", {
   expect_error(TreatmentPatterns::executeTreatmentPatterns())
 })
