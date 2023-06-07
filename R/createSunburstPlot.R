@@ -199,8 +199,6 @@ transformCSVtoJSON <- function(data, outcomes, folder, fileName) {
       freq = data$freq)
   )
   
-  print(transformed_json)
-  
   result <- paste0(
     "{ \"data\" : ", transformed_json, ", \"lookup\" : ", lookup, "}")
   
@@ -264,6 +262,7 @@ createSunburstPlot <- function(data, folder, fileName) {
   
   # Replace @insert_data
   html <- sub("@insert_data", json, html)
+  html <- sub("@name", "Sunburst", html)
   
   # Save HTML file
   writeLines(

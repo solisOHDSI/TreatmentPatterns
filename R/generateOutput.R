@@ -30,7 +30,7 @@ generateOutput <- function(saveSettings) {
       tempFolder = saveSettings$tempFolder,
       databaseName = saveSettings$databaseName,
       studyName = settings[1, i],
-      minCellCount = settings[14, i]
+      minCellCount = settings[15, i]
     ))
 
     treatmentPathways <- objList
@@ -39,7 +39,7 @@ generateOutput <- function(saveSettings) {
       # Write WithYear and NoYear files
       outputTreatedPatients(
         data = treatmentPathways[[1]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "percentageGroupsTreatedNoYear.csv"
@@ -47,7 +47,7 @@ generateOutput <- function(saveSettings) {
 
       outputTreatedPatients(
         data = treatmentPathways[[2]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "PercentageGroupsTreatedWithYear.csv"
@@ -58,9 +58,9 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
-        minCellCount = settings[14, i]
+        minCellCount = settings[15, i]
       ))
 
       objList <- append(objList, doMinCellCount(
@@ -70,9 +70,9 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        groupCombinations = settings[16, i],
-        minCellCount = settings[14, i],
-        minCellMethod = settings[15, i]
+        groupCombinations = settings[17, i],
+        minCellCount = settings[15, i],
+        minCellMethod = settings[16, i]
       ))
 
       objList <- append(objList, lapply(treatmentPathways, function(pathway) {
@@ -82,8 +82,8 @@ generateOutput <- function(saveSettings) {
           outputFolder = saveSettings$outputFolder,
           databaseName = saveSettings$databaseName,
           studyName = settings[1, i],
-          eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
-          addNoPaths = settings[17, i]
+          eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
+          addNoPaths = settings[18, i]
         )
       }))
     }
@@ -492,8 +492,8 @@ outputDurationEras <- function(
 
   result <- file[, .(
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -511,8 +511,8 @@ outputDurationEras <- function(
   resultTotalConcept <- file[, .(
     event_cohort_name = "Total treated",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -521,8 +521,8 @@ outputDurationEras <- function(
   resultFixedCombinations <- file[, .(
     event_cohort_name = "Fixed combinations",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -537,8 +537,8 @@ outputDurationEras <- function(
   resultAllCombinations <- file[, .(
     event_cohort_name = "All combinations",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -553,8 +553,8 @@ outputDurationEras <- function(
   resultMonotherapy <- file[, .(
     event_cohort_name = "Monotherapy",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -567,8 +567,8 @@ outputDurationEras <- function(
   resultTotalSeq <- file[, .(
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -578,8 +578,8 @@ outputDurationEras <- function(
     event_cohort_name = "Total treated",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -589,8 +589,8 @@ outputDurationEras <- function(
     event_cohort_name = "Fixed combinations",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N
@@ -601,8 +601,8 @@ outputDurationEras <- function(
       event_cohort_name = "All combinations",
       event_seq = "Overall",
       AVG_DURATION = round(mean(duration_era), 2),
-      MEDIAN = round(median(duration_era), 2),
-      SD = round(sd(duration_era), 2),
+      MEDIAN = round(stats::median(duration_era), 2),
+      SD = round(stats::sd(duration_era), 2),
       MIN = min(duration_era),
       MAX = max(duration_era),
       COUNT = .N
@@ -612,8 +612,8 @@ outputDurationEras <- function(
     event_cohort_name = "Monotherapy",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
-    MEDIAN = round(median(duration_era), 2),
-    SD = round(sd(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
     MIN = min(duration_era),
     MAX = max(duration_era),
     COUNT = .N

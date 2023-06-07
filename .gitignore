@@ -1,7 +1,9 @@
-.Rproj.user
 .Rhistory
+.Rproj.user/
 .RData
 .Ruserdata
-output org
-output
-output.zip
+dev/
+diagnostics/
+output/
+output/
+vignettes/output/
