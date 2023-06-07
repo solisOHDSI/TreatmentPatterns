@@ -24,7 +24,8 @@ Imports:
     glue,
     utils,
     rjson,
-    googleVis
+    googleVis,
+    stats
 Suggests:
     tibble,
     testthat (>= 3.0.0),
