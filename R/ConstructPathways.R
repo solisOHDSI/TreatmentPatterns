@@ -195,11 +195,11 @@ constructPathways <- function(dataSettings,
       )
       
       exitHistory <- treatmentHistory %>%
-        filter(type == "exit") %>%
-        select(-"type")
+        dplyr::filter(.data$type == "exit") %>%
+        dplyr::select(-"type")
       
       treatmentHistory <- treatmentHistory %>%
-        filter(type == "event")
+        dplyr::filter(.data$type == "event")
 
       # Apply pathway settings to create treatment pathways
       ParallelLogger::logInfo(paste(
@@ -436,13 +436,13 @@ doCreateTreatmentHistory <- function(
     currentCohorts$cohort_id %in% exitCohortIds, , ]
 
   targetCohorts <- targetCohorts %>%
-    mutate(type = "target")
+    dplyr::mutate(type = "target")
   
   eventCohorts <- eventCohorts %>%
-    mutate(type = "event")
+    dplyr::mutate(type = "event")
   
   exitCohorts <- exitCohorts %>%
-    mutate(type = "exit")
+    dplyr::mutate(type = "exit")
   
   eventCohorts <- dplyr::bind_rows(
     eventCohorts,
