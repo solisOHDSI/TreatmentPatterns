@@ -16,10 +16,10 @@ doCreateTreatmentHistory(
 \arguments{
 \item{currentCohorts}{(\link[base]{data.frame})\cr
 \enumerate{
-  \item (\link[base]{numeric}) cohort_id
-  \item (\link[base]{numeric}) person_id
-  \item (\link[base]{date}: `\%Y-\%m-\%d`) start_date
-  \item (\link[base]{date}: `\%Y-\%m-\%d`) end_date
+\item (\link[base]{numeric}) cohort_id
+\item (\link[base]{numeric}) person_id
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) start_date
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) end_date
 }}
 
 \item{targetCohortId}{(\link[base]{c}) of (\link[base]{numeric})\cr
@@ -40,14 +40,14 @@ includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.}
 \value{
 (\link[base]{data.frame})\cr
 \enumerate{
-  \item (\link[base]{numeric}) person_id
-  \item (\link[base]{numeric}) index_year
-  \item (\link[base]{numeric}) event_cohort_id
-  \item (\link[base]{date}) event_start_date
-  \item (\link[base]{date}) event_end_date
-  \item (\link[base]{character}) type
-  \item (\link[base]{difftime}) duration_era
-  \item (\link[base]{difftime}) gap_same
+\item (\link[base]{numeric}) person_id
+\item (\link[base]{numeric}) index_year
+\item (\link[base]{numeric}) event_cohort_id
+\item (\link[base]{date}) event_start_date
+\item (\link[base]{date}) event_end_date
+\item (\link[base]{character}) type
+\item (\link[base]{difftime}) duration_era
+\item (\link[base]{difftime}) gap_same
 }
 }
 \description{

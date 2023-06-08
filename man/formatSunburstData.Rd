@@ -8,8 +8,8 @@ formatSunburstData(filePath, indexYear)
 }
 \arguments{
 \item{filePath}{\link[base]{character}\cr
-Path to file containing `event_cohort_name1`, `event_cohort_name2`,
-`event_cohort_name3`, `event_cohort_name4`, `event_cohort_name5` columns.}
+Path to file containing \code{event_cohort_name1}, \code{event_cohort_name2},
+\code{event_cohort_name3}, \code{event_cohort_name4}, \code{event_cohort_name5} columns.}
 
 \item{indexYear}{\link[base]{integer} or \link[base]{character}\cr
 Index year to filter on.}

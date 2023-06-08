@@ -41,7 +41,7 @@ as often as necessary) treatment pathways below minCellCount.}
 }
 \value{
 List
-    List of file_noyear and file_withyear
+List of file_noyear and file_withyear
 
 List
 }

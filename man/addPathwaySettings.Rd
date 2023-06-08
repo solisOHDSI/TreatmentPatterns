@@ -70,7 +70,8 @@ combination treatment.}
 Minimum time an event era before or after a generated combination treatment
 should last to be included in analysis.}
 
-\item{filterTreatments}{(\link[base]{character}: "First") ["First", "Changes", "All"]\cr
+\item{filterTreatments}{(\link[base]{character}: "First") ["First", "Changes", "All"
+]\cr
 Select first occurrence of ("First"); changes between ("Changes'); all event
 cohorts ("All").}
 
