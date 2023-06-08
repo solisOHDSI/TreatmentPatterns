@@ -67,12 +67,22 @@ constructPathways <- function(dataSettings,
   connection <- DatabaseConnector::connect(dataSettings$connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
 
+  # Get cohort ids from pathwaySettings
+  cohortIds <- pathwaySettings$all_settings[c(2,3,4), 2:length(pathwaySettings$all_settings)] %>%
+    unlist() %>%
+    stringr::str_split(pattern = ",") %>%
+    unlist() %>%
+    unique() %>%
+    as.integer()
+  
+  cohortIds <- cohortIds[!is.na(cohortIds)]
+  
   # Get cohorts from database
-  fullCohorts <- data.table::as.data.table(extractFile(
-    connection,
-    dataSettings$cohortTable,
-    dataSettings$resultSchema,
-    dataSettings$connectionDetails$dbms
+  fullCohorts <- data.table::as.data.table(extractCohortTable(
+    connection = connection,
+    resultsSchema = dataSettings$resultSchema,
+    cohortTableName = dataSettings$cohortTable,
+    cohortIds = cohortIds
   ))
 
   colnames(fullCohorts) <- c(

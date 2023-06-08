@@ -15,7 +15,7 @@
 #' @param exitCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
 #' Vector exit cohort IDs of current study settings.
 #'
-#' @param includeTreatments (\link[base]{character}: "startDate") ["startDate", "endDate"]\cr
+#' @param includeTreatments (\link[base]{character}: "startDate") \["startDate", "endDate"\]\cr
 #' Include treatments starting "startDate" or ending "endDate" after target
 #' cohort start date.
 #'
@@ -47,7 +47,8 @@
 #' Minimum time an event era before or after a generated combination treatment
 #' should last to be included in analysis.
 #'
-#' @param filterTreatments (\link[base]{character}: "First") ["First", "Changes", "All"]\cr
+#' @param filterTreatments (\link[base]{character}: "First") \["First", "Changes", "All"
+#' ]\cr
 #' Select first occurrence of ("First"); changes between ("Changes'); all event
 #' cohorts ("All").
 #'
@@ -58,7 +59,7 @@
 #' Minimum number of persons with a specific treatment pathway for the pathway
 #' to be included in analysis.
 #'
-#' @param minCellMethod (\link[base]{character}: "Remove") ["Remove"]\cr
+#' @param minCellMethod (\link[base]{character}: "Remove") \["Remove"\]\cr
 #' Select to completely remove / sequentially adjust (by removing last step
 #' as often as necessary) treatment pathways below minCellCount.
 #'
