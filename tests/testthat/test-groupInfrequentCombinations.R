@@ -1,10 +1,6 @@
 library(testthat)
 library(TreatmentPatterns)
 
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing", "testParamsOutput.R"))
-
 test_that("void", {
   expect_error(
     TreatmentPatterns:::groupInfrequentCombinations()
