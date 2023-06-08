@@ -290,7 +290,8 @@ writeCohortTable(
   saveSettings = saveSettings,
   cohortSettings = cohortSettings,
   dataSettings = dataSettings,
-  tableName = cohortTable)
+  tableName = cohortTable
+)
 ```
 1. **saveSettings**: `saveSettings` object.
 2. **cohortSettings**: `cohortSettings` object.
