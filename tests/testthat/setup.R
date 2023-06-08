@@ -90,11 +90,12 @@ TreatmentPatterns::writeCohortTable(
 
 connection <- DatabaseConnector::connect(dataSettings$connectionDetails)
 
-fullCohorts <- data.table::as.data.table(TreatmentPatterns::extractFile(
-  connection,
-  dataSettings$cohortTable,
-  dataSettings$resultSchema,
-  dataSettings$connectionDetails$dbms))
+fullCohorts <- data.table::as.data.table(TreatmentPatterns::extractCohortTable(
+  connection = connection,
+  resultsSchema = dataSettings$resultSchema,
+  cohortTableName = dataSettings$cohortTable,
+  cohortIds = cohortSettings$cohortsToCreate$cohortId
+))
 
 DatabaseConnector::disconnect(connection)
 
