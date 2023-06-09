@@ -14,8 +14,8 @@ collapsed into one era.}
 }
 \value{
 treatmentHistory
-    Updated dataframe, where event cohorts with
-    gap_same < eraCollapseSize are collapsed.
+Updated dataframe, where event cohorts with
+gap_same < eraCollapseSize are collapsed.
 }
 \description{
 Updates the treatmentHistory data.frame where if gapSame is smaller than the

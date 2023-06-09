@@ -290,7 +290,8 @@ writeCohortTable(
   saveSettings = saveSettings,
   cohortSettings = cohortSettings,
   dataSettings = dataSettings,
-  tableName = cohortTable)
+  tableName = cohortTable
+)
 ```
 1. **saveSettings**: `saveSettings` object.
 2. **cohortSettings**: `cohortSettings` object.
@@ -311,7 +312,7 @@ constructPathways(
 
 ### generateOutput
 After our pathways are computed, we can generate our output files.
-```{r generateOutput, results='hide'}
+```{r generateOutput, results='hide', warning=FALSE}
 generateOutput(saveSettings = saveSettings)
 ```
 1. **saveSettings**: `saveSettings` object.

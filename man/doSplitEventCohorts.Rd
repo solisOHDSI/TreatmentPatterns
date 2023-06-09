@@ -25,8 +25,8 @@ slashes (/).}
 }
 \value{
 treatmentHistory
-    Updated dataframe, with specified event cohorts now
-    split in two different event cohorts (acute and therapy).
+Updated dataframe, with specified event cohorts now
+split in two different event cohorts (acute and therapy).
 }
 \description{
 Splits the treatmentHistory data.frame based on event cohorts into ‘acute’

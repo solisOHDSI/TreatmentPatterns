@@ -1,10 +1,6 @@
 library(TreatmentPatterns)
 library(testthat)
 
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing", "testParamsOutput.R"))
-
 outputFile <- "percentageGroupsTreatedNoYear.csv"
 
 test_that("void", {

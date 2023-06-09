@@ -4,7 +4,13 @@
 \alias{addPathwayAnalysis}
 \title{addPathwayAnalysis}
 \usage{
-addPathwayAnalysis(pathwaySettings, targetCohortIds, eventCohortIds, ...)
+addPathwayAnalysis(
+  pathwaySettings,
+  targetCohortIds,
+  eventCohortIds,
+  exitCohortIds = NULL,
+  ...
+)
 }
 \arguments{
 \item{pathwaySettings}{A pathwaySettings object}
@@ -12,6 +18,8 @@ addPathwayAnalysis(pathwaySettings, targetCohortIds, eventCohortIds, ...)
 \item{targetCohortIds}{Target Cohort ID's}
 
 \item{eventCohortIds}{Event Cohort ID's}
+
+\item{exitCohortIds}{Exit Cohort ID's}
 
 \item{...}{Optional addPathwaySettings parameters i.e. studyName. Excluding
 eventCohortId and targetCohortIds}

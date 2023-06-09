@@ -20,18 +20,18 @@ considered a combination event.}
 \item{minPostCombinationDuration}{Minimum number of days an event era starting after a combination event
 or ending before a combination event must last to be counted a separate
 event. Events occuring before or after a combination that are less than
-`minPostCombinationDuration` days long will be dropped from the analysis.}
+\code{minPostCombinationDuration} days long will be dropped from the analysis.}
 }
 \value{
 A treatmentHistory dataframe with the columns event_cohort_id,
-    person_id, event_start_date, event_end_date. event_cohort_id will be
-    of character type and combination events will have a new event_cohort_id
-    made up of the concatenated event_cohort_ids of each combined
-    event_cohort_id. When two events overlap for more than
-    `combinationWindow` days they will be collapsed into a single combination
-    event. Events are collapsed iteratively starting with the first two
-    overlapping events per person and continuing until no more overlapping
-    events exist in the treatmentHistory.
+person_id, event_start_date, event_end_date. event_cohort_id will be
+of character type and combination events will have a new event_cohort_id
+made up of the concatenated event_cohort_ids of each combined
+event_cohort_id. When two events overlap for more than
+\code{combinationWindow} days they will be collapsed into a single combination
+event. Events are collapsed iteratively starting with the first two
+overlapping events per person and continuing until no more overlapping
+events exist in the treatmentHistory.
 }
 \description{
 doCombinationWindow is an internal function that combines overlapping events

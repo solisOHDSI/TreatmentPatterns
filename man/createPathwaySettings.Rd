@@ -7,27 +7,30 @@
 createPathwaySettings(cohortSettings, ...)
 }
 \arguments{
-\item{cohortSettings}{cohortSettings object}
+\item{cohortSettings}{(\link[TreatmentPatterns]{addPathwaySettings})\cr
+cohortSettings object}
 
-\item{...}{Any addPathwaySettings parameter:
-1. studyName
-2. includeTreatments
-3. periodPriorToIndex
-4. minEraDuration
-5. splitEventCohorts
-6. splitTime
-7. eraCollapseSize
-8. combinationWindow
-9. minPostCombinationDuration
-10. filterTreatments
-11. maxPathLength
-12. minCellCount
-13. minCellMethod
-14. groupCombinations
-15. addNoPaths}
+\item{...}{\enumerate{
+\item studyName
+\item includeTreatments
+\item periodPriorToIndex
+\item minEraDuration
+\item splitEventCohorts
+\item splitTime
+\item eraCollapseSize
+\item combinationWindow
+\item minPostCombinationDuration
+\item filterTreatments
+\item maxPathLength
+\item minCellCount
+\item minCellMethod
+\item groupCombinations
+\item addNoPaths
+}}
 }
 \value{
-Object pathwaySettings.
+(\link[TreatmentPatterns]{createPathwaySettings})
+S3 pathwaySettings object.
 }
 \description{
 Create pathway settings.

@@ -14,8 +14,8 @@ combination treatment for it to be included in analysis.}
 }
 \value{
 treatmentHistory
-    Updated dataframe, rows with duration_era <
-    minPostCombinationDuration filtered out.
+Updated dataframe, rows with duration_era <
+minPostCombinationDuration filtered out.
 }
 \description{
 Filters treatmentHistory based on if durationEra is smaller than the
