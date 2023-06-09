@@ -10,7 +10,15 @@
 #' Settings
 #' 
 #' @examples
+#' cohortSettings <- CohortSettings$new(
+#'   targetCohorts = data.frame(cohortId = c(1), cohortName = c("disease")),
+#'   eventCohorts = data.frame(cohortId = c(2, 3), cohortName = c("drugA", "drugB"))
+#' )
 #' 
+#' AnalysisA <- AnalysisSettings$new(
+#'   cohortSettings = cohortSettings,
+#'   studyName = "Analysis 1"
+#' )
 AnalysisSettings <- R6::R6Class(
   inherit = Settings, 
   classname = "AnalysisSettings",
@@ -96,105 +104,51 @@ AnalysisSettings <- R6::R6Class(
     #' @return
     #' `self`
     validate = function(settings) {
-      checkmate::assertCharacter(x = settings$includeTreatments, len = 1)
-      checkmate::assertSubset(x = settings$includeTreatments, choices = c("startDate", "endDate"))
-      
-      checkmate::assertNumeric(x = settings$periodPriorToIndex, len = 1,
-        finite = TRUE,
-        null.ok = FALSE
-      )
-      
-      checkmate::assertNumeric(
-        x = settings$minEraDuration,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
+      # Assertions
+      errorMessages <- checkmate::makeAssertCollection()
       
       checkmate::assertCharacter(
-        x = settings$splitEventCohorts,
-        len = 1
-      )
-      
+        studyName, len = 1, null.ok = FALSE, add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$splitTime,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
+        targetCohortId, min.len = 1, unique = TRUE, null.ok = FALSE, add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$eraCollapseSize,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
+        eventCohortIds, min.len = 1, unique = TRUE, null.ok = FALSE, add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$combinationWindow,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
-      checkmate::assertNumeric(
-        x = settings$minPostCombinationDuration,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
+        exitCohortIds, min.len = 0, unique = TRUE, null.ok = TRUE, add = errorMessages)
       checkmate::assertCharacter(
-        x = settings$filterTreatments,
-        len = 1
-      )
-      
+        includeTreatments, len = 1, add = errorMessages)
       checkmate::assertSubset(
-        x = settings$filterTreatments,
-        choices = c("First", "Changes", "All")
-      )
-      
+        includeTreatments, choices = c("startDate", "endDate"), add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$maxPathLength,
-        lower = 0,
-        upper = 5,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
+        periodPriorToIndex, len = 1, finite = TRUE, null.ok = FALSE, add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$minCellCount,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
-      # Not used in ConstructPathways.R
+        minEraDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
       checkmate::assertCharacter(
-        x = settings$minCellMethod,
-        len = 1
-      )
-      
+        splitEventCohorts, len = 1, add = errorMessages)
       checkmate::assertNumeric(
-        x = settings$groupCombinations,
-        lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE
-      )
-      
+        splitTime, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        eraCollapseSize, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        combinationWindow, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        minPostCombinationDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertCharacter(
+        filterTreatments, len = 1, add = errorMessages)
+      checkmate::assertSubset(
+        filterTreatments, choices = c("First", "Changes", "All"), add = errorMessages)
+      checkmate::assertNumeric(
+        maxPathLength, lower = 0, upper = 5, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        minCellCount, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertCharacter(
+        minCellMethod, len = 1, add = errorMessages)
+      checkmate::assertNumeric(
+        groupCombinations, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
       checkmate::assertLogical(
-        x = settings$addNoPaths,
-        any.missing = FALSE,
-        len = 1
-      )
+        addNoPaths, any.missing = FALSE, len = 1, add = errorMessages)
+      
+      checkmate::reportAssertions(collection = errorMessages)
       return(invisible(self))
     }
   ),

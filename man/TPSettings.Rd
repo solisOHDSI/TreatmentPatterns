@@ -18,13 +18,13 @@ TPSettings object, inherits from Settings.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-TPSettings-new}{\code{TPSettings$new()}}
+\item \href{#method-TPSettings-get}{\code{TPSettings$get()}}
 \item \href{#method-TPSettings-clone}{\code{TPSettings$clone()}}
 }
 }
 \if{html}{\out{
 <details open><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="TreatmentPatterns" data-topic="Settings" data-id="get"><a href='../../TreatmentPatterns/html/Settings.html#method-Settings-get'><code>TreatmentPatterns::Settings$get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="TreatmentPatterns" data-topic="Settings" data-id="print"><a href='../../TreatmentPatterns/html/Settings.html#method-Settings-print'><code>TreatmentPatterns::Settings$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="TreatmentPatterns" data-topic="Settings" data-id="validate"><a href='../../TreatmentPatterns/html/Settings.html#method-Settings-validate'><code>TreatmentPatterns::Settings$validate()</code></a></span></li>
 </ul>
@@ -42,18 +42,33 @@ initialize
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dataSettings}}{<DataSettings> DataSettings R6 object.}
+\item{\code{dataSettings}}{\if{html}{\out{<DataSettings>}} DataSettings R6 object.}
 
-\item{\code{cohortSettings}}{<CohortSettings> CohortSettings R6 object.}
+\item{\code{cohortSettings}}{\if{html}{\out{<CohortSettings>}} CohortSettings R6 object.}
 
-\item{\code{pathwaySettings}}{<PathwaySettings> PathwaySettings R6 object.}
+\item{\code{pathwaySettings}}{\if{html}{\out{<PathwaySettings>}} PathwaySettings R6 object.}
 
-\item{\code{saveSettings}}{<SaveSettings> SaveSettings R6 object.}
+\item{\code{saveSettings}}{\if{html}{\out{<SaveSettings>}} SaveSettings R6 object.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 invisible(self)
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-TPSettings-get"></a>}}
+\if{latex}{\out{\hypertarget{method-TPSettings-get}{}}}
+\subsection{Method \code{get()}}{
+get
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{TPSettings$get()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\if{html}{\out{
+  <list>
+}}
 }
 }
 \if{html}{\out{<hr>}}

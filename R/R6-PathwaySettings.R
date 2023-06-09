@@ -20,21 +20,19 @@ PathwaySettings <- R6::R6Class(
     #' @param analysisSettings (`AnalysisSettings`)
     #' An instance of AnalysisSettings R6 object.
     #' 
-    #' @return
-    #' `self` 
+    #' @return `self`
     addAnalysis = function(analysisSettings) {
       private$analyses <- append(private$analyses, analysisSettings)
       return(invisible(self))
     },
     
     #' @description
-    #'   Exports the analyses list as an RDS-file.
+    #' Exports the analyses list as an RDS-file.
     #' 
-    #' @param filePath
-    #'   <character> Path to RDS-file.
+    #' @param filePath (\link[base]{character})
+    #' Path to RDS-file.
     #' 
-    #' @return
-    #'   invisible(self)
+    #' @return `self`
     exportAnalyses = function(filePath) {
       path <- file.path(filePath)
       saveRDS(object = private$analyses, file = path)
@@ -44,15 +42,17 @@ PathwaySettings <- R6::R6Class(
     },
     
     #' @description
-    #'   Imports the analyses list from an RDS-file.
+    #' Imports the analyses list from an RDS-file.
     #' 
-    #' @param filePath
-    #'   <character> Path to RDS-file.
-    #' @param validate
-    #'   <logical> (default: TRUE)
+    #' @param filePath (\link[base]{character})
+    #' Path to RDS-file.
+    #' @param validate (\link[base]{logical}: TRUE)
+    #' \describe{
+    #'   \item{TRUE}{Validate AnalysisSettings when imported.}
+    #'   \item{FALSE}{Do not validate AnalysisSettings when imported.}
+    #' }
     #'
-    #' @return
-    #'   invisible(self)
+    #' @return `self`
     importAnalyses = function(filePath, validate = TRUE) {
       path <- file.path(filePath)
       analyses <- readRDS(file = path)
@@ -66,10 +66,9 @@ PathwaySettings <- R6::R6Class(
     },
     
     #' @description
-    #'   get
+    #' Gettter method
     #'
-    #' @return
-    #'   <data.frame>
+    #' @return (\link[base]{data.frame})
     get = function() {
       dplyr::bind_rows(lapply(private$analyses, function(analysis) {
         analysis$get()
@@ -77,13 +76,12 @@ PathwaySettings <- R6::R6Class(
     },
     
     #' @description
-    #'   validate
+    #' Validation method
     #'
-    #' @param analyses
-    #'   <list> List of AnalysisSettings R6 objects.
+    #' @param analyses (\link[base]{list})
+    #' List of AnalysisSettings R6 objects.
     #'
-    #' @return
-    #'   invisible(self)
+    #' @return `self`
     validate = function(analyses) {
       lapply(analyses, function(analysis) {
         analysis$validate(analysis$get())
