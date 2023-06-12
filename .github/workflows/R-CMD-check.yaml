@@ -45,7 +45,7 @@ jobs:
         run: |
             install.packages("SqlRender", repos = "https://cloud.r-project.org/")
             install.packages("RSQLite", repos = "https://cloud.r-project.org/")
-            install.packages("readr" repos = "https://cloud.r-project.org/")
+            install.packages("readr", repos = "https://cloud.r-project.org/")
             install.packages("Eunomia", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
 
