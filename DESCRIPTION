@@ -26,14 +26,13 @@ Imports:
     googleVis,
     stats
 Suggests:
+    knitr,
+    rmarkdown,
     tibble,
     testthat (>= 3.0.0),
     usethis,
-    knitr,
     Eunomia,
-    CohortGenerator,
-    CirceR,
-    rmarkdown
+    CohortGenerator
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
