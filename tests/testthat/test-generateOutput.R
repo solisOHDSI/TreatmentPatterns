@@ -8,8 +8,8 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_message(
+  suppressWarnings(expect_message(
     TreatmentPatterns::generateOutput(
       saveSettings = saveSettings),
-    "Zipping:.+")
+    "Zipping:.+"))
 })

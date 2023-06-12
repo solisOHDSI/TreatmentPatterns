@@ -8,7 +8,7 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_output(TreatmentPatterns:::outputTreatedPatients(
+  expect_message(TreatmentPatterns:::outputTreatedPatients(
     data = treatmentPathways[[1]],
     eventCohortIds = eventCohortIds,
     groupCombinations = groupCombinations,

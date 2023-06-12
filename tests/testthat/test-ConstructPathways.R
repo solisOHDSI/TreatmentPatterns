@@ -8,7 +8,7 @@ test_that("Void", {
 })
 
 test_that("Minimal", {
-  expect_output(
+  expect_message(
     constructPathways(
       dataSettings = dataSettings,
       pathwaySettings = pathwaySettings,
