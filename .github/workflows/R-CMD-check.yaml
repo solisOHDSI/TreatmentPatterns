@@ -37,17 +37,25 @@ jobs:
       
       - name: Install Eunomia
         run: |
-            install.packages(c("SqlRender", "RSQLite", "readr"))
+            install.packages("SqlRender")
+            install.packages("RSQLite")
+            install.packages(""readr"")
             install.packages("Eunomia", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
 
       - name: Install CohortGenerator
         run: |
-            install.packages(c(
-              "bit64", "checkmate", "digest", "dplyr", "lubridate",
-              "ParallelLogger", "readr", "rlang", "RJSONIO", "jsonlite",
-              "SqlRender", "stringi"
-            ))
+            install.packages("checkmate")
+            install.packages("digest")
+            install.packages("dplyr")
+            install.packages("lubridate")
+            install.packages("ParallelLogger")
+            install.packages("readr")
+            install.packages("rlang")
+            install.packages("RJSONIO")
+            install.packages("jsonlite")
+            install.packages("SqlRender")
+            install.packages("stringi")
 
             install.packages("CohortGenerator", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
