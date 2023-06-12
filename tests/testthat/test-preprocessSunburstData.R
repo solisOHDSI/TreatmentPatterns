@@ -6,7 +6,7 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_output(TreatmentPatterns:::preprocessSunburstData(
+  expect_message(TreatmentPatterns:::preprocessSunburstData(
     data = treatmentPathways[[1]],
     tempFolder = saveSettings$tempFolder,
     outputFolder = saveSettings$outputFolder,

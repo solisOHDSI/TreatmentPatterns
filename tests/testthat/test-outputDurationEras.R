@@ -6,7 +6,7 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_output(TreatmentPatterns:::outputDurationEras(
+  suppressWarnings(expect_message(TreatmentPatterns:::outputDurationEras(
     outputFolder = saveSettings$outputFolder,
     tempFolder = saveSettings$tempFolder,
     databaseName = saveSettings$databaseName,
@@ -14,7 +14,7 @@ test_that("minimal", {
     eventCohortIds = eventCohortIds,
     groupCombinations = TRUE,
     minCellCount = 5
-  ), "outputDurationEras done")
+  ), "outputDurationEras done"))
 })
 
 out <- TreatmentPatterns:::outputDurationEras(
@@ -38,3 +38,4 @@ test_that("output", {
   expect_equal(typeof(out$MAX), "double")
   expect_equal(typeof(out$COUNT), "double")
 })
+

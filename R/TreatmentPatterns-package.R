@@ -3,7 +3,6 @@
 
 ## usethis namespace: start
 #' @import checkmate
-#' @import ParallelLogger
 #' @import stringr
 #' @import glue
 #' @import utils

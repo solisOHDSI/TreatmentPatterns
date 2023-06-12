@@ -120,10 +120,7 @@ constructPathways <- function(dataSettings,
       dir.create(tempFolders, recursive = TRUE)
     }
     
-    ParallelLogger::logInfo(print(paste0(
-      "Constructing treatment pathways: ",
-      studyName
-    )))
+    message(glue::glue("Constructing treatment pathways: {studyName}"))
 
     # Select cohorts included
     targetCohortId <- pathwaySettings[
@@ -212,11 +209,9 @@ constructPathways <- function(dataSettings,
         dplyr::filter(.data$type == "event")
 
       # Apply pathway settings to create treatment pathways
-      ParallelLogger::logInfo(paste(
-        "Construct treatment pathways, this may",
-        "take a while for larger datasets."))
+      message("Construct treatment pathways, this may take a while for larger datasets.")
 
-      writeLines(paste0("Original number of rows: ", nrow(treatmentHistory)))
+      message(glue::glue("Original number of rows: {nrow(treatmentHistory)}"))
 
       # TODO: check what happens if treatmentHistory zero or few rows
       # (throw errors)
@@ -251,7 +246,7 @@ constructPathways <- function(dataSettings,
       
       if (nrow(treatmentHistory) != 0) {
         # Add event_seq number to determine order of treatments in pathway
-        ParallelLogger::logInfo("Adding drug sequence number.")
+        message("Adding drug sequence number.")
         treatmentHistory <- treatmentHistory[
           order(person_id, event_start_date, event_end_date), ]
 
@@ -262,14 +257,14 @@ constructPathways <- function(dataSettings,
           maxPathLength)
 
         # Add event_cohort_name (instead of only event_cohort_id)
-        ParallelLogger::logInfo("Adding concept names.")
+        message("Adding concept names.")
 
         treatmentHistory <- addLabels(
           treatmentHistory,
           saveSettings$outputFolder)
 
         # Order the combinations
-        ParallelLogger::logInfo("Ordering the combinations.")
+        message("Ordering the combinations.")
         combi <- grep(
           pattern = "+",
           x = treatmentHistory$event_cohort_name,
@@ -370,7 +365,7 @@ constructPathways <- function(dataSettings,
       }
     }
   }
-  ParallelLogger::logInfo("constructPathways done.")
+  message("constructPathways done.")
 }
 
 
@@ -561,8 +556,7 @@ doEraDuration <- function(treatmentHistory, minEraDuration) {
   )
   
   treatmentHistory <- treatmentHistory[duration_era >= minEraDuration, ]
-  ParallelLogger::logInfo(print(
-    paste0("After minEraDuration: ", nrow(treatmentHistory))))
+  message(glue::glue("After minEraDuration: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -596,7 +590,7 @@ doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
     x = treatmentHistory,
     duration_era >= minPostCombinationDuration | is.na(duration_era))
 
-  ParallelLogger::logInfo(
+  message(
     glue::glue("After minPostCombinationDuration: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
@@ -749,9 +743,7 @@ doEraCollapse <- function(treatmentHistory, eraCollapseSize) {
     time2 = event_start_date,
     units = "days")]
 
-  ParallelLogger::logInfo(print(paste0(
-    "After eraCollapseSize: ",
-    nrow(treatmentHistory))))
+  message(glue::glue("After eraCollapseSize: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -832,16 +824,12 @@ doCombinationWindow <- function(
         data.table::shift(event_end_date, type = "lag") >
         event_end_date, combination_LRFS := 1]
 
-    ParallelLogger::logInfo(print(paste0(
-      "Iteration ", iterations,
-      " modifying  ", sum(treatmentHistory$SELECTED_ROWS),
-      " selected rows out of ",
-      nrow(treatmentHistory), ": ",
-      sum(!is.na(treatmentHistory$switch)),
-      " switches, ", sum(!is.na(treatmentHistory$combination_FRFS)),
-      " combinations FRFS and ",
-      sum(!is.na(treatmentHistory$combination_LRFS)),
-      " combinations LRFS")))
+    message(glue::glue(
+      "Iteration {iterations}",
+      "modifying  {sum(treatmentHistory$SELECTED_ROWS)}",
+      "selected rows out of {nrow(treatmentHistory)}: {sum(!is.na(treatmentHistory$switch))} switches, ",
+      "{sum(!is.na(treatmentHistory$combination_FRFS))} combinations FRFS and ",
+      "{sum(!is.na(treatmentHistory$combination_LRFS))} combinations LRFS"))
 
     sumSwitchComb <- sum(
       sum(!is.na(treatmentHistory$switch)),
@@ -955,16 +943,14 @@ doCombinationWindow <- function(
     gc()
   }
 
-  ParallelLogger::logInfo(print(paste0(
-    "After combinationWindow: ", nrow(treatmentHistory))))
+  message(glue::glue("After combinationWindow: {nrow(treatmentHistory)}"))
 
   treatmentHistory[, GAP_PREVIOUS := NULL]
   treatmentHistory[, SELECTED_ROWS := NULL]
 
   time2 <- Sys.time()
-  ParallelLogger::logInfo(paste0(
-    "Time needed to execute combination window ",
-    difftime(time2, time1, units = "mins")))
+  message(glue::glue(
+    "Time needed to execute combination window {difftime(time2, time1, units = 'mins')}"))
 
   return(treatmentHistory)
 }
@@ -1059,7 +1045,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
 
   if (filterTreatments != "All") {
     # Order the combinations
-    ParallelLogger::logInfo("Order the combinations.")
+    message("Order the combinations.")
     combi <- grep("+", treatmentHistory$event_cohort_id, fixed = TRUE)
 
     if (length(combi) != 0) {
@@ -1103,9 +1089,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
     }
   }
 
-  ParallelLogger::logInfo(print(paste0(
-    "After filterTreatments: ",
-    nrow(treatmentHistory))))
+  message(glue::glue("After filterTreatments: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -1145,8 +1129,7 @@ doMaxPathLength <- function(treatmentHistory, maxPathLength) {
   # Apply maxPathLength
   treatmentHistory <- treatmentHistory[event_seq <= maxPathLength, ]
 
-  ParallelLogger::logInfo(print(paste0(
-    "After maxPathLength: ", nrow(treatmentHistory))))
+  message(glue::glue("After maxPathLength: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
