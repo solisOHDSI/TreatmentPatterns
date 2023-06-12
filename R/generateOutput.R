@@ -289,9 +289,7 @@ outputTreatedPatients <- function(
             )
           )
       } else {
-        ParallelLogger::logInfo(warning(
-          paste0("Subset of data is empty for study settings in year ", y)
-        ))
+        warning(glue::glue("Subset of data is empty for study settings in year {y}"))
         subsetResult <- NULL
       }
       return(subsetResult)
@@ -303,7 +301,7 @@ outputTreatedPatients <- function(
     x = result,
     file = file.path(outputFolder, outputFile),
     row.names = FALSE)
-  ParallelLogger::logInfo("outputTreatedPatients done")
+  message("outputTreatedPatients done")
 }
 
 
@@ -646,7 +644,7 @@ outputDurationEras <- function(
 
   # Remove durations computed using less than minCellCount observations
   results[COUNT < as.numeric(minCellCount), c("AVG_DURATION", "MEDIAN", "SD", "MIN", "MAX", "COUNT")] <- NA
-  ParallelLogger::logInfo("outputDurationEras done")
+  message("outputDurationEras done")
   on.exit(rm(columns))
   return(results)
 }
@@ -735,15 +733,10 @@ doMinCellCount <- function(
   if (minCellMethod == "Adjust") {
     col <- ncol(fileNoYear) - 1
     while (sum(fileNoYear$freq < minCellCount) > 0 && col != 0) {
-      ParallelLogger::logInfo(
-        paste(
-          "Change col ",
-          col,
-          " to NA for ",
-          sum(fileNoYear$freq < minCellCount),
-          " paths with too low frequency (without year)"
-        )
-      )
+      message(glue::glue(
+        "Change col {col} to NA for {sum(fileNoYear$freq < minCellCount)} ",
+        "paths with too low frequency (without year)"
+      ))
 
       fileNoYear[freq < minCellCount, col] <- NA
       fileNoYear <- fileNoYear[, .(freq = sum(freq)), by = layers]
@@ -753,15 +746,10 @@ doMinCellCount <- function(
 
     col <- ncol(fileWithYear) - 2
     while (sum(fileWithYear$freq < minCellCount) > 0 && col != 0) {
-      ParallelLogger::logInfo(
-        paste(
-          "Change col ",
-          col,
-          " to NA for ",
-          sum(fileWithYear$freq < minCellCount),
-          " paths with too low frequency (with year)"
-        )
-      )
+      message(glue::glue(
+        "Change col {col} to NA for {sum(fileWithYear$freq < minCellCount)}",
+        "paths with too low frequency (with year)"
+      ))
 
       fileWithYear[freq < minCellCount, col] <- NA
       fileWithYear <- fileWithYear[
@@ -784,18 +772,16 @@ doMinCellCount <- function(
       fileWithYear[, .(freq = sum(freq)), by = c(layers, "index_year")]
   }
 
-  ParallelLogger::logInfo(paste(
-    "Remove ",
-    sum(fileNoYear$freq < minCellCount),
-    " paths with too low frequency (without year)"
+  message(glue::glue(
+    "Remove {sum(fileNoYear$freq < minCellCount)} ",
+    "paths with too low frequency (without year)"
   ))
 
   fileNoYear <- fileNoYear[freq >= minCellCount, ]
 
-  ParallelLogger::logInfo(paste(
-    "Remove ",
-    sum(fileWithYear$freq < minCellCount),
-    " paths with too low frequency (with year)"
+  message(glue::glue(
+    "Remove {sum(fileWithYear$freq < minCellCount)} ",
+    "paths with too low frequency (with year)"
   ))
 
   fileWithYear <- fileWithYear[freq >= minCellCount, ]
@@ -815,7 +801,7 @@ doMinCellCount <- function(
       )
     )
   }
-  ParallelLogger::logInfo("doMinCellCount done")
+  message("doMinCellCount done")
   return(list(summaryCounts, fileNoYear, fileWithYear))
 }
 
@@ -879,18 +865,14 @@ preprocessSunburstData <- function(
             indexYear = year
           )
         } else {
-          ParallelLogger::logInfo(warning(
-            paste0(
-              "Subset of data is empty for study settings ",
-              studyName,
-              " in year ",
-              year
-            )
+          warning(glue::glue(
+            "Subset of data is empty for study settings {studyName} ",
+            "in year {year}",
           ))
         }
       }))
     }
-    ParallelLogger::logInfo("preprocessSunburstData done")
+    message("preprocessSunburstData done")
   }
   return(outDF)
 }
