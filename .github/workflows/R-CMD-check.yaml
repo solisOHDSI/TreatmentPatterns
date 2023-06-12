@@ -51,6 +51,13 @@ jobs:
             install.packages("usethis", repos = "https://cloud.r-project.org/")
         shell: Rscript {0}
         
+        
+      - name: Install CirceR
+        run: |
+            install.packages("rJava", repos = "https://cloud.r-project.org/")
+            install.packages("RJSONIO", repos = "https://cloud.r-project.org/")
+            install.packages("CirceR", repos = "https://OHDSI.github.io/drat", type = "source")
+        shell: Rscript {0}
       
       - name: Install Eunomia
         run: |
