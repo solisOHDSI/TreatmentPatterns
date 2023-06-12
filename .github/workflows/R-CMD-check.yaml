@@ -41,6 +41,17 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
       
+      
+      - name: Install Suggests
+        run: |
+            install.packages("knitr", repos = "https://cloud.r-project.org/")
+            install.packages("rmarkdown", repos = "https://cloud.r-project.org/")
+            install.packages("tibble", repos = "https://cloud.r-project.org/")
+            install.packages("testthat", repos = "https://cloud.r-project.org/")
+            install.packages("usethis", repos = "https://cloud.r-project.org/")
+        shell: Rscript {0}
+        
+      
       - name: Install Eunomia
         run: |
             install.packages("SqlRender", repos = "https://cloud.r-project.org/")
