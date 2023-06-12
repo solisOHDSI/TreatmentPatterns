@@ -31,7 +31,6 @@ Suggests:
     usethis,
     knitr,
     Eunomia,
-    CohortDiagnostics,
     CohortGenerator,
     CirceR,
     rmarkdown

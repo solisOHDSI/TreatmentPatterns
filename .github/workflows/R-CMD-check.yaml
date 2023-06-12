@@ -35,12 +35,21 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
       
-      - name: Install from drat
+      - name: Install Eunomia
         run: |
+            install.packages(c("SqlRender", "RSQLite", "readr"))
             install.packages("Eunomia", repos = "https://OHDSI.github.io/drat", type = "source")
-            install.packages("CohortDiagnostics", repos = "https://OHDSI.github.io/drat", type = "source")
+        shell: Rscript {0}
+
+      - name: Install CohortGenerator
+        run: |
+            install.packages(c(
+              "bit64", "checkmate", "digest", "dplyr", "lubridate",
+              "ParallelLogger", "readr", "rlang", "RJSONIO", "jsonlite",
+              "SqlRender", "stringi"
+            ))
+
             install.packages("CohortGenerator", repos = "https://OHDSI.github.io/drat", type = "source")
-            install.packages("CirceR", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-r@v2
