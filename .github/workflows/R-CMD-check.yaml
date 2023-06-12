@@ -37,25 +37,25 @@ jobs:
       
       - name: Install Eunomia
         run: |
-            install.packages("SqlRender")
-            install.packages("RSQLite")
-            install.packages(""readr"")
+            install.packages("SqlRender", repos = "https://cloud.r-project.org/")
+            install.packages("RSQLite", repos = "https://cloud.r-project.org/")
+            install.packages(""readr"", repos = "https://cloud.r-project.org/")
             install.packages("Eunomia", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
 
       - name: Install CohortGenerator
         run: |
-            install.packages("checkmate")
-            install.packages("digest")
-            install.packages("dplyr")
-            install.packages("lubridate")
-            install.packages("ParallelLogger")
-            install.packages("readr")
-            install.packages("rlang")
-            install.packages("RJSONIO")
-            install.packages("jsonlite")
-            install.packages("SqlRender")
-            install.packages("stringi")
+            install.packages("checkmate", repos = "https://cloud.r-project.org/")
+            install.packages("digest", repos = "https://cloud.r-project.org/")
+            install.packages("dplyr", repos = "https://cloud.r-project.org/")
+            install.packages("lubridate", repos = "https://cloud.r-project.org/")
+            install.packages("ParallelLogger", repos = "https://cloud.r-project.org/")
+            install.packages("readr", repos = "https://cloud.r-project.org/")
+            install.packages("rlang", repos = "https://cloud.r-project.org/")
+            install.packages("RJSONIO", repos = "https://cloud.r-project.org/")
+            install.packages("jsonlite", repos = "https://cloud.r-project.org/")
+            install.packages("SqlRender", repos = "https://cloud.r-project.org/")
+            install.packages("stringi", repos = "https://cloud.r-project.org/")
 
             install.packages("CohortGenerator", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
