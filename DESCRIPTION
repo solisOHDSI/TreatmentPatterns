@@ -19,7 +19,6 @@ Imports:
     SqlRender,
     stringr,
     stringi,
-    ParallelLogger,
     fs,
     glue,
     utils,
