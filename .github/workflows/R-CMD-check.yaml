@@ -82,6 +82,7 @@ jobs:
             install.packages("jsonlite", repos = "https://cloud.r-project.org/")
             install.packages("SqlRender", repos = "https://cloud.r-project.org/")
             install.packages("stringi", repos = "https://cloud.r-project.org/")
+            install.packages("rJava", repos = "https://cloud.r-project.org/")
 
             install.packages("CohortGenerator", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
