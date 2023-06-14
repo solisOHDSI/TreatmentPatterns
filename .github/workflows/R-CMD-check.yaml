@@ -49,6 +49,7 @@ jobs:
         if: runner.os == 'Windows' || runner.os == 'macOS'
         run: |
           install.packages("rJava", repos = "https://cloud.r-project.org/", type = "source")
+        shell: Rscript {0}
         
       - name: Install Suggests
         run: |
