@@ -40,14 +40,14 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
       
-      - name: Install rJava Ubuntu
+      - name: Linux Java prep
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get install r-api-3.5
-          sudo apt-get install r-cran-rjava
+          sudo apt-get install -y default-jre
+          sudo apt-get install -y default-jdk
+          sudo R CMD javareconf
           
-      - name: Install rJava Windows and MacOS
-        if: runner.os == 'Windows' || runner.os == 'macOS'
+      - name: Install rJava
         run: |
           install.packages("rJava", repos = "https://cloud.r-project.org/", type = "source")
         shell: Rscript {0}
