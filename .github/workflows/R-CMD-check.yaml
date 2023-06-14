@@ -43,6 +43,8 @@ jobs:
       - name: Install rJava Ubuntu
         if: runner.os == 'Linux'
         run: |
+          sudo add-apt-repository ppa:marutter/c2d4u3.5
+          sudo apt-get update
           sudo apt-get install r-cran-rjava
           
       - name: Install rJava Windows and MacOS
@@ -51,7 +53,7 @@ jobs:
           install.packages("rJava", repos = "https://cloud.r-project.org/", type = "source")
         shell: Rscript {0}
         
-      - name: Install Suggests
+      - name: Install Suggestsst
         run: |
             install.packages("knitr", repos = "https://cloud.r-project.org/")
             install.packages("rmarkdown", repos = "https://cloud.r-project.org/")
