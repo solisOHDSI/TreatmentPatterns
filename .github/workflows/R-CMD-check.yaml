@@ -43,8 +43,7 @@ jobs:
       - name: Install rJava Ubuntu
         if: runner.os == 'Linux'
         run: |
-          sudo add-apt-repository ppa:marutter/c2d4u3.5
-          sudo apt-get update
+          sudo apt-get install r-api-3.5
           sudo apt-get install r-cran-rjava
           
       - name: Install rJava Windows and MacOS
