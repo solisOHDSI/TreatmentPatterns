@@ -26,20 +26,14 @@ Imports:
     googleVis,
     stats
 Suggests:
+    knitr,
+    rmarkdown,
     tibble,
     testthat (>= 3.0.0),
     usethis,
-    knitr,
     Eunomia,
-    CohortDiagnostics,
     CohortGenerator,
-    CirceR,
-    rmarkdown
-Remotes:
-    OHDSI/CohortDiagnostics,
-    OHDSI/CohortGenerator,
-    OHDSI/CirceR,
-    OHDSI/Eunomia
+    CirceR
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
