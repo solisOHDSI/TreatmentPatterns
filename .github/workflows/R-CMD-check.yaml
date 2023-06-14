@@ -20,7 +20,9 @@ jobs:
         config:
           - {os: macos-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -40,30 +42,26 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
       
-      - name: Linux Java prep
+      - name: Install Linux jre and jdk
         if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y default-jre
           sudo apt-get install -y default-jdk
           sudo R CMD javareconf
-          
-      - name: Install rJava
-        run: |
-          install.packages("rJava", repos = "https://cloud.r-project.org/", type = "source")
-        shell: Rscript {0}
         
-      - name: Install Suggestsst
+      - name: Install Suggests
         run: |
             install.packages("knitr", repos = "https://cloud.r-project.org/")
             install.packages("rmarkdown", repos = "https://cloud.r-project.org/")
             install.packages("tibble", repos = "https://cloud.r-project.org/")
             install.packages("testthat", repos = "https://cloud.r-project.org/")
-            install.packages("usethis", repos = "https://cloud.r-project.org/")
+            install.packages("usethis")
         shell: Rscript {0}
         
         
       - name: Install CirceR
         run: |
+            install.packages("rJava", repos = "https://cloud.r-project.org/")
             install.packages("RJSONIO", repos = "https://cloud.r-project.org/")
             install.packages("CirceR", repos = "https://OHDSI.github.io/drat", type = "source")
         shell: Rscript {0}
