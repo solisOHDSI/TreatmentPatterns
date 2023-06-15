@@ -180,6 +180,22 @@
               "STANDARD_CONCEPT_CAPTION": "Standard",
               "VOCABULARY_ID": "RxNorm"
             }
+          },
+          {
+            "concept": {
+              "CONCEPT_CLASS_ID": "Event",
+              "CONCEPT_CODE": "419620001",
+              "CONCEPT_ID": 4306655,
+              "CONCEPT_NAME": "Death",
+              "DOMAIN_ID": "Observation",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "VOCABULARY_ID": "SNOMED",
+              "VALID_START_DATE": "2006-01-31",
+              "VALID_END_DATE": "2099-12-31"
+            }
           }
         ]
       }
