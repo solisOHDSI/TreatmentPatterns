@@ -51,6 +51,11 @@ formatSunburstData <- function(filePath, indexYear) {
       freq = dat[i, "freq"]
     )
   }))
+  
+  # Fix for shorter paths
+  pathData$path <- pathData$path %>%
+    stringr::str_remove_all(pattern = "--+") %>%
+    stringr::str_remove_all(pattern = "-NA")
 
   pathData$path <- stringr::str_replace_all(pathData$path, pattern = "-NA", "")
   return(pathData)
