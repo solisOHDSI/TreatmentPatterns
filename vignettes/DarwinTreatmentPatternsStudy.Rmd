@@ -9,8 +9,10 @@ output:
   html_vignette:
     toc: yes
     toc_depth: 3
-    vignette: "%\\VignetteIndexEntry{Darwin_Documentation} %\\VignetteEngine{knitr::rmarkdown}
-      %\\VignetteEncoding{UTF-8}\n"
+    vignette: >
+      %\VignetteIndexEntry{Darwin_Documentation}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
   pdf_document:
     toc: yes
 ---

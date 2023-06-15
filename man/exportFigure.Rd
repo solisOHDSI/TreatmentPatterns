@@ -14,7 +14,9 @@ exportFigure(
 )
 }
 \arguments{
-\item{outputPath}{HTML-Filename.}
+\item{filePath}{HTML-Filename.}
+
+\item{outputPath}{Filename of image, either with .pdf or .png extension.}
 
 \item{zoom}{Zoom factor, default = 3.}
 
@@ -23,8 +25,6 @@ exportFigure(
 \item{selector}{Default: \code{"svg"}; svg only works if the output file is pdf, otherwise use \code{NULL}}
 
 \item{...}{Other potential parameters to be passed to webshot2::webshot()}
-
-\item{fileNameOut}{Filename of image, either with .pdf or .png extension.}
 }
 \value{
 Invisibly returns the normalized path to all screenshots taken. The character vector will have a class of '"webshot"'.
