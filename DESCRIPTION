@@ -24,6 +24,7 @@ Imports:
     utils,
     rjson,
     googleVis,
+    webshot2,
     stats
 Suggests:
     knitr,
