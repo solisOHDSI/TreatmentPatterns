@@ -2,7 +2,7 @@
 #' 
 #' Save an SVG-image from a html-file as a PNG, - or PDF-file.
 #'
-#' @param fileName HTML-Filename.
+#' @param outputPath HTML-Filename.
 #' @param fileNameOut Filename of image, either with .pdf or .png extension.
 #' @param zoom Zoom factor, default = 3.
 #' @param vwidth Width of frame to capture, default = 430.

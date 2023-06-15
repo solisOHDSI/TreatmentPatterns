@@ -14,6 +14,8 @@ exportFigure(
 )
 }
 \arguments{
+\item{outputPath}{HTML-Filename.}
+
 \item{zoom}{Zoom factor, default = 3.}
 
 \item{vwidth}{Width of frame to capture, default = 430.}
@@ -21,8 +23,6 @@ exportFigure(
 \item{selector}{Default: \code{"svg"}; svg only works if the output file is pdf, otherwise use \code{NULL}}
 
 \item{...}{Other potential parameters to be passed to webshot2::webshot()}
-
-\item{fileName}{HTML-Filename.}
 
 \item{fileNameOut}{Filename of image, either with .pdf or .png extension.}
 }
