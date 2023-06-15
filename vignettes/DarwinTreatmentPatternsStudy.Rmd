@@ -1,16 +1,18 @@
 ---
 title: "Perform a Darwin study using the TreatmentPatterns package"
-always_allow_html: true
+always_allow_html: yes
 output:
-  pdf_document:
-      toc: yes
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
   html_vignette:
     toc: yes
     toc_depth: 3
-    vignette: >
-      %\VignetteIndexEntry{Darwin_Documentation}
-      %\VignetteEngine{knitr::rmarkdown}
-      %\VignetteEncoding{UTF-8}
+    vignette: "%\\VignetteIndexEntry{Darwin_Documentation} %\\VignetteEngine{knitr::rmarkdown}
+      %\\VignetteEncoding{UTF-8}\n"
+  pdf_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -151,7 +153,8 @@ Generate our cohortTableNames
 CohortGenerator::createCohortTables(
   connectionDetails = connectionDetails,
   cohortDatabaseSchema = resultSchema,
-  cohortTableNames = cohortTableNames)
+  cohortTableNames = cohortTableNames
+)
 ```
 Finally, we can generate our specified cohorts in Eunomia.
 ```{r getCohortsGenerated, message=FALSE, results='hide'}
@@ -161,7 +164,8 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(
   cdmDatabaseSchema = cdmDatabaseSchema,
   cohortDatabaseSchema = resultSchema,
   cohortTableNames = cohortTableNames,
-  cohortDefinitionSet = cohortsToCreate)
+  cohortDefinitionSet = cohortsToCreate
+)
 ```
 
 ## 3. Specify settings to construct treatment pathways
@@ -172,7 +176,8 @@ dataSettings <- createDataSettings(
   connectionDetails = connectionDetails, # Eunomia connectionDetails
   cdmDatabaseSchema = cdmDatabaseSchema, # "main"
   resultSchema = resultSchema,           # "main"
-  cohortTable = cohortTable)             # "cohortTable"
+  cohortTable = cohortTable              # "cohortTable"
+)
 ```
 1. **connectionDetails**: _connectionDetails_ object of DatabaseConnector (>= 6.0.0).
 2. **cdmDatabaseSchema**: A character string specifying the database schema where the CDM is located.
@@ -184,7 +189,8 @@ dataSettings <- createDataSettings(
 saveSettings <- createSaveSettings(
   databaseName = "Eunomia",
   rootFolder = tempdir(),
-  outputFolder = "output")
+  outputFolder = "output"
+)
 ```
 1. **databaseName**: Character string specifying the name of the database.
 2. **rootFolder**: Character string specifying the path of the root folder where outputted files should be saved at.
@@ -209,7 +215,8 @@ eventCohorts <- cohortsGenerated %>%
 ```{r cohortSettings}
 cohortSettings <- createCohortSettings(
   targetCohorts = targetCohort,
-  eventCohorts = eventCohorts)
+  eventCohorts = eventCohorts
+)
 ```
 1. **targetCohorts**: A data.frame containing the `Cohort ID` and `Cohort Name` of the target cohorts
 2. **eventCohorts**: A data.frame containing the `Cohort ID` and `Cohort Name` of the event cohorts
@@ -241,7 +248,8 @@ The settings below are part of `pathwaySettings` and allow the user to influence
 ```{r pathwaySettings}
 pathwaySettings <- createPathwaySettings(
   cohortSettings = cohortSettings,
-  studyName = "Viral_Sinusitis")
+  studyName = "Viral_Sinusitis"
+)
 ```
 1. **cohortSettings**: The `cohortSettings` object created by `createCohortSettings`
 2. **studyName**: A character string specifying the name of the study.
@@ -258,7 +266,7 @@ Optionally we can add another pathway analysis. Lets say for our analysis we wan
 6. And most importantly we must name our study.
 
 In this example we will change some of the settings: 
-```{r addPathwayAnalysis}
+```{r addPathwayAnalysis, eval=FALSE}
 pathwaySettings <- addPathwayAnalysis(
   pathwaySettings = pathwaySettings,
   targetCohortIds = targetCohort$cohortId,
@@ -275,7 +283,7 @@ pathwaySettings <- addPathwayAnalysis(
   minCellCount = 5,
   # 5. nPathway =< 5 -> Other
   groupCombinations = 5
-  )
+)
 ```
 1. **pathwaySettings**: The `pathwaySettings` object created by `cratePathwaySettings`.
 2. **targetCohortIds**: The Target Cohort IDs
@@ -304,7 +312,8 @@ After our settings are specified we can construct our pathways.
 constructPathways(
   dataSettings = dataSettings,
   pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings)
+  saveSettings = saveSettings
+)
 ```
 1. **dataSettings**: `dataSettings` object.
 2. **pathwaySettings**: `pathwaySettings` object.
@@ -316,3 +325,39 @@ After our pathways are computed, we can generate our output files.
 generateOutput(saveSettings = saveSettings)
 ```
 1. **saveSettings**: `saveSettings` object.
+
+### Sunburst plot
+```{r}
+sunburstData <- TreatmentPatterns::formatSunburstData(
+  filePath = file.path(saveSettings$outputFolder, "freqPerYear.csv"),
+  indexYear = "no year"
+)
+
+TreatmentPatterns::createSunburstPlot(
+  sunburstData,
+  folder = file.path(saveSettings$outputFolder, "/"),
+  fileName = "sunburstPlot.html"
+)
+
+webshot2::webshot(
+  url = "output/sunburstPlot.html",
+  file = "output/sunburstPlot.png",
+  selector = "svg", vwidth = 1200
+)
+```
+
+```{r}
+sankeyData <- read.csv(file.path(saveSettings$outputFolder, "freqPerYear.csv"))
+
+createSankeyDiagram(
+  data = sankeyData,
+  groupCombinations = FALSE,
+  outputFolder = "output"
+)
+
+exportFigure(
+  filePath = "output/sankeyDiagram.html",
+  outputPath = "output/sankeyDiagram.png",
+  selector = "svg"
+)
+```
