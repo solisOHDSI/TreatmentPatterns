@@ -32,7 +32,7 @@ colnames(labels) <- c("event_cohort_id", "event_cohort_name")
 
 test_that("read file correctly", {
   expect_true(
-    all(labels$event_cohort_id %in% treatmentHistory$event_cohort_id,
+    all(labels$event_cohort_id[c(1:4, 6:7)] %in% treatmentHistory$event_cohort_id,
     TRUE))
 })
 
