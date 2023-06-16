@@ -19,27 +19,22 @@ Imports:
     SqlRender,
     stringr,
     stringi,
-    ParallelLogger,
     fs,
     glue,
     utils,
     rjson,
-    googleVis
+    googleVis,
+    webshot2,
+    stats
 Suggests:
+    knitr,
+    rmarkdown,
     tibble,
     testthat (>= 3.0.0),
     usethis,
-    knitr,
     Eunomia,
-    CohortDiagnostics,
     CohortGenerator,
-    CirceR,
-    rmarkdown
-Remotes:
-    OHDSI/CohortDiagnostics,
-    OHDSI/CohortGenerator,
-    OHDSI/CirceR,
-    OHDSI/Eunomia
+    CirceR
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
@@ -47,3 +42,4 @@ RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Additional_repositories: https://OHDSI.github.io/drat
+Roxygen: list(markdown = TRUE)

@@ -4,19 +4,22 @@
 \alias{extractFile}
 \title{extractFile}
 \usage{
-extractFile(connection, tableName, resultsSchema, dbms)
+extractFile(connection, tableName, resultsSchema)
 }
 \arguments{
-\item{connection}{DatabaseConnector connection object}
+\item{connection}{\link[DatabaseConnector]{connect}\cr
+Connection object from DatabaseConnector.}
 
-\item{tableName}{Name of table}
+\item{tableName}{\link[base]{character}\cr
+Name of table.}
 
-\item{resultsSchema}{Schema of results}
-
-\item{dbms}{Name of dbms to use}
+\item{resultsSchema}{\link[base]{character}\cr
+Schema of results.
+\link[DatabaseConnector]{createConnectionDetails}.}
 }
 \value{
-data the extracted table as a data.frame
+\link[base]{data.frame}
+The extracted table as a data frame.
 }
 \description{
 Extract table with specific name from database server.

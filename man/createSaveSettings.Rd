@@ -22,7 +22,8 @@ tempFolder if not given).}
 \item{tempFolder}{Temp folder.}
 }
 \value{
-Object saveSettings.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Object saveSettings.
+}\if{html}{\out{</div>}}
 }
 \description{
 Creates saveSettings object.

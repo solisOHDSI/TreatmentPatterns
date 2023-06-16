@@ -6,6 +6,7 @@
 #' @param pathwaySettings A pathwaySettings object
 #' @param eventCohortIds Event Cohort ID's
 #' @param targetCohortIds Target Cohort ID's
+#' @param exitCohortIds Exit Cohort ID's
 #' @param ... Optional addPathwaySettings parameters i.e. studyName. Excluding
 #' eventCohortId and targetCohortIds
 #'
@@ -34,12 +35,17 @@
 #'   eventCohortIds = c(11, 12),
 #'   studyName = "Second study"
 #' )
-addPathwayAnalysis <- function(pathwaySettings,
-                               targetCohortIds,
-                               eventCohortIds, ...) {
+addPathwayAnalysis <- function(
+    pathwaySettings,
+    targetCohortIds,
+    eventCohortIds,
+    exitCohortIds = NULL,
+    ...) {
+  
   analysis <- addPathwaySettings(
     eventCohortIds = eventCohortIds,
     targetCohortId = targetCohortIds,
+    exitCohortIds = exitCohortIds,
     ...
   )
 

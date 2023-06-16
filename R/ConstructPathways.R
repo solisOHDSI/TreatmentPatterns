@@ -67,17 +67,30 @@ constructPathways <- function(dataSettings,
   connection <- DatabaseConnector::connect(dataSettings$connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
 
+  # Get cohort ids from pathwaySettings
+  cohortIds <- pathwaySettings$all_settings[c(2,3,4), 2:length(pathwaySettings$all_settings)] %>%
+    unlist() %>%
+    stringr::str_split(pattern = ",") %>%
+    unlist() %>%
+    unique() %>%
+    as.integer()
+  
+  cohortIds <- cohortIds[!is.na(cohortIds)]
+  
   # Get cohorts from database
-  fullCohorts <- data.table::as.data.table(extractFile(
-    connection,
-    dataSettings$cohortTable,
-    dataSettings$resultSchema,
-    dataSettings$connectionDetails$dbms))
+  fullCohorts <- data.table::as.data.table(extractCohortTable(
+    connection = connection,
+    resultsSchema = dataSettings$resultSchema,
+    cohortTableName = dataSettings$cohortTable,
+    cohortIds = cohortIds
+  ))
 
-  colnames(fullCohorts) <- c("cohort_id",
-                              "person_id",
-                              "start_date",
-                              "end_date")
+  colnames(fullCohorts) <- c(
+    "cohort_id",
+    "person_id",
+    "start_date",
+    "end_date"
+  )
 
   # Save pathway settings
   pathwaySettings <- pathwaySettings$all_settings
@@ -94,84 +107,111 @@ constructPathways <- function(dataSettings,
     row.names = FALSE)
 
   # For all different pathway settings
-  settings <- colnames(pathwaySettings)[grepl("analysis",
-                                              colnames(pathwaySettings))]
+  settings <- colnames(pathwaySettings)[
+    grepl("analysis", colnames(pathwaySettings))
+  ]
 
   for (s in settings) {
     studyName <- pathwaySettings[pathwaySettings$param == "studyName", s]
 
     # Check if directories exist and create if necessary
     tempFolders <- file.path(saveSettings$tempFolder, studyName)
-    if (!file.exists(tempFolders))
-      dir.create(tempFolders,
-                 recursive = TRUE)
-
-    ParallelLogger::logInfo(print(paste0("Constructing treatment pathways: ",
-                                         studyName)))
+    if (!file.exists(tempFolders)) {
+      dir.create(tempFolders, recursive = TRUE)
+    }
+    
+    message(glue::glue("Constructing treatment pathways: {studyName}"))
 
     # Select cohorts included
     targetCohortId <- pathwaySettings[
-      pathwaySettings$param == "targetCohortId", s]
+      pathwaySettings$param == "targetCohortId", s
+    ]
 
     eventCohortIds <- pathwaySettings[
-      pathwaySettings$param == "eventCohortIds", s]
-
+      pathwaySettings$param == "eventCohortIds", s
+    ]
+    
     eventCohortIds <- unlist(strsplit(eventCohortIds, split = c(";|,")))
 
+    exitCohortIds <- pathwaySettings[
+      pathwaySettings$param == "exitCohortIds", s
+    ]
+    
+    exitCohortIds <- unlist(strsplit(exitCohortIds, split = c(";|,")))
+    
+    print(exitCohortIds)
+    
     # Analysis settings
     includeTreatments <- pathwaySettings[
-      pathwaySettings$param == "includeTreatments", s]
+      pathwaySettings$param == "includeTreatments", s
+    ]
 
     periodPriorToIndex <- as.integer(pathwaySettings[
-      pathwaySettings$param == "periodPriorToIndex", s])
+      pathwaySettings$param == "periodPriorToIndex", s
+    ])
 
     minEraDuration <- as.integer(pathwaySettings[
-      pathwaySettings$param == "minEraDuration", s])
+      pathwaySettings$param == "minEraDuration", s
+    ])
 
     splitEventCohorts <- pathwaySettings[
-      pathwaySettings$param == "splitEventCohorts", s]
+      pathwaySettings$param == "splitEventCohorts", s
+    ]
 
     splitTime <- pathwaySettings[
-      pathwaySettings$param == "splitTime", s]
+      pathwaySettings$param == "splitTime", s
+    ]
 
     eraCollapseSize <- as.integer(pathwaySettings[
-      pathwaySettings$param == "eraCollapseSize", s])
+      pathwaySettings$param == "eraCollapseSize", s
+    ])
 
     combinationWindow <- as.integer(pathwaySettings[
-      pathwaySettings$param == "combinationWindow", s])
+      pathwaySettings$param == "combinationWindow", s
+    ])
 
     minPostCombinationDuration <- as.integer(pathwaySettings[
-      pathwaySettings$param == "minPostCombinationDuration", s])
+      pathwaySettings$param == "minPostCombinationDuration", s
+    ])
 
     filterTreatments <-  pathwaySettings[
-      pathwaySettings$param == "filterTreatments", s]
+      pathwaySettings$param == "filterTreatments", s
+    ]
 
     maxPathLength <- as.integer(pathwaySettings[
-      pathwaySettings$param == "maxPathLength", s])
+      pathwaySettings$param == "maxPathLength", s
+    ])
 
     # Select subset of full cohort including only data for the current target
     # cohort
     selectPeople <- fullCohorts$person_id[
       fullCohorts$cohort_id == targetCohortId]
-
+    
     currentCohorts <- fullCohorts[
       fullCohorts$person_id %in% selectPeople, ]
-
+    
     if (nrow(currentCohorts) != 0) {
       # Preprocess the target/event cohorts to create treatment history
       treatmentHistory <- doCreateTreatmentHistory(
         currentCohorts,
         targetCohortId,
         eventCohortIds,
+        exitCohortIds,
         periodPriorToIndex,
-        includeTreatments)
+        includeTreatments
+      )
+      
+      exitHistory <- treatmentHistory %>%
+        dplyr::filter(.data$type == "exit") %>%
+        dplyr::select(-"type")
+      
+      treatmentHistory <- treatmentHistory %>%
+        dplyr::filter(.data$type == "event")
 
       # Apply pathway settings to create treatment pathways
-      ParallelLogger::logInfo(paste(
-        "Construct treatment pathways, this may",
-        "take a while for larger datasets."))
+      message("Construct treatment pathways, this may take a while for larger datasets.")
 
-      writeLines(paste0("Original number of rows: ", nrow(treatmentHistory)))
+      message(glue::glue("Original number of rows: {nrow(treatmentHistory)}"))
 
       # TODO: check what happens if treatmentHistory zero or few rows
       # (throw errors)
@@ -198,10 +238,15 @@ constructPathways <- function(dataSettings,
       treatmentHistory <- doFilterTreatments(
         treatmentHistory,
         filterTreatments)
-
+      
+      exitHistory$event_cohort_id <- as.character(exitHistory$event_cohort_id)
+      treatmentHistory <- dplyr::bind_rows(
+        treatmentHistory,
+        exitHistory)
+      
       if (nrow(treatmentHistory) != 0) {
         # Add event_seq number to determine order of treatments in pathway
-        ParallelLogger::logInfo("Adding drug sequence number.")
+        message("Adding drug sequence number.")
         treatmentHistory <- treatmentHistory[
           order(person_id, event_start_date, event_end_date), ]
 
@@ -212,14 +257,14 @@ constructPathways <- function(dataSettings,
           maxPathLength)
 
         # Add event_cohort_name (instead of only event_cohort_id)
-        ParallelLogger::logInfo("Adding concept names.")
+        message("Adding concept names.")
 
         treatmentHistory <- addLabels(
           treatmentHistory,
           saveSettings$outputFolder)
 
         # Order the combinations
-        ParallelLogger::logInfo("Ordering the combinations.")
+        message("Ordering the combinations.")
         combi <- grep(
           pattern = "+",
           x = treatmentHistory$event_cohort_name,
@@ -238,7 +283,7 @@ constructPathways <- function(dataSettings,
         treatmentHistory$event_cohort_name <- unlist(
           treatmentHistory$event_cohort_name)
       }
-
+      
       # Save the processed treatment history
       write.csv(treatmentHistory, file.path(
         tempFolders,
@@ -320,35 +365,54 @@ constructPathways <- function(dataSettings,
       }
     }
   }
-  ParallelLogger::logInfo("constructPathways done.")
+  message("constructPathways done.")
 }
 
 
 #' doCreateTreatmentHistory
 #'
-#' @param currentCohorts
-#'     Dataframe with target and event cohorts of current study settings.
-#' @param targetCohortId
-#'     Target cohort ID of current study settings.
-#' @param eventCohortIds
-#'     Event cohort IDs of current study settings.
-#' @param periodPriorToIndex
-#'     Number of days prior to the index date of the target cohort that event
-#'     cohorts are allowed to start
-#' @param includeTreatments
-#'     Include treatments starting ('startDate') or ending ('endDate') after
-#'     target cohort start date
+#' @param currentCohorts (\link[base]{data.frame})\cr
+#' \enumerate{
+#'   \item (\link[base]{numeric}) cohort_id
+#'   \item (\link[base]{numeric}) person_id
+#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) start_date
+#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) end_date
+#' }
+#' 
+#' @param targetCohortId (\link[base]{c}) of (\link[base]{numeric})\cr
+#' targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param eventCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' eventCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param exitCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
+#' exitCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param periodPriorToIndex (\link[base]{numeric})\cr
+#' periodPriorToIndex from \link[TreatmentPatterns]{addPathwaySettings}.
+#' 
+#' @param includeTreatments (\link[base]{character})\cr
+#' includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.
 #'
-#' @return currentCohorts
-#'     Updated dataframe, including only event cohorts after
-#'     target cohort start date and with added index year, duration, gap same
-#'     columns.
+#' @return (\link[base]{data.frame})\cr
+#' \enumerate{
+#'   \item (\link[base]{numeric}) person_id
+#'   \item (\link[base]{numeric}) index_year
+#'   \item (\link[base]{numeric}) event_cohort_id
+#'   \item (\link[base]{date}) event_start_date
+#'   \item (\link[base]{date}) event_end_date
+#'   \item (\link[base]{character}) type
+#'   \item (\link[base]{difftime}) duration_era
+#'   \item (\link[base]{difftime}) gap_same
+#' }
 doCreateTreatmentHistory <- function(
     currentCohorts,
     targetCohortId,
     eventCohortIds,
+    exitCohortIds,
     periodPriorToIndex,
     includeTreatments) {
+  
   checkmate::assert(checkmate::check_data_frame(
     currentCohorts,
     min.cols = 4,
@@ -359,26 +423,45 @@ doCreateTreatmentHistory <- function(
 
   checkmate::assert(checkmate::checkCharacter(targetCohortId, len = 1))
   checkmate::assert(checkmate::checkCharacter(eventCohortIds))
+  # checkmate::assert(checkmate::checkCharacter(exitCohortIds, null.ok = TRUE))
   checkmate::assert(checkmate::checkInt(periodPriorToIndex))
 
   # Add index year column based on start date target cohort
-  targetCohort <- currentCohorts[
+  targetCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% targetCohortId, , ]
 
-  targetCohort$index_year <- as.numeric(format(targetCohort$start_date, "%Y"))
+  targetCohorts$index_year <- as.numeric(format(targetCohorts$start_date, "%Y"))
 
   # Select event cohorts for target cohort and merge with start/end date and
   # index year
   eventCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% eventCohortIds, , ]
+  
+  exitCohorts <- currentCohorts[
+    currentCohorts$cohort_id %in% exitCohortIds, , ]
 
+  targetCohorts <- targetCohorts %>%
+    dplyr::mutate(type = "target")
+  
+  eventCohorts <- eventCohorts %>%
+    dplyr::mutate(type = "event")
+  
+  exitCohorts <- exitCohorts %>%
+    dplyr::mutate(type = "exit")
+  
+  eventCohorts <- dplyr::bind_rows(
+    eventCohorts,
+    exitCohorts
+  )
+  
   currentCohorts <- merge(
     x = eventCohorts,
-    y = targetCohort,
+    y = targetCohorts,
     by = c("person_id"),
     all.x = TRUE,
-    allow.cartesian = TRUE)
-
+    allow.cartesian = TRUE
+  )
+  
   # Only keep event cohorts starting (startDate) or ending (endDate) after
   # target cohort start date
   if (includeTreatments == "startDate") {
@@ -412,15 +495,15 @@ doCreateTreatmentHistory <- function(
         currentCohorts$start_date.x <
         currentCohorts$end_date.y, ]
   }
-
+  
   # Remove unnecessary columns
   currentCohorts <- currentCohorts[
     , c("person_id", "index_year", "cohort_id.x",
-        "start_date.x", "end_date.x")]
-
+        "start_date.x", "end_date.x", "type.x")]
+  
   colnames(currentCohorts) <- c(
     "person_id", "index_year", "event_cohort_id",
-    "event_start_date", "event_end_date")
+    "event_start_date", "event_end_date", "type")
 
   # Calculate duration and gap same
   currentCohorts[,
@@ -443,14 +526,15 @@ doCreateTreatmentHistory <- function(
 #'
 #' Filters the treatmentHistory based on the specified minimum era duration
 #'
-#' @param treatmentHistory
-#'     Dataframe with event cohorts of the target cohort in different rows.
-#' @param minEraDuration
-#'     Minimum time an event era should last to be included in analysis.
+#' @param treatmentHistory (\link[base]{data.frame})\cr
+#' See \link[TreatmentPatterns]{doCreateTreatmentHistory}.
+#' 
+#' @param minEraDuration (\link[base]{numeric})\cr
+#' minEraDuration from \link[TreatmentPatterns]{addPathwaySettings}.
 #'
-#' @return treatmentHistory
-#'     Updated dataframe, rows with duration <
-#'     minEraDuration filtered out.
+#' @return (\link[base]{data.frame})
+#' Updated treatmentHistory dataframe, rows with duration < minEraDuration
+#' filtered out.
 #' @examples
 #' \dontrun{
 #' th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
@@ -470,10 +554,9 @@ doEraDuration <- function(treatmentHistory, minEraDuration) {
     len = 1,
     null.ok = FALSE
   )
-
+  
   treatmentHistory <- treatmentHistory[duration_era >= minEraDuration, ]
-  ParallelLogger::logInfo(print(
-    paste0("After minEraDuration: ", nrow(treatmentHistory))))
+  message(glue::glue("After minEraDuration: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -507,7 +590,7 @@ doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
     x = treatmentHistory,
     duration_era >= minPostCombinationDuration | is.na(duration_era))
 
-  ParallelLogger::logInfo(
+  message(
     glue::glue("After minPostCombinationDuration: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
@@ -660,9 +743,7 @@ doEraCollapse <- function(treatmentHistory, eraCollapseSize) {
     time2 = event_start_date,
     units = "days")]
 
-  ParallelLogger::logInfo(print(paste0(
-    "After eraCollapseSize: ",
-    nrow(treatmentHistory))))
+  message(glue::glue("After eraCollapseSize: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -743,16 +824,12 @@ doCombinationWindow <- function(
         data.table::shift(event_end_date, type = "lag") >
         event_end_date, combination_LRFS := 1]
 
-    ParallelLogger::logInfo(print(paste0(
-      "Iteration ", iterations,
-      " modifying  ", sum(treatmentHistory$SELECTED_ROWS),
-      " selected rows out of ",
-      nrow(treatmentHistory), ": ",
-      sum(!is.na(treatmentHistory$switch)),
-      " switches, ", sum(!is.na(treatmentHistory$combination_FRFS)),
-      " combinations FRFS and ",
-      sum(!is.na(treatmentHistory$combination_LRFS)),
-      " combinations LRFS")))
+    message(glue::glue(
+      "Iteration {iterations}",
+      "modifying  {sum(treatmentHistory$SELECTED_ROWS)}",
+      "selected rows out of {nrow(treatmentHistory)}: {sum(!is.na(treatmentHistory$switch))} switches, ",
+      "{sum(!is.na(treatmentHistory$combination_FRFS))} combinations FRFS and ",
+      "{sum(!is.na(treatmentHistory$combination_LRFS))} combinations LRFS"))
 
     sumSwitchComb <- sum(
       sum(!is.na(treatmentHistory$switch)),
@@ -866,16 +943,14 @@ doCombinationWindow <- function(
     gc()
   }
 
-  ParallelLogger::logInfo(print(paste0(
-    "After combinationWindow: ", nrow(treatmentHistory))))
+  message(glue::glue("After combinationWindow: {nrow(treatmentHistory)}"))
 
   treatmentHistory[, GAP_PREVIOUS := NULL]
   treatmentHistory[, SELECTED_ROWS := NULL]
 
   time2 <- Sys.time()
-  ParallelLogger::logInfo(paste0(
-    "Time needed to execute combination window ",
-    difftime(time2, time1, units = "mins")))
+  message(glue::glue(
+    "Time needed to execute combination window {difftime(time2, time1, units = 'mins')}"))
 
   return(treatmentHistory)
 }
@@ -970,7 +1045,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
 
   if (filterTreatments != "All") {
     # Order the combinations
-    ParallelLogger::logInfo("Order the combinations.")
+    message("Order the combinations.")
     combi <- grep("+", treatmentHistory$event_cohort_id, fixed = TRUE)
 
     if (length(combi) != 0) {
@@ -1014,9 +1089,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
     }
   }
 
-  ParallelLogger::logInfo(print(paste0(
-    "After filterTreatments: ",
-    nrow(treatmentHistory))))
+  message(glue::glue("After filterTreatments: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -1056,8 +1129,7 @@ doMaxPathLength <- function(treatmentHistory, maxPathLength) {
   # Apply maxPathLength
   treatmentHistory <- treatmentHistory[event_seq <= maxPathLength, ]
 
-  ParallelLogger::logInfo(print(paste0(
-    "After maxPathLength: ", nrow(treatmentHistory))))
+  message(glue::glue("After maxPathLength: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
 }
 
@@ -1075,7 +1147,7 @@ addLabels <- function(treatmentHistory, outputFolder) {
   # convenrt event_cohort_id to character
   labels["cohortId"] <- as.character(labels[, "cohortId"])
 
-  labels <- labels[labels$cohortType == "event", c("cohortId", "cohortName")]
+  labels <- labels[labels$cohortType == "event" | labels$cohortType == "exit", c("cohortId", "cohortName")]
   colnames(labels) <- c("event_cohort_id", "event_cohort_name")
 
   treatmentHistory <- merge(

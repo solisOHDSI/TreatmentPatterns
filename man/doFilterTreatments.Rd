@@ -14,8 +14,8 @@ event cohorts ('All').}
 }
 \value{
 treatmentHistory
-    Updated dataframe, where the desired event cohorts are maintained for
-    the visualizations.
+Updated dataframe, where the desired event cohorts are maintained for
+the visualizations.
 }
 \description{
 Updates the treatmentHistory data.frame where the desired event cohorts are

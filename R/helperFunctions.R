@@ -2,25 +2,29 @@
 #'
 #' Extract table with specific name from database server.
 #'
-#' @param connection DatabaseConnector connection object
-#' @param tableName Name of table
-#' @param resultsSchema Schema of results
-#' @param dbms Name of dbms to use
-#'
-#' @return data the extracted table as a data.frame
 #' @export
+#'
+#' @param connection \link[DatabaseConnector]{connect}\cr
+#' Connection object from DatabaseConnector.
+#' @param tableName \link[base]{character}\cr
+#' Name of table.
+#' @param resultsSchema \link[base]{character}\cr
+#' Schema of results.
+#' \link[DatabaseConnector]{createConnectionDetails}.
+#'
+#' @return \link[base]{data.frame}
+#' The extracted table as a data frame.
 #'
 #' @examples
 #' \dontrun{
 #'   con <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 #'   extractFile(con, "person", "main", "sqlite")
 #'}
-extractFile <- function(connection, tableName, resultsSchema, dbms) {
+extractFile <- function(connection, tableName, resultsSchema) {
   # Assertions
   checkmate::checkClass(connection, "DatabaseConnectorDbiConnection")
   checkmate::checkCharacter(tableName, len = 1)
   checkmate::checkCharacter(resultsSchema, len = 1)
-  checkmate::checkCharacter(dbms, len = 1)
 
   parameterizedSql <- "SELECT * FROM @resultsSchema.@tableName"
   renderedSql <- SqlRender::render(
@@ -30,10 +34,75 @@ extractFile <- function(connection, tableName, resultsSchema, dbms) {
 
   translatedSql <- SqlRender::translate(
     renderedSql,
-    targetDialect = dbms)
+    targetDialect = connection@dbms)
   DatabaseConnector::querySql(connection, translatedSql)
 }
 
+
+#' extractCohortTable
+#'
+#' Extracts the cohort table from the database, containing specified cohorts.
+#'
+#' @export
+#'
+#' @param connection \link[DatabaseConnector]{connect}\cr
+#' Connection object from DatabaseConnector.
+#' @param resultsSchema \link[base]{character}\cr
+#' Schema of results.
+#' @param cohortTableName \link[base]{character}\cr
+#' Name of table.
+#' @param cohortIds \link[base]{c} of \link[base]{integer}\cr
+#' Vector of cohort ID's.
+#'
+#' @return \link[base]{data.frame}
+#' Cohort table from database including the specified cohorts
+#' | column               | data type              |
+#' | -------------------- | ---------------------- |
+#' | COHORT_DEFINITION_ID | \link[base]{integer}   |
+#' | SUBJECT_ID           | \link[base]{integer}   |
+#' | COHORT_START_DATE    | \link[base]{character} |
+#' | COHORT_END_DATE      | \link[base]{character} |
+#' 
+#' @examples
+#' \dontrun{
+#'   extractCohortTable(
+#'     connection = connection,
+#'     cohortTableName = "cohortTable",
+#'     resultsSchema = "main",
+#'     cohortIds = c(1,2,3)
+#'   )
+#' }
+extractCohortTable <- function(
+    connection,
+    resultsSchema,
+    cohortTableName,
+    cohortIds = NULL) {
+  checkmate::checkClass(connection, "DatabaseConnectorDbiConnection")
+  checkmate::checkCharacter(cohortTableName, len = 1)
+  checkmate::checkCharacter(resultsSchema, len = 1)
+  checkmate::checkNumeric(cohortIds, null.ok = TRUE)
+  
+  if (is.null(cohortIds) | is.null(NA)) {
+    renderedSql <- SqlRender::render(
+      "SELECT * FROM @resultsSchema.@cohortTableName",
+      resultsSchema = resultsSchema,
+      cohortTableName = cohortTableName
+    )
+  } else {
+    renderedSql <- SqlRender::render(
+      "SELECT * FROM @resultsSchema.@cohortTableName WHERE cohort_definition_id IN (@cohortIds)",
+      resultsSchema = resultsSchema,
+      cohortTableName = cohortTableName,
+      cohortIds = cohortIds
+    )
+  }
+  
+  translatedSql <- SqlRender::translate(
+    renderedSql,
+    targetDialect = connection@dbms
+  )
+  DatabaseConnector::querySql(connection, translatedSql)
+}
 
 #' writeCohortTable
 #'
@@ -63,11 +132,11 @@ writeCohortTable <- function(
   on.exit(DatabaseConnector::disconnect(con))
 
   # Extract files from DB, write to outputFolder
-  tbl <- extractFile(
+  tbl <- extractCohortTable(
     connection = con,
-    tableName = tableName,
+    cohortTableName = tableName,
     resultsSchema = dataSettings$resultSchema,
-    dbms = dataSettings$connectionDetails$dbms)
+    cohortIds = cohortSettings$cohortsToCreate$cohortId)
 
   write.csv(
     tbl,

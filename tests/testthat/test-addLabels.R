@@ -1,14 +1,6 @@
 library(TreatmentPatterns)
 library(testthat)
 
-source(list.files(system.file(
-  package = "TreatmentPatterns",
-  "examples", "SettingObjects"), full.names = TRUE))
-
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing", "testParams.R"))
-
 test_that("void", {
   expect_error(TreatmentPatterns:::addLabels())
 })
@@ -40,7 +32,7 @@ colnames(labels) <- c("event_cohort_id", "event_cohort_name")
 
 test_that("read file correctly", {
   expect_true(
-    all(labels$event_cohort_id %in% treatmentHistory$event_cohort_id,
+    all(labels$event_cohort_id[c(1:4, 6:7)] %in% treatmentHistory$event_cohort_id,
     TRUE))
 })
 

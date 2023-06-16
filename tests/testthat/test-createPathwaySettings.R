@@ -2,8 +2,10 @@
 library(testthat)
 library(TreatmentPatterns)
 
-targetCohorts <- data.frame(cohortId = c(1),
-                            cohortName = c("Hypertension"))
+targetCohorts <- data.frame(
+  cohortId = c(1),
+  cohortName = c("Hypertension")
+)
 
 eventCohorts <- data.frame(
   cohortId = c(10, 11, 12, 13, 14),
@@ -61,7 +63,7 @@ test_that("includeTreatments", {
     cohortSettings,
     studyName = "MyStudyName",
     includeTreatments = "stuff"),
-    "Must be a subset of \\{'startDate','endDate'\\}")
+    "Variable 'includeTreatments':.+\\{'startDate','endDate'\\}.+")
 })
 
 # periodPriorToIndex
@@ -224,7 +226,7 @@ test_that("filterTreatments", {
     combinationWindow = 30,
     minPostCombinationDuration = 30,
     filterTreatments = "stuff"),
-    "Must be a subset of \\{'First','Changes','All'\\}")
+    "Variable 'filterTreatments':.+\\{'First','Changes','All'\\}.+")
 })
 
 # maxPathLength

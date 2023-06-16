@@ -30,7 +30,7 @@ generateOutput <- function(saveSettings) {
       tempFolder = saveSettings$tempFolder,
       databaseName = saveSettings$databaseName,
       studyName = settings[1, i],
-      minCellCount = settings[14, i]
+      minCellCount = settings[15, i]
     ))
 
     treatmentPathways <- objList
@@ -39,7 +39,7 @@ generateOutput <- function(saveSettings) {
       # Write WithYear and NoYear files
       outputTreatedPatients(
         data = treatmentPathways[[1]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "percentageGroupsTreatedNoYear.csv"
@@ -47,7 +47,7 @@ generateOutput <- function(saveSettings) {
 
       outputTreatedPatients(
         data = treatmentPathways[[2]],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
         outputFolder = saveSettings$outputFolder,
         outputFile = "PercentageGroupsTreatedWithYear.csv"
@@ -58,9 +58,9 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
+        eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
         groupCombinations = TRUE,
-        minCellCount = settings[14, i]
+        minCellCount = settings[15, i]
       ))
 
       objList <- append(objList, doMinCellCount(
@@ -70,9 +70,9 @@ generateOutput <- function(saveSettings) {
         tempFolder = saveSettings$tempFolder,
         databaseName = saveSettings$databaseName,
         studyName = settings[1, i],
-        groupCombinations = settings[16, i],
-        minCellCount = settings[14, i],
-        minCellMethod = settings[15, i]
+        groupCombinations = settings[17, i],
+        minCellCount = settings[15, i],
+        minCellMethod = settings[16, i]
       ))
 
       objList <- append(objList, lapply(treatmentPathways, function(pathway) {
@@ -82,8 +82,8 @@ generateOutput <- function(saveSettings) {
           outputFolder = saveSettings$outputFolder,
           databaseName = saveSettings$databaseName,
           studyName = settings[1, i],
-          eventCohortIds = unlist(stringr::str_split(settings[3, i], ",")),
-          addNoPaths = settings[17, i]
+          eventCohortIds = unlist(stringr::str_split(settings[c(3, 4), i], ",")),
+          addNoPaths = settings[18, i]
         )
       }))
     }
@@ -94,7 +94,11 @@ generateOutput <- function(saveSettings) {
       eventCohortName = dat[[i]][[3]],
       eventSeq = dat[[i]][[4]],
       averageDuration = dat[[i]][[5]],
-      count = dat[[i]][[6]],
+      median = dat[[i]][[6]],
+      sd = dat[[i]][[7]],
+      min = dat[[i]][[8]],
+      max = dat[[i]][[9]],
+      count = dat[[i]][[10]],
       study = rep(settings[1, i], length(dat[[i]][[3]]))
     )
   }))
@@ -122,7 +126,7 @@ generateOutput <- function(saveSettings) {
 
   # summary cnt
   summaryCount <- dplyr::bind_rows(lapply(seq_len(length(dat)), function(i) {
-    dat[[i]][[7]]
+    dat[[i]][[11]]
   }))
 
   write.csv(
@@ -132,10 +136,10 @@ generateOutput <- function(saveSettings) {
 
   treatmentPathways <- dplyr::bind_rows(lapply(
     seq_len(length(dat)), function(i) {
-    row.names(dat[[i]][[8]]) <- NULL
-    row.names(dat[[i]][[9]]) <- NULL
+    row.names(dat[[i]][[12]]) <- NULL
+    row.names(dat[[i]][[13]]) <- NULL
 
-    rbind(dat[[i]][[8]], dat[[i]][[9]], fill = TRUE)
+    rbind(dat[[i]][[12]], dat[[i]][[13]], fill = TRUE)
   }))
 
   write.csv(
@@ -285,9 +289,7 @@ outputTreatedPatients <- function(
             )
           )
       } else {
-        ParallelLogger::logInfo(warning(
-          paste0("Subset of data is empty for study settings in year ", y)
-        ))
+        warning(glue::glue("Subset of data is empty for study settings in year {y}"))
         subsetResult <- NULL
       }
       return(subsetResult)
@@ -299,7 +301,7 @@ outputTreatedPatients <- function(
     x = result,
     file = file.path(outputFolder, outputFile),
     row.names = FALSE)
-  ParallelLogger::logInfo("outputTreatedPatients done")
+  message("outputTreatedPatients done")
 }
 
 
@@ -486,8 +488,14 @@ outputDurationEras <- function(
   # Group non-fixed combinations in one group according to groupCobinations
   file <- groupInfrequentCombinations(file, groupCombinations)
 
-  result <- file[, .(AVG_DURATION = round(mean(duration_era), 3), COUNT = .N),
-                 by = c("event_cohort_name", "event_seq")
+  result <- file[, .(
+    AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
+    COUNT = .N
+  ), by = c("event_cohort_name", "event_seq")
   ][
     order(event_cohort_name, event_seq)
   ]
@@ -501,12 +509,20 @@ outputDurationEras <- function(
   resultTotalConcept <- file[, .(
     event_cohort_name = "Total treated",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   ), by = c("event_seq")]
 
   resultFixedCombinations <- file[, .(
     event_cohort_name = "Fixed combinations",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   ), by = c("event_seq", "fixed_combinations")]
 
@@ -519,6 +535,10 @@ outputDurationEras <- function(
   resultAllCombinations <- file[, .(
     event_cohort_name = "All combinations",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   ), by = c("event_seq", "all_combinations")]
 
@@ -531,6 +551,10 @@ outputDurationEras <- function(
   resultMonotherapy <- file[, .(
     event_cohort_name = "Monotherapy",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   ), by = c("event_seq", "monotherapy")]
 
@@ -541,6 +565,10 @@ outputDurationEras <- function(
   resultTotalSeq <- file[, .(
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   ), by = c("event_cohort_name")]
 
@@ -548,6 +576,10 @@ outputDurationEras <- function(
     event_cohort_name = "Total treated",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   )]
 
@@ -555,6 +587,10 @@ outputDurationEras <- function(
     event_cohort_name = "Fixed combinations",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   )]
 
@@ -563,6 +599,10 @@ outputDurationEras <- function(
       event_cohort_name = "All combinations",
       event_seq = "Overall",
       AVG_DURATION = round(mean(duration_era), 2),
+      MEDIAN = round(stats::median(duration_era), 2),
+      SD = round(stats::sd(duration_era), 2),
+      MIN = min(duration_era),
+      MAX = max(duration_era),
       COUNT = .N
     )]
 
@@ -570,6 +610,10 @@ outputDurationEras <- function(
     event_cohort_name = "Monotherapy",
     event_seq = "Overall",
     AVG_DURATION = round(mean(duration_era), 2),
+    MEDIAN = round(stats::median(duration_era), 2),
+    SD = round(stats::sd(duration_era), 2),
+    MIN = min(duration_era),
+    MAX = max(duration_era),
     COUNT = .N
   )]
 
@@ -595,12 +639,12 @@ outputDurationEras <- function(
     "Other")
 
   for (o in outcomes[!(outcomes %in% results$event_cohort_name)]) {
-    results <- rbind(results, list(o, "Overall", 0.0, 0))
+    results <- rbind(results, list(o, "Overall", 0.0, 0.0, 0.0, 0, 0, 0))
   }
 
   # Remove durations computed using less than minCellCount observations
-  results[COUNT < minCellCount, c("AVG_DURATION", "COUNT")] <- NA
-  ParallelLogger::logInfo("outputDurationEras done")
+  results[COUNT < as.numeric(minCellCount), c("AVG_DURATION", "MEDIAN", "SD", "MIN", "MAX", "COUNT")] <- NA
+  message("outputDurationEras done")
   on.exit(rm(columns))
   return(results)
 }
@@ -689,15 +733,10 @@ doMinCellCount <- function(
   if (minCellMethod == "Adjust") {
     col <- ncol(fileNoYear) - 1
     while (sum(fileNoYear$freq < minCellCount) > 0 && col != 0) {
-      ParallelLogger::logInfo(
-        paste(
-          "Change col ",
-          col,
-          " to NA for ",
-          sum(fileNoYear$freq < minCellCount),
-          " paths with too low frequency (without year)"
-        )
-      )
+      message(glue::glue(
+        "Change col {col} to NA for {sum(fileNoYear$freq < minCellCount)} ",
+        "paths with too low frequency (without year)"
+      ))
 
       fileNoYear[freq < minCellCount, col] <- NA
       fileNoYear <- fileNoYear[, .(freq = sum(freq)), by = layers]
@@ -707,15 +746,10 @@ doMinCellCount <- function(
 
     col <- ncol(fileWithYear) - 2
     while (sum(fileWithYear$freq < minCellCount) > 0 && col != 0) {
-      ParallelLogger::logInfo(
-        paste(
-          "Change col ",
-          col,
-          " to NA for ",
-          sum(fileWithYear$freq < minCellCount),
-          " paths with too low frequency (with year)"
-        )
-      )
+      message(glue::glue(
+        "Change col {col} to NA for {sum(fileWithYear$freq < minCellCount)}",
+        "paths with too low frequency (with year)"
+      ))
 
       fileWithYear[freq < minCellCount, col] <- NA
       fileWithYear <- fileWithYear[
@@ -738,18 +772,16 @@ doMinCellCount <- function(
       fileWithYear[, .(freq = sum(freq)), by = c(layers, "index_year")]
   }
 
-  ParallelLogger::logInfo(paste(
-    "Remove ",
-    sum(fileNoYear$freq < minCellCount),
-    " paths with too low frequency (without year)"
+  message(glue::glue(
+    "Remove {sum(fileNoYear$freq < minCellCount)} ",
+    "paths with too low frequency (without year)"
   ))
 
   fileNoYear <- fileNoYear[freq >= minCellCount, ]
 
-  ParallelLogger::logInfo(paste(
-    "Remove ",
-    sum(fileWithYear$freq < minCellCount),
-    " paths with too low frequency (with year)"
+  message(glue::glue(
+    "Remove {sum(fileWithYear$freq < minCellCount)} ",
+    "paths with too low frequency (with year)"
   ))
 
   fileWithYear <- fileWithYear[freq >= minCellCount, ]
@@ -769,7 +801,7 @@ doMinCellCount <- function(
       )
     )
   }
-  ParallelLogger::logInfo("doMinCellCount done")
+  message("doMinCellCount done")
   return(list(summaryCounts, fileNoYear, fileWithYear))
 }
 
@@ -833,18 +865,14 @@ preprocessSunburstData <- function(
             indexYear = year
           )
         } else {
-          ParallelLogger::logInfo(warning(
-            paste0(
-              "Subset of data is empty for study settings ",
-              studyName,
-              " in year ",
-              year
-            )
+          warning(glue::glue(
+            "Subset of data is empty for study settings {studyName} ",
+            "in year {year}",
           ))
         }
       }))
     }
-    ParallelLogger::logInfo("preprocessSunburstData done")
+    message("preprocessSunburstData done")
   }
   return(outDF)
 }

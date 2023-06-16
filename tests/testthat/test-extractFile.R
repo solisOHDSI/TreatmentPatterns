@@ -14,8 +14,7 @@ test_that("minimal", {
   data <- TreatmentPatterns::extractFile(
     connection = connection,
     tableName = "person",
-    resultsSchema = "main",
-    dbms = "sqlite")
+    resultsSchema = "main")
 
   expect_s3_class(data, "data.frame")
   expect_equal(dim(data), c(2694, 18))
@@ -23,20 +22,21 @@ test_that("minimal", {
 })
 
 test_that("invalid input", {
-  expect_error(TreatmentPatterns::extractFile(connection = NULL,
-                                              tableName = "person",
-                                              resultsSchema = "main",
-                                              dbms = "sqlite"))
-  expect_error(TreatmentPatterns::extractFile(connection = connection,
-                                              tableName = NULL,
-                                              resultsSchema = "main",
-                                              dbms = "sqlite"))
-  expect_error(TreatmentPatterns::extractFile(connection = connection,
-                                              tableName = "person",
-                                              resultsSchema = NULL,
-                                              dbms = "sqlite"))
-  expect_error(TreatmentPatterns::extractFile(connection = connection,
-                                              tableName = "person",
-                                              resultsSchema = "main",
-                                              dbms = NULL))
+  expect_error(TreatmentPatterns::extractFile(
+    connection = NULL,
+    tableName = "person",
+    resultsSchema = "main"
+  ))
+  
+  expect_error(TreatmentPatterns::extractFile(
+    connection = connection,
+    tableName = NULL,
+    resultsSchema = "main"
+  ))
+  
+  expect_error(TreatmentPatterns::extractFile(
+    connection = connection,
+    tableName = "person",
+    resultsSchema = NULL
+  ))
 })

@@ -8,28 +8,47 @@ doCreateTreatmentHistory(
   currentCohorts,
   targetCohortId,
   eventCohortIds,
+  exitCohortIds,
   periodPriorToIndex,
   includeTreatments
 )
 }
 \arguments{
-\item{currentCohorts}{Dataframe with target and event cohorts of current study settings.}
+\item{currentCohorts}{(\link[base]{data.frame})\cr
+\enumerate{
+\item (\link[base]{numeric}) cohort_id
+\item (\link[base]{numeric}) person_id
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) start_date
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) end_date
+}}
 
-\item{targetCohortId}{Target cohort ID of current study settings.}
+\item{targetCohortId}{(\link[base]{c}) of (\link[base]{numeric})\cr
+targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.}
 
-\item{eventCohortIds}{Event cohort IDs of current study settings.}
+\item{eventCohortIds}{(\link[base]{c}) of (\link[base]{numeric})\cr
+eventCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.}
 
-\item{periodPriorToIndex}{Number of days prior to the index date of the target cohort that event
-cohorts are allowed to start}
+\item{exitCohortIds}{(\link[base]{c}) of (\link[base]{numeric})\cr
+exitCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.}
 
-\item{includeTreatments}{Include treatments starting ('startDate') or ending ('endDate') after
-target cohort start date}
+\item{periodPriorToIndex}{(\link[base]{numeric})\cr
+periodPriorToIndex from \link[TreatmentPatterns]{addPathwaySettings}.}
+
+\item{includeTreatments}{(\link[base]{character})\cr
+includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.}
 }
 \value{
-currentCohorts
-    Updated dataframe, including only event cohorts after
-    target cohort start date and with added index year, duration, gap same
-    columns.
+(\link[base]{data.frame})\cr
+\enumerate{
+\item (\link[base]{numeric}) person_id
+\item (\link[base]{numeric}) index_year
+\item (\link[base]{numeric}) event_cohort_id
+\item (\link[base]{date}) event_start_date
+\item (\link[base]{date}) event_end_date
+\item (\link[base]{character}) type
+\item (\link[base]{difftime}) duration_era
+\item (\link[base]{difftime}) gap_same
+}
 }
 \description{
 doCreateTreatmentHistory

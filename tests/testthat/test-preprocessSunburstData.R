@@ -1,16 +1,12 @@
 library(testthat)
 library(TreatmentPatterns)
 
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing", "testParamsOutput.R"))
-
 test_that("void", {
   expect_error(TreatmentPatterns:::preprocessSunburstData())
 })
 
 test_that("minimal", {
-  expect_output(TreatmentPatterns:::preprocessSunburstData(
+  expect_message(TreatmentPatterns:::preprocessSunburstData(
     data = treatmentPathways[[1]],
     tempFolder = saveSettings$tempFolder,
     outputFolder = saveSettings$outputFolder,

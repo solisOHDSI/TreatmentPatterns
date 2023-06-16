@@ -5,9 +5,10 @@
 \title{addPathwaySettings}
 \usage{
 addPathwaySettings(
-  studyName = "name_unknown",
+  studyName = "nameUnknown",
   targetCohortId,
   eventCohortIds,
+  exitCohortIds = NULL,
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,
@@ -25,58 +26,78 @@ addPathwaySettings(
 )
 }
 \arguments{
-\item{studyName}{Name identifying the set of study parameters. Default value is
-"name_unknown".}
+\item{studyName}{(\link[base]{character}: "nameUnknown")\cr
+Name identifying the set of study parameters.}
 
-\item{targetCohortId}{Target cohort ID of current study settings.}
+\item{targetCohortId}{(\link[base]{c}) of (\link[base]{numeric})\cr
+Vector of target cohort ID of current study settings.}
 
-\item{eventCohortIds}{Event cohort IDs of current study settings.}
+\item{eventCohortIds}{(\link[base]{c}) of (\link[base]{numeric})\cr
+Vector event cohort IDs of current study settings.}
 
-\item{includeTreatments}{Include treatments starting ('startDate') or ending ('endDate') after
-target cohort start date. Default value is "startDate".}
+\item{exitCohortIds}{(\link[base]{c}) of (\link[base]{numeric})\cr
+Vector exit cohort IDs of current study settings.}
 
-\item{periodPriorToIndex}{Number of days prior to the index date of the target cohort that event
-cohorts are allowed to start. Default value is 0.}
+\item{includeTreatments}{(\link[base]{character}: "startDate") ["startDate", "endDate"]\cr
+Include treatments starting "startDate" or ending "endDate" after target
+cohort start date.}
 
-\item{minEraDuration}{Minimum time an event era should last to be included in analysis.
-Default value is 0.}
+\item{periodPriorToIndex}{(\link[base]{numeric}: 0)\cr
+Number of days prior to the index date of the
+target cohort that event cohorts are allowed to start.}
 
-\item{splitEventCohorts}{Specify event cohort ID's to split in acute (< X days) and therapy
-(>= X days).}
+\item{minEraDuration}{(\link[base]{numeric}: 0)\cr
+Minimum time an event era should last to be
+included in analysis.}
 
-\item{splitTime}{Specify number of days (X) at which each of the split event cohorts
-should be split in acute and therapy. Default value is 30.}
+\item{splitEventCohorts}{(\link[base]{character}: "")\cr
+Specify event cohort ID's to split in acute
+(< X days) and therapy (>= X days).}
 
-\item{eraCollapseSize}{Window of time between which two eras of the same event cohort are
-collapsed into one era. Default value is 30.}
+\item{splitTime}{(\link[base]{numeric}: 30)\cr
+Specify number of days (X) at which each of the split event cohorts should
+be split in acute and therapy.}
 
-\item{combinationWindow}{Window of time two event cohorts need to overlap to be considered a
-combination treatment. Default value is 30.}
+\item{eraCollapseSize}{(\link[base]{numeric}: 30)\cr
+Window of time between which two eras of the same event cohort are collapsed
+into one era.}
 
-\item{minPostCombinationDuration}{Minimum time an event era before or after a generated combination
-treatment should last to be included in analysis. Default value is 30.}
+\item{combinationWindow}{(\link[base]{numeric}: 30)\cr
+Window of time two event cohorts need to overlap to be considered a
+combination treatment.}
 
-\item{filterTreatments}{Select first occurrence of ("First") / changes between ("Changes') / all
-event cohorts ("All"). Default value is "First".}
+\item{minPostCombinationDuration}{(\link[base]{numeric}: 30)\cr
+Minimum time an event era before or after a generated combination treatment
+should last to be included in analysis.}
 
-\item{maxPathLength}{Maximum number of steps included in treatment pathway (max 5). Default
-value is 5.}
+\item{filterTreatments}{(\link[base]{character}: "First") ["First", "Changes", "All"
+]\cr
+Select first occurrence of ("First"); changes between ("Changes'); all event
+cohorts ("All").}
 
-\item{minCellCount}{Minimum number of persons with a specific treatment pathway for the
-pathway to be included in analysis. Default value is 5.}
+\item{maxPathLength}{(\link[base]{numeric}: 5)\cr
+Maximum number of steps included in treatment pathway. Up to 5 is supported.}
 
-\item{minCellMethod}{Select to completely remove / sequentially adjust (by removing last step
-as often as necessary) treatment pathways below minCellCount. Default
-value is "Remove".}
+\item{minCellCount}{(\link[base]{numeric}: 5)\cr
+Minimum number of persons with a specific treatment pathway for the pathway
+to be included in analysis.}
 
-\item{groupCombinations}{Select to group all non-fixed combinations in one category 'other’ in
-the sunburst plot. Default value is 10.}
+\item{minCellMethod}{(\link[base]{character}: "Remove") ["Remove"]\cr
+Select to completely remove / sequentially adjust (by removing last step
+as often as necessary) treatment pathways below minCellCount.}
 
-\item{addNoPaths}{Select to include untreated persons without treatment pathway in the
-sunburst plot. Default value is FALSE.}
+\item{groupCombinations}{(\link[base]{numeric}: 10)\cr
+Select to group all non-fixed combinations in one category 'other’ in the
+sunburst plot.}
+
+\item{addNoPaths}{(\link[base]{logical}: TRUE)\cr
+Select to include untreated persons without treatment pathway in the
+sunburst plot. Default value is FALSE. When set to TRUE the sunburst plot
+will show non-treated individuals as blank space.}
 }
 \value{
-a data.frame containing the pathway settings
+(\link[base]{data.frame})\cr
+A data frame containing the pathway settings.
 }
 \description{
 Defines and returns a data.frame specifying different parameters how to

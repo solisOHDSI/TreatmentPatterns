@@ -27,7 +27,8 @@ the cohortDatabaseSchema. This table will hold the target and event
 cohorts used in this study.}
 }
 \value{
-Object dataSettings.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Object dataSettings.
+}\if{html}{\out{</div>}}
 }
 \description{
 Create a dataSettings object containing information about how to connect to

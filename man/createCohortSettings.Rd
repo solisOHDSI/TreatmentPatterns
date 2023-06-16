@@ -4,17 +4,24 @@
 \alias{createCohortSettings}
 \title{Create cohort settings.}
 \usage{
-createCohortSettings(targetCohorts, eventCohorts)
+createCohortSettings(targetCohorts, eventCohorts, exitCohorts = NULL)
 }
 \arguments{
-\item{targetCohorts}{Data frame containing the study population of interest
-cohortId = "Unique ID number", cohortName = "Descriptive name cohort".}
+\item{targetCohorts}{(\link[base]{data.frame})\cr
+containing the study population of interest cohortId = "Unique ID number",
+cohortName = "Descriptive name cohort".}
 
-\item{eventCohorts}{Data frame containing the events of interest
-cohortId = "Unique ID number", cohortName = "Descriptive name cohort".}
+\item{eventCohorts}{(\link[base]{data.frame})\cr
+containing the events of interest cohortId = "Unique ID number",
+cohortName = "Descriptive name cohort".}
+
+\item{exitCohorts}{(\link[base]{data.frame})\cr
+containing the exit events of interest cohortId = "Unique ID number",
+cohortName = "Descriptive name cohort".}
 }
 \value{
-Object cohortSettings.
+(\link[TreatmentPatterns]{createCohortSettings})\cr
+S3 cohortSettings object.
 }
 \description{
 Create a cohortsSettings object, containing information about the target
@@ -29,5 +36,9 @@ cohortSettings <- createCohortSettings(
     cohortName = c("a")),
   eventCohorts = data.frame(
     cohortId = c(2, 3),
-    cohortName = c("b", "c")))
+    cohortName = c("b", "c")),
+  exitCohorts = data.frame(
+    cohortId = c(4),
+    cohortName = c("d"))
+  )
 }
