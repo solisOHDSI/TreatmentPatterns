@@ -38,13 +38,13 @@ checkConstructPathways <- function(env) {
 #' Construct treatment pathways. Also generates output in csv format.
 #'
 #' @param dataSettings
-#' Settings object as created by \link[TreatmentPattern]{createDataSettings}.
+#' Settings object as created by \link[TreatmentPatterns]{createDataSettings}.
 #' @param pathwaySettings
-#' Settings object as created by \link[TreatmentPattern]{createPathwaySettings}.
+#' Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.
 #' @param saveSettings
-#' Settings object as created by \link[TreatmentPattern]{createSaveSettings}.
+#' Settings object as created by \link[TreatmentPatterns]{createSaveSettings}.
 #' @param cohortSettings
-#' Settings object created by \link[TreatmentPattern]{createCohortSettings}.
+#' Settings object created by \link[TreatmentPatterns]{createCohortSettings}.
 #'
 #' @export
 #'
@@ -52,7 +52,10 @@ checkConstructPathways <- function(env) {
 #'   constructPathways(
 #'     dataSettings = dataSettings,
 #'     pathwaySettings = pathwaySettings,
-#'     saveSettings = saveSettings)}
+#'     saveSettings = saveSettings,
+#'     cohortSettings = cohortSettings
+#'   )
+#' }
 constructPathways <- function(dataSettings,
                               pathwaySettings,
                               saveSettings,
@@ -474,7 +477,7 @@ doCreateTreatmentHistory <- function(
   andromeda$currentCohorts <- merge(
     x = andromeda$eventCohorts,
     y = andromeda$targetCohorts,
-    by = c("person_id"),
+    by = "person_id",
     all.x = TRUE,
     allow.cartesian = TRUE
   )
