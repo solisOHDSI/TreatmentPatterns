@@ -293,21 +293,6 @@ pathwaySettings <- addPathwayAnalysis(
 4. **...**: Any other parameter you'd liek to change. A full list of parameters can be found in the `addPathwaySettings` documentation. **Some** of these parameters are: studyName, minEraDuration, combinationWindow, eraCollapseSize, maxPathLength.
 
 ## Constructing pathways and reviewing output
-### writeCohortTable
-writeCohortTable writes the cohort table and the cohortsToCreate table to our output folder
-```{r writeCohortTable, results='hide', message=FALSE, warning=FALSE}
-writeCohortTable(
-  saveSettings = saveSettings,
-  cohortSettings = cohortSettings,
-  dataSettings = dataSettings,
-  tableName = cohortTable
-)
-```
-1. **saveSettings**: `saveSettings` object.
-2. **cohortSettings**: `cohortSettings` object.
-3. **dataSettings**: `dataSettings` object.
-3. **tableName**: Table name of the cohort table in the database.
-
 ### constructPathways
 After our settings are specified we can construct our pathways.
 ```{r constructPathways, results='hide', message=FALSE, warning=FALSE}
