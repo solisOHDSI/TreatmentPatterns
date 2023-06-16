@@ -450,31 +450,33 @@ doCreateTreatmentHistory <- function(
 
   targetCohorts$index_year <- as.numeric(format(targetCohorts$start_date, "%Y"))
 
+  
+  andromeda <- Andromeda::andromeda()
   # Select event cohorts for target cohort and merge with start/end date and
   # index year
-  eventCohorts <- currentCohorts[
+  andromeda$eventCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% eventCohortIds, , ]
   
-  exitCohorts <- currentCohorts[
+  andromeda$exitCohorts <- currentCohorts[
     currentCohorts$cohort_id %in% exitCohortIds, , ]
 
-  targetCohorts <- targetCohorts %>%
+  andromeda$targetCohorts <- targetCohorts %>%
     dplyr::mutate(type = "target")
   
-  eventCohorts <- eventCohorts %>%
+  andromeda$eventCohorts <- eventCohorts %>%
     dplyr::mutate(type = "event")
   
-  exitCohorts <- exitCohorts %>%
+  andromeda$exitCohorts <- exitCohorts %>%
     dplyr::mutate(type = "exit")
   
-  eventCohorts <- dplyr::bind_rows(
+  andromeda$eventCohorts <- dplyr::bind_rows(
     eventCohorts,
     exitCohorts
   )
   
-  currentCohorts <- merge(
-    x = eventCohorts,
-    y = targetCohorts,
+  andromeda$currentCohorts <- merge(
+    x = andromeda$eventCohorts,
+    y = andromeda$targetCohorts,
     by = c("person_id"),
     all.x = TRUE,
     allow.cartesian = TRUE
@@ -483,61 +485,61 @@ doCreateTreatmentHistory <- function(
   # Only keep event cohorts starting (startDate) or ending (endDate) after
   # target cohort start date
   if (includeTreatments == "startDate") {
-    currentCohorts <- currentCohorts[
-      currentCohorts$start_date.y -
+    andromeda$currentCohorts <- andromeda$currentCohorts[
+      andromeda$currentCohorts$start_date.y -
         as.difftime(periodPriorToIndex, units = "days") <=
-        currentCohorts$start_date.x &
-        currentCohorts$start_date.x <
-        currentCohorts$end_date.y, ]
+        andromeda$currentCohorts$start_date.x &
+        andromeda$currentCohorts$start_date.x <
+        andromeda$currentCohorts$end_date.y, ]
 
   } else if (includeTreatments == "endDate") {
-    currentCohorts <- currentCohorts[
-      currentCohorts$start_date.y -
+    andromeda$currentCohorts <- andromeda$currentCohorts[
+      andromeda$currentCohorts$start_date.y -
         as.difftime(periodPriorToIndex, units = "days") <=
-        currentCohorts$end_date.x &
-        currentCohorts$start_date.x <
-        currentCohorts$end_date.y, ]
+        andromeda$currentCohorts$end_date.x &
+        andromeda$currentCohorts$start_date.x <
+        andromeda$currentCohorts$end_date.y, ]
 
-    currentCohorts$start_date.x <- pmax(
-      currentCohorts$start_date.y - as.difftime(
+    andromeda$currentCohorts$start_date.x <- pmax(
+      andromeda$currentCohorts$start_date.y - as.difftime(
         periodPriorToIndex, units = "days"),
-      currentCohorts$start_date.x)
+      andromeda$currentCohorts$start_date.x)
   } else {
     warning(paste(
       "includeTreatments input incorrect,",
       "return all event cohorts ('includeTreatments')"))
-    currentCohorts <- currentCohorts[
-      currentCohorts$start_date.y -
+    andromeda$currentCohorts <- andromeda$currentCohorts[
+      andromeda$currentCohorts$start_date.y -
         as.difftime(periodPriorToIndex, units = "days") <=
-        currentCohorts$start_date.x &
-        currentCohorts$start_date.x <
-        currentCohorts$end_date.y, ]
+        andromeda$currentCohorts$start_date.x &
+        andromeda$currentCohorts$start_date.x <
+        andromeda$currentCohorts$end_date.y, ]
   }
   
   # Remove unnecessary columns
-  currentCohorts <- currentCohorts[
+  andromeda$currentCohorts <- andromeda$currentCohorts[
     , c("person_id", "index_year", "cohort_id.x",
         "start_date.x", "end_date.x", "type.x")]
   
-  colnames(currentCohorts) <- c(
+  colnames(andromeda$currentCohorts) <- c(
     "person_id", "index_year", "event_cohort_id",
     "event_start_date", "event_end_date", "type")
 
   # Calculate duration and gap same
-  currentCohorts[,
+  andromeda$currentCohorts[,
     duration_era := difftime(event_end_date, event_start_date, units = "days")]
 
-  currentCohorts <- currentCohorts[order(event_start_date, event_end_date), ]
+  andromeda$currentCohorts <- andromeda$currentCohorts[order(event_start_date, event_end_date), ]
 
-  currentCohorts[
+  andromeda$currentCohorts[
     , lag_variable := data.table::shift(event_end_date, type = "lag"),
     by = c("person_id", "event_cohort_id")]
 
-  currentCohorts[,
+  andromeda$currentCohorts[,
     gap_same := difftime(event_start_date, lag_variable, units = "days"), ]
 
-  currentCohorts$lag_variable <- NULL
-  return(currentCohorts)
+  andromeda$currentCohorts$lag_variable <- NULL
+  return(andromeda$currentCohorts)
 }
 
 #' doEraDuration

@@ -25,7 +25,8 @@ Imports:
     rjson,
     googleVis,
     webshot2,
-    stats
+    stats,
+    Andromeda
 Suggests:
     knitr,
     rmarkdown,

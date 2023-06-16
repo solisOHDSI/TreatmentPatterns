@@ -9,6 +9,7 @@
 #' @import SqlRender
 #' @import fs
 #' @import dplyr
+#' @import Andromeda
 #' @importFrom googleVis gvisSankey
 #' @importFrom rjson toJSON
 #' @importFrom stringi stri_replace_all_fixed
