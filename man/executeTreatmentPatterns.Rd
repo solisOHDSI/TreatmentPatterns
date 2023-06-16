@@ -4,14 +4,21 @@
 \alias{executeTreatmentPatterns}
 \title{executeTreatmentPatterns}
 \usage{
-executeTreatmentPatterns(dataSettings, pathwaySettings, saveSettings)
+executeTreatmentPatterns(
+  dataSettings,
+  pathwaySettings,
+  saveSettings,
+  cohortSettings
+)
 }
 \arguments{
-\item{dataSettings}{dataSettings object}
+\item{dataSettings}{dataSettings object created by \link[TreatmentPatterns]{createDataSettings}.}
 
-\item{pathwaySettings}{pathwaySettings object}
+\item{pathwaySettings}{pathwaySettings object created by \link[TreatmentPatterns]{createPathwaySettings}.}
 
-\item{saveSettings}{saveSettings object}
+\item{saveSettings}{saveSettings object created by \link[TreatmentPatterns]{createSaveSettings}.}
+
+\item{cohortSettings}{cohortSettings object created by \link[TreatmentPatterns]{createCohortSettings}.}
 }
 \description{
 This is the main function which runs all parts of the treatment pathways
@@ -47,6 +54,8 @@ if (interactive()) {
   executeTreatmentPatterns(
   dataSettings = dataSettings,
   pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings)
+  saveSettings = saveSettings,
+  cohortSettings = cohortSettings
+  )
 }
 }
