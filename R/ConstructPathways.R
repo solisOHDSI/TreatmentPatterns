@@ -38,11 +38,13 @@ checkConstructPathways <- function(env) {
 #' Construct treatment pathways. Also generates output in csv format.
 #'
 #' @param dataSettings
-#'     Settings object as created by createDataSettings().
+#' Settings object as created by \link[TreatmentPattern]{createDataSettings}.
 #' @param pathwaySettings
-#'     Settings object as created by createPathwaySettings().
+#' Settings object as created by \link[TreatmentPattern]{createPathwaySettings}.
 #' @param saveSettings
-#'     Settings object as created by createSaveSettings().
+#' Settings object as created by \link[TreatmentPattern]{createSaveSettings}.
+#' @param cohortSettings
+#' Settings object created by \link[TreatmentPattern]{createCohortSettings}.
 #'
 #' @export
 #'
