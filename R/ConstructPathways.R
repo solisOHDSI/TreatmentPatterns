@@ -53,7 +53,8 @@ checkConstructPathways <- function(env) {
 #'     saveSettings = saveSettings)}
 constructPathways <- function(dataSettings,
                               pathwaySettings,
-                              saveSettings) {
+                              saveSettings,
+                              cohortSettings) {
   # Check if inputs correct
   check <- checkConstructPathways(environment())
 
@@ -90,6 +91,16 @@ constructPathways <- function(dataSettings,
     "person_id",
     "start_date",
     "end_date"
+  )
+  
+  
+  if (!dir.exists(saveSettings$outputFolder)) {
+    dir.create(saveSettings$outputFolder)
+  }
+  
+  write.csv(
+    x = cohortSettings$cohortsToCreate,
+    file = file.path(saveSettings$outputFolder, "cohortsToCreate.csv")
   )
   
   write.csv(
