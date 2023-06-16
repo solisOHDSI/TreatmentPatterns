@@ -196,7 +196,8 @@ addLabelsTH <- TreatmentPatterns:::addLabels(
 TreatmentPatterns::constructPathways(
   dataSettings = dataSettings,
   pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings
+  saveSettings = saveSettings,
+  cohortSettings = cohortSettings
 )
 
 # Generate output for folder structure etc.
