@@ -114,7 +114,6 @@ constructPathways <- function(dataSettings,
   pathwaySettings <- pathwaySettings$all_settings
 
   # Create output and temp folders
-  fs::dir_create(saveSettings$outputFolder)
   fs::dir_create(saveSettings$tempFolder)
 
   write.csv(
@@ -156,8 +155,6 @@ constructPathways <- function(dataSettings,
     ]
     
     exitCohortIds <- unlist(strsplit(exitCohortIds, split = c(";|,")))
-    
-    print(exitCohortIds)
     
     # Analysis settings
     includeTreatments <- pathwaySettings[
