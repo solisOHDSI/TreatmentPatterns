@@ -91,6 +91,11 @@ constructPathways <- function(dataSettings,
     "start_date",
     "end_date"
   )
+  
+  write.csv(
+    x = fullCohorts,
+    file = file.path(saveSettings$outputFolder, "cohortTable.csv")
+  )
 
   # Save pathway settings
   pathwaySettings <- pathwaySettings$all_settings
