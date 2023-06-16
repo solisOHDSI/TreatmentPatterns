@@ -38,11 +38,13 @@ checkConstructPathways <- function(env) {
 #' Construct treatment pathways. Also generates output in csv format.
 #'
 #' @param dataSettings
-#'     Settings object as created by createDataSettings().
+#' Settings object as created by \link[TreatmentPatterns]{createDataSettings}.
 #' @param pathwaySettings
-#'     Settings object as created by createPathwaySettings().
+#' Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.
 #' @param saveSettings
-#'     Settings object as created by createSaveSettings().
+#' Settings object as created by \link[TreatmentPatterns]{createSaveSettings}.
+#' @param cohortSettings
+#' Settings object created by \link[TreatmentPatterns]{createCohortSettings}.
 #'
 #' @export
 #'
@@ -50,10 +52,14 @@ checkConstructPathways <- function(env) {
 #'   constructPathways(
 #'     dataSettings = dataSettings,
 #'     pathwaySettings = pathwaySettings,
-#'     saveSettings = saveSettings)}
+#'     saveSettings = saveSettings,
+#'     cohortSettings = cohortSettings
+#'   )
+#' }
 constructPathways <- function(dataSettings,
                               pathwaySettings,
-                              saveSettings) {
+                              saveSettings,
+                              cohortSettings) {
   # Check if inputs correct
   check <- checkConstructPathways(environment())
 
@@ -90,6 +96,21 @@ constructPathways <- function(dataSettings,
     "person_id",
     "start_date",
     "end_date"
+  )
+  
+  
+  if (!dir.exists(saveSettings$outputFolder)) {
+    dir.create(saveSettings$outputFolder)
+  }
+  
+  write.csv(
+    x = cohortSettings$cohortsToCreate,
+    file = file.path(saveSettings$outputFolder, "cohortsToCreate.csv")
+  )
+  
+  write.csv(
+    x = fullCohorts,
+    file = file.path(saveSettings$outputFolder, "cohortTable.csv")
   )
 
   # Save pathway settings
@@ -457,7 +478,7 @@ doCreateTreatmentHistory <- function(
   currentCohorts <- merge(
     x = eventCohorts,
     y = targetCohorts,
-    by = c("person_id"),
+    by = "person_id",
     all.x = TRUE,
     allow.cartesian = TRUE
   )

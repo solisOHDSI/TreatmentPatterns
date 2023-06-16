@@ -12,7 +12,8 @@ test_that("Minimal", {
     constructPathways(
       dataSettings = dataSettings,
       pathwaySettings = pathwaySettings,
-      saveSettings = saveSettings
+      saveSettings = saveSettings,
+      cohortSettings = cohortSettings
     ), "constructPathways done.")
 })
 

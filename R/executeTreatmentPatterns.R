@@ -5,9 +5,14 @@
 #' treatment pathways, 2) Generate output (sunburst plots, Sankey diagrams and
 #' more).
 #'
-#' @param dataSettings dataSettings object
-#' @param pathwaySettings pathwaySettings object
-#' @param saveSettings saveSettings object
+#' @param dataSettings
+#' dataSettings object created by \link[TreatmentPatterns]{createDataSettings}.
+#' @param pathwaySettings
+#' pathwaySettings object created by \link[TreatmentPatterns]{createPathwaySettings}.
+#' @param saveSettings
+#' saveSettings object created by \link[TreatmentPatterns]{createSaveSettings}.
+#' @param cohortSettings
+#' cohortSettings object created by \link[TreatmentPatterns]{createCohortSettings}.
 #'
 #' @return NULL
 #' @export
@@ -40,18 +45,23 @@
 #'   executeTreatmentPatterns(
 #'   dataSettings = dataSettings,
 #'   pathwaySettings = pathwaySettings,
-#'   saveSettings = saveSettings)
+#'   saveSettings = saveSettings,
+#'   cohortSettings = cohortSettings
+#'   )
 #' }
 executeTreatmentPatterns <- function(
     dataSettings,
     pathwaySettings,
-    saveSettings) {
+    saveSettings,
+    cohortSettings) {
 
   # 1) Construct treatment pathways
   TreatmentPatterns::constructPathways(
     dataSettings = dataSettings,
     pathwaySettings = pathwaySettings,
-    saveSettings = saveSettings)
+    saveSettings = saveSettings,
+    cohortSettings = cohortSettings
+  )
 
   # 2) Generate output (sunburst plots, Sankey diagrams and more)
   TreatmentPatterns::generateOutput(saveSettings)

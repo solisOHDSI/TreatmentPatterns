@@ -210,14 +210,22 @@ targetCohort <- cohortsGenerated %>%
 ```{r eventCohorts}
 # Select everything BUT Viral Sinusitis cohorts
 eventCohorts <- cohortsGenerated %>%
-  filter(cohortName != "ViralSinusitis") %>%
+  filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
   select(cohortId, cohortName)
 ```
+
+```{r}
+exitCohorts <- cohortsGenerated %>%
+  filter(cohortName == "Death") %>%
+  select(cohortId, cohortName)
+```
+
 
 ```{r cohortSettings}
 cohortSettings <- createCohortSettings(
   targetCohorts = targetCohort,
-  eventCohorts = eventCohorts
+  eventCohorts = eventCohorts,
+  exitCohorts = exitCohorts
 )
 ```
 1. **targetCohorts**: A data.frame containing the `Cohort ID` and `Cohort Name` of the target cohorts
@@ -293,33 +301,20 @@ pathwaySettings <- addPathwayAnalysis(
 4. **...**: Any other parameter you'd liek to change. A full list of parameters can be found in the `addPathwaySettings` documentation. **Some** of these parameters are: studyName, minEraDuration, combinationWindow, eraCollapseSize, maxPathLength.
 
 ## Constructing pathways and reviewing output
-### writeCohortTable
-writeCohortTable writes the cohort table and the cohortsToCreate table to our output folder
-```{r writeCohortTable, results='hide', message=FALSE, warning=FALSE}
-writeCohortTable(
-  saveSettings = saveSettings,
-  cohortSettings = cohortSettings,
-  dataSettings = dataSettings,
-  tableName = cohortTable
-)
-```
-1. **saveSettings**: `saveSettings` object.
-2. **cohortSettings**: `cohortSettings` object.
-3. **dataSettings**: `dataSettings` object.
-3. **tableName**: Table name of the cohort table in the database.
-
 ### constructPathways
 After our settings are specified we can construct our pathways.
 ```{r constructPathways, results='hide', message=FALSE, warning=FALSE}
 constructPathways(
   dataSettings = dataSettings,
   pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings
+  saveSettings = saveSettings,
+  cohortSettings = cohortSettings
 )
 ```
 1. **dataSettings**: `dataSettings` object.
 2. **pathwaySettings**: `pathwaySettings` object.
-3. **saveSettings**: `saveSettings` object.f
+3. **saveSettings**: `saveSettings` object.
+4. **cohortSettings**: `cohortSettings` object.
 
 ### generateOutput
 After our pathways are computed, we can generate our output files.

@@ -9,7 +9,9 @@ test_that("minimal", {
     TreatmentPatterns::executeTreatmentPatterns(
       dataSettings = dataSettings,
       pathwaySettings = pathwaySettings,
-      saveSettings = saveSettings)
+      saveSettings = saveSettings,
+      cohortSettings = cohortSettings
+    )
   )
 
   expect_true(
