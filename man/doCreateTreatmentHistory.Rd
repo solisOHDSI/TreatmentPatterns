@@ -8,7 +8,7 @@ doCreateTreatmentHistory(
   currentCohorts,
   targetCohortId,
   eventCohortIds,
-  exitCohortIds,
+  exitCohortIds = NULL,
   periodPriorToIndex,
   includeTreatments
 )
