@@ -820,7 +820,7 @@ doSplitEventCohorts <- function(
 #' }
 doEraCollapse <- function(treatmentHistory, eraCollapseSize) {
   # Assertions
-  checkmate::assertDataFrame(x = TH)
+  checkmate::assertDataFrame(x = treatmentHistory)
   checkmate::assertNumeric(
     x = eraCollapseSize,
     lower = 0,
@@ -856,7 +856,7 @@ doEraCollapse <- function(treatmentHistory, eraCollapseSize) {
   #   units = "days")]
   
   treatmentHistory %>%
-    mutate(duration_era = difftime(
+    dplyr::mutate(duration_era = difftime(
       time1 = event_start_date,
       time2 = event_end_date,
       units = "days"))
@@ -915,22 +915,39 @@ doCombinationWindow <- function(
 
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
-    treatmentHistory[
-      SELECTED_ROWS == 1 &
-        (-GAP_PREVIOUS < combinationWindow &
-           !(-GAP_PREVIOUS == duration_era |
-               -GAP_PREVIOUS == data.table::shift(duration_era, type = "lag"))),
-      switch := 1]
+    # treatmentHistory[
+    #   SELECTED_ROWS == 1 &
+    #     (-GAP_PREVIOUS < combinationWindow & 
+    #        !(-GAP_PREVIOUS == duration_era | 
+    #            -GAP_PREVIOUS == data.table::shift(duration_era, type = "lag"))),
+    #     switch := 1]
+    
 
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::group_by(
+        switch = as.numeric(
+          .data$SELECTED_ROWS == 1 &
+            -.data$GAP_PREVIOUS < combinationWindow &
+            !-.data$GAP_PREVIOUS == .data$duration_era |
+            -GAP_PREVIOUS == dplyr::lag(.data$duration_era)))
+      
+    
     # For rows selected not in column switch ->
     # if treatmentHistory[r - 1, event_end_date] <=
     # treatmentHistory[r, event_end_date] ->
     # add column combination first received, first stopped
-    treatmentHistory[
-      SELECTED_ROWS == 1 &
-        is.na(switch) &
-        data.table::shift(event_end_date, type = "lag") <= event_end_date,
-      combination_FRFS := 1]
+    # treatmentHistory[
+    #   SELECTED_ROWS == 1 &
+    #     is.na(switch) &
+    #     data.table::shift(event_end_date, type = "lag") <= event_end_date,
+    #   combination_FRFS := 1]
+    
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::group_by(
+        combination_FRFS = as.numeric(
+          SELECTED_ROWS == 1 &
+            is.na(switch) &
+            dplyr::lag(.data$event_end_date) <= .data$event_end_date))
 
     # For rows selected not in column switch ->
     # if treatmentHistory[r - 1, event_end_date] >
@@ -1127,8 +1144,8 @@ selectRowsCombinationWindow <- function(treatmentHistory) {
   #   ALL_ROWS := which(treatmentHistory$GAP_PREVIOUS < 0)]
 
   treatmentHistory <- treatmentHistory %>%
-    filter(GAP_PREVIOUS < 0) %>%
-    mutate(ALL_ROWS = which(.data$GAP_PREVIOUS < 0))
+    dplyr::ungroup() %>%
+    dplyr::mutate(ALL_ROWS = ifelse(.data$GAP_PREVIOUS < 0, dplyr::row_number(), NA))
   
   # Select one row per iteration for each person
   # rows <- as.data.table(treatmentHistory)[
@@ -1137,23 +1154,21 @@ selectRowsCombinationWindow <- function(treatmentHistory) {
   #   by = person_id]$ALL_ROWS
   
   rows <- treatmentHistory %>%
+    dplyr::filter(!is.na(.data$ALL_ROWS)) %>%
     dplyr::group_by(.data$person_id) %>%
-    dplyr::filter(.data$ALL_ROWS == 1) %>%
-    dplyr::ungroup() %>%
-    dplyr::select("ALL_ROWS") %>%
-    unlist()
+    dplyr::filter(dplyr::row_number() == 1) %>%
+    dplyr::pull(.data$ALL_ROWS)
 
   # treatmentHistory[rows, SELECTED_ROWS := 1]
-  treatmentHistory <- treatmentHistory[rows, ] %>%
-    mutate(SELECTED_ROWS = 1)
-  
   # treatmentHistory[!rows, SELECTED_ROWS := 0]
-  treatmentHistory <- treatmentHistory[-rows] %>%
-    mutate(SELECTED_ROWS = 0)
+  treatmentHistory <- dplyr::bind_rows(
+    treatmentHistory[rows, ] %>% dplyr::mutate(SELECTED_ROWS = 1),
+    treatmentHistory[-rows, ] %>% dplyr::mutate(SELECTED_ROWS = 0)
+  )
   
   # treatmentHistory[, ALL_ROWS := NULL]
   treatmentHistory <- treatmentHistory %>%
-    mutate(ALL_ROWS = NULL)
+    dplyr::select(-"ALL_ROWS")
   
   return(treatmentHistory)
 }
