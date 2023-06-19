@@ -81,6 +81,18 @@ pathwaySettings <- TreatmentPatterns::createPathwaySettings(
   minEraDuration = 1,
   maxPathLength = 2)
 
+pathwaySettings <- TreatmentPatterns::addPathwayAnalysis(
+  pathwaySettings = pathwaySettings,
+  targetCohortIds = targetCohort$cohortId,
+  eventCohortIds = eventCohorts$cohortId[-1],
+  studyName = "someOtherCoolParameters",
+  minEraDuration = 14,
+  eraCollapseSize = 21,
+  combinationWindow = 7,
+  minCellCount = 5,
+  groupCombinations = 5
+)
+
 # Write files
 TreatmentPatterns::writeCohortTable(
   saveSettings = saveSettings,
