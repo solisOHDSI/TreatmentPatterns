@@ -7,16 +7,21 @@
 getPathways(outputFolder, tempFolder, databaseName, studyName, minCellCount)
 }
 \arguments{
-\item{outputFolder}{Path to the output folder.}
+\item{outputFolder}{(\link[base]{character})
+Path to the output folder.}
 
-\item{tempFolder}{Path to the temp folder.}
+\item{tempFolder}{(\link[base]{character})
+Path to the temp folder.}
 
-\item{databaseName}{Name of the database that will appear in the results.}
+\item{databaseName}{(\link[base]{character})
+Name of the database that will appear in the results.}
 
-\item{studyName}{Name for the study corresponding to the current settings.}
+\item{studyName}{(\link[base]{character})
+Name for the study corresponding to the current settings.}
 
-\item{minCellCount}{Minimum number of persons with a specific treatment pathway for the
-pathway to be included in analysis.}
+\item{minCellCount}{(\link[base]{numeric})
+Minimum number of persons with a specific treatment pathway for the pathway
+to be included in analysis.}
 }
 \value{
 List with two dataframes.
