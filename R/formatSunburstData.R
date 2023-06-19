@@ -2,11 +2,14 @@
 #' 
 #' Function to format data from files containing event_cohort_name columns.
 #'
-#' @param filePath \link[base]{character}\cr
+#' @param filePath (\link[base]{character})
 #' Path to file containing `event_cohort_name1`, `event_cohort_name2`,
 #' `event_cohort_name3`, `event_cohort_name4`, `event_cohort_name5` columns.
-#' @param indexYear \link[base]{integer} or \link[base]{character}\cr
-#' Index year to filter on.
+#' @param indexYear (\link[base]{integer} | \link[base]{character})
+#' Index year to filter on. "no year" may be specified, or the year as an integer.
+#' @param studyName (\link[base]{character})
+#' Name of the study, specified in the `pathwaySerttings` object.
+#' 
 #'
 #' @return \link[base]{data.frame}
 #' | column | data type              |
@@ -19,7 +22,8 @@
 #' \dontrun{
 #'   pathData <- formatSunburstData(
 #'     filePath = "output/treatmentPathways.csv",
-#'     indexYear = NA
+#'     indexYear = NA,
+#'     studyName = "Viral_Sinusitis"
 #'   )
 #'   
 #'   createSunburstPlot(
@@ -28,7 +32,7 @@
 #'     fileName = "sunburst.html"
 #'   )
 #' }
-formatSunburstData <- function(filePath, indexYear) {
+formatSunburstData <- function(filePath, indexYear, studyName = NULL) {
   dat <- read.csv(filePath)
   
   if (is.na(indexYear)) {
@@ -37,6 +41,11 @@ formatSunburstData <- function(filePath, indexYear) {
   } else {
     dat <- dat %>%
       dplyr::filter(index_year == indexYear)
+  }
+  
+  if (!is.null(studyName)) {
+    dat <- dat %>%
+      dplyr::filter(.data$studyName == studyName)
   }
 
   pathData <- dplyr::bind_rows(lapply(seq_len(nrow(dat)), function(i) {
