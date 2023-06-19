@@ -188,10 +188,16 @@ dataSettings <- createDataSettings(
 
 ### saveSettings
 ```{r saveSettings, warning=FALSE}
+tempOutput <- file.path(tempdir(), "output")
+tempTemp <- file.path(tempdir(), "temp")
+
+dir.create(tempOutput)
+dir.create(tempTemp)
+
 saveSettings <- createSaveSettings(
   databaseName = "Eunomia",
-  rootFolder = tempdir(),
-  outputFolder = "output"
+  rootFolder = tempTemp,
+  outputFolder = tempOutput
 )
 ```
 1. **databaseName**: Character string specifying the name of the database.
@@ -219,7 +225,6 @@ exitCohorts <- cohortsGenerated %>%
   filter(cohortName == "Death") %>%
   select(cohortId, cohortName)
 ```
-
 
 ```{r cohortSettings}
 cohortSettings <- createCohortSettings(
@@ -276,13 +281,13 @@ Optionally we can add another pathway analysis. Lets say for our analysis we wan
 6. And most importantly we must name our study.
 
 In this example we will change some of the settings: 
-```{r addPathwayAnalysis, eval=FALSE}
+```{r addPathwayAnalysis}
 pathwaySettings <- addPathwayAnalysis(
   pathwaySettings = pathwaySettings,
   targetCohortIds = targetCohort$cohortId,
   eventCohortIds = eventCohorts$cohortId[-1],
   # 6. Name of are new study
-  studyName = "someOtherCoolParameters",
+  studyName = "Viral_Sinusitis_2",
   # 1. Minimum duration of 14 days.
   minEraDuration = 14,
   # 2. Collapse two eras if they are 21 days apart.
@@ -324,9 +329,10 @@ generateOutput(saveSettings = saveSettings)
 1. **saveSettings**: `saveSettings` object.
 
 ### Sunburst plot
-```{r}
+```{r eval=FALSE}
 sunburstData <- TreatmentPatterns::formatSunburstData(
   filePath = file.path(saveSettings$outputFolder, "freqPerYear.csv"),
+  studyName = "Viral_Sinusitis",
   indexYear = "no year"
 )
 
@@ -342,12 +348,14 @@ webshot2::webshot(
   selector = "svg", vwidth = 1200
 )
 ```
+![sunburstPlot](../man/figures/sunburstplot.png)
 
-```{r}
+```{r sankeyDiagram, eval=FALSE}
 sankeyData <- read.csv(file.path(saveSettings$outputFolder, "freqPerYear.csv"))
 
 createSankeyDiagram(
   data = sankeyData,
+  studyName = "Viral_Sinusitis",
   groupCombinations = FALSE,
   outputFolder = "output"
 )
@@ -358,3 +366,4 @@ exportFigure(
   selector = "svg"
 )
 ```
+![sankeyDiagram](../man/figures/sankeydiagram.png)

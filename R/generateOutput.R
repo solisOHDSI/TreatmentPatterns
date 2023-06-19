@@ -164,17 +164,17 @@ generateOutput <- function(saveSettings) {
 #'
 #' Get treatment pathways for generating aggregate output.
 #'
-#' @param outputFolder
-#'     Path to the output folder.
-#' @param tempFolder
-#'     Path to the temp folder.
-#' @param databaseName
-#'     Name of the database that will appear in the results.
-#' @param studyName
-#'     Name for the study corresponding to the current settings.
-#' @param minCellCount
-#'     Minimum number of persons with a specific treatment pathway for the
-#'     pathway to be included in analysis.
+#' @param outputFolder (\link[base]{character})
+#' Path to the output folder.
+#' @param tempFolder (\link[base]{character})
+#' Path to the temp folder.
+#' @param databaseName (\link[base]{character})
+#' Name of the database that will appear in the results.
+#' @param studyName (\link[base]{character})
+#' Name for the study corresponding to the current settings.
+#' @param minCellCount (\link[base]{numeric})
+#' Minimum number of persons with a specific treatment pathway for the pathway
+#' to be included in analysis.
 #'
 #' @return List with two dataframes.
 getPathways <- function(
@@ -190,7 +190,8 @@ getPathways <- function(
         tempFolder,
         studyName,
         paste0(databaseName, "_", studyName, "_paths.csv")))
-      )
+      ) %>%
+      mutate(studyName = studyName)
   }, error = function(e) {
     warning(
       glue::glue("Data is empty for study settings {studyName}"))
@@ -478,7 +479,8 @@ outputDurationEras <- function(
       studyName,
       paste0(databaseName, "_", studyName, "_event_seq_processed.csv")
     )
-  ))
+  )) %>%
+    mutate(studyName = studyName)
 
   # Remove unnessary columns
   columns <- c("duration_era", "event_seq", "event_cohort_name")
@@ -712,7 +714,8 @@ doMinCellCount <- function(
       tempFolder,
       studyName,
       paste0(databaseName, "_", studyName, "_summary_cnt.csv")
-    ))
+    )) %>%
+    mutate(studyName = studyName)
 
   sumAll <- as.integer(summaryCounts[
     summaryCounts$index_year == "Number of persons in target cohort NA", "N"
@@ -935,7 +938,7 @@ inputSunburstPlot <- function(
         tempFolder,
         studyName,
         paste0(databaseName, "_", studyName, "_summary_cnt.csv"))
-    )
+    ) %>% mutate(studyName = studyName)
 
     if (indexYear == "all") {
       noPath <- as.integer(summaryCounts[
