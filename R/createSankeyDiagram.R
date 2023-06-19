@@ -60,15 +60,16 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 
 #' createSankeyDiagram
 #'
-#' @param data
-#'     Dataframe with event cohorts of the target cohort in different columns.
-#' @param outputFolder
-#'     Path to the output folder.
-#' @param groupCombinations
-#'     Select to group all non-fixed combinations in one category "other" in
-#'     the sunburst plot.
-#' @param fileName
-#'     File name of the html-file to output.
+#' @param data (\link[base]{data.frame})
+#' Data frame with event cohorts of the target cohort in different columns.
+#' @param studyName (\link[base]{character})
+#' Name of the study, specified in the `pathwaySerttings` object.
+#' @param outputFolder (\link[base]{character})
+#' Path to the output folder.
+#' @param groupCombinations (\link[base]{logical})
+#' Select to group all non-fixed combinations in one category "other" in the sunburst plot.
+#' @param fileName (\link[base]{character})
+#' File name of the html-file to output.
 #'
 #' @export
 #'
@@ -77,16 +78,23 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #' @examples \dontrun{
 #'   creaeSankeyDiagram(
 #'     data = read.csv("freqPerYear.csv"),
+#'     studyName = "Viral_Sinusitis",
 #'     groupCombinations = FALSE,
 #'     outputFolder = "output")
 #' }
 createSankeyDiagram <- function(
     data,
+    studyName = NULL,
     outputFolder,
     groupCombinations,
     fileName = "sankeyDiagram.html") {
   # Group non-fixed combinations in one group according to groupCobinations
   data <- groupInfrequentCombinations(data, groupCombinations)
+  
+  if (!is.null(studyName)) {
+    data <- data %>%
+      dplyr::filter(.data$studyName == studyName)
+  }
   
   # Define stop treatment
   data[is.na(data)] <- "Stopped"
