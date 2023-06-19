@@ -582,14 +582,12 @@ doCreateTreatmentHistory <- function(
   andromeda$lagData <- andromeda$currentCohorts %>%
     dplyr::group_by(.data$person_id, .data$event_cohort_id) %>%
     dplyr::select("event_end_date") %>%
-    collect() %>%
-    lag()
+    dplyr::collect() %>%
+    dplyr::lag() %>%
+    dplyr::rename(lag_variable = event_end_date)
   
-  andromeda$currentCohorts %>%
-    dplyr::inner_join(andromeda$lagData %>% select("person_id", "event_cohort_id"), by = "person_id")
-  
-  andromeda$currentCohorts %>%
-    mutate(lag_variable = andromeda$lagData$event_end_date)
+  andromeda$currentCohorts <- andromeda$currentCohorts %>%
+    dplyr::inner_join(andromeda$lagData %>% select("person_id", "lag_variable"), by = "person_id")
   
   # currentCohorts[,
   #   gap_same := difftime(start_date, lag_variable, units = "days"), ]
@@ -909,7 +907,7 @@ doCombinationWindow <- function(
     treatmentHistory$event_cohort_id)
 
   # Find which rows contain some overlap
-  treatmentHistory <- TreatmentPatterns:::selectRowsCombinationWindow(treatmentHistory)
+  treatmentHistory <- selectRowsCombinationWindow(treatmentHistory)
 
   # While rows that need modification exist:
   iterations <- 1
