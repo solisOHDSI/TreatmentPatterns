@@ -102,7 +102,7 @@ TreatmentPatterns::writeCohortTable(
 
 connection <- DatabaseConnector::connect(dataSettings$connectionDetails)
 
-fullCohorts <- data.table::as.data.table(TreatmentPatterns::extractCohortTable(
+fullCohorts <- dplyr::tibble(TreatmentPatterns::extractCohortTable(
   connection = connection,
   resultsSchema = dataSettings$resultSchema,
   cohortTableName = dataSettings$cohortTable,
