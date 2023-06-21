@@ -450,12 +450,17 @@ information about our cohorts.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Select everything BUT Viral Sinusitis cohorts</span></span>
 <span><span class="va">eventCohorts</span> <span class="op">&lt;-</span> <span class="va">cohortsGenerated</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohortName</span> <span class="op">!=</span> <span class="st">"ViralSinusitis"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohortName</span> <span class="op">!=</span> <span class="st">"ViralSinusitis"</span> <span class="op">&amp;</span> <span class="va">cohortName</span> <span class="op">!=</span> <span class="st">"Death"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cohortId</span>, <span class="va">cohortName</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">exitCohorts</span> <span class="op">&lt;-</span> <span class="va">cohortsGenerated</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohortName</span> <span class="op">==</span> <span class="st">"Death"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cohortId</span>, <span class="va">cohortName</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cohortSettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createCohortSettings.html">createCohortSettings</a></span><span class="op">(</span></span>
 <span>  targetCohorts <span class="op">=</span> <span class="va">targetCohort</span>,</span>
-<span>  eventCohorts <span class="op">=</span> <span class="va">eventCohorts</span></span>
+<span>  eventCohorts <span class="op">=</span> <span class="va">eventCohorts</span>,</span>
+<span>  exitCohorts <span class="op">=</span> <span class="va">exitCohorts</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>
@@ -583,7 +588,7 @@ sunburst plot</td>
 <div class="float">
 <img src="../reference/figures/pathwaysettings.png" alt="pathwaySettings"><div class="figcaption">pathwaySettings</div>
 </div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathwaySettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createPathwaySettings.html">createPathwaySettings</a></span><span class="op">(</span></span>
 <span>  cohortSettings <span class="op">=</span> <span class="va">cohortSettings</span>,</span>
 <span>  studyName <span class="op">=</span> <span class="st">"Viral_Sinusitis"</span></span>
@@ -619,7 +624,7 @@ them.</li>
 <li>And most importantly we must name our study.</li>
 </ol>
 <p>In this example we will change some of the settings:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathwaySettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addPathwayAnalysis.html">addPathwayAnalysis</a></span><span class="op">(</span></span>
 <span>  pathwaySettings <span class="op">=</span> <span class="va">pathwaySettings</span>,</span>
 <span>  targetCohortIds <span class="op">=</span> <span class="va">targetCohort</span><span class="op">$</span><span class="va">cohortId</span>,</span>
@@ -658,33 +663,6 @@ minEraDuration, combinationWindow, eraCollapseSize, maxPathLength.</li>
 <h2 id="constructing-pathways-and-reviewing-output">Constructing pathways and reviewing output<a class="anchor" aria-label="anchor" href="#constructing-pathways-and-reviewing-output"></a>
 </h2>
 <div class="section level3">
-<h3 id="writecohorttable">writeCohortTable<a class="anchor" aria-label="anchor" href="#writecohorttable"></a>
-</h3>
-<p>writeCohortTable writes the cohort table and the cohortsToCreate
-table to our output folder</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/writeCohortTable.html">writeCohortTable</a></span><span class="op">(</span></span>
-<span>  saveSettings <span class="op">=</span> <span class="va">saveSettings</span>,</span>
-<span>  cohortSettings <span class="op">=</span> <span class="va">cohortSettings</span>,</span>
-<span>  dataSettings <span class="op">=</span> <span class="va">dataSettings</span>,</span>
-<span>  tableName <span class="op">=</span> <span class="va">cohortTable</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<ol style="list-style-type: decimal">
-<li>
-<strong>saveSettings</strong>: <code>saveSettings</code>
-object.</li>
-<li>
-<strong>cohortSettings</strong>: <code>cohortSettings</code>
-object.</li>
-<li>
-<strong>dataSettings</strong>: <code>dataSettings</code>
-object.</li>
-<li>
-<strong>tableName</strong>: Table name of the cohort table in the
-database.</li>
-</ol>
-</div>
-<div class="section level3">
 <h3 id="constructpathways">constructPathways<a class="anchor" aria-label="anchor" href="#constructpathways"></a>
 </h3>
 <p>After our settings are specified we can construct our pathways.</p>
@@ -692,7 +670,8 @@ database.</li>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/constructPathways.html">constructPathways</a></span><span class="op">(</span></span>
 <span>  dataSettings <span class="op">=</span> <span class="va">dataSettings</span>,</span>
 <span>  pathwaySettings <span class="op">=</span> <span class="va">pathwaySettings</span>,</span>
-<span>  saveSettings <span class="op">=</span> <span class="va">saveSettings</span></span>
+<span>  saveSettings <span class="op">=</span> <span class="va">saveSettings</span>,</span>
+<span>  cohortSettings <span class="op">=</span> <span class="va">cohortSettings</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <ol style="list-style-type: decimal">
 <li>
@@ -703,7 +682,10 @@ object.</li>
 object.</li>
 <li>
 <strong>saveSettings</strong>: <code>saveSettings</code>
-object.f</li>
+object.</li>
+<li>
+<strong>cohortSettings</strong>: <code>cohortSettings</code>
+object.</li>
 </ol>
 </div>
 <div class="section level3">
@@ -721,8 +703,16 @@ files.</p>
 <pre><code><span><span class="co">## doMinCellCount done</span></span></code></pre>
 <pre><code><span><span class="co">## preprocessSunburstData done</span></span>
 <span><span class="co">## preprocessSunburstData done</span></span></code></pre>
+<pre><code><span><span class="co">## outputTreatedPatients done</span></span>
+<span><span class="co">## outputTreatedPatients done</span></span></code></pre>
+<pre><code><span><span class="co">## outputDurationEras done</span></span></code></pre>
+<pre><code><span><span class="co">## Remove 4 paths with too low frequency (without year)</span></span></code></pre>
+<pre><code><span><span class="co">## Remove 64 paths with too low frequency (with year)</span></span></code></pre>
+<pre><code><span><span class="co">## doMinCellCount done</span></span></code></pre>
+<pre><code><span><span class="co">## preprocessSunburstData done</span></span>
+<span><span class="co">## preprocessSunburstData done</span></span></code></pre>
 <pre><code><span><span class="co">## Zipping: D:\Users\mvankessel\Documents\R-Packages\TreatmentPatterns\vignettes\output</span></span>
-<span><span class="co">## to: C:\Users\mvankessel\AppData\Local\Temp\RtmpEtpEM6\output.zip</span></span></code></pre>
+<span><span class="co">## to: C:\Users\mvankessel\AppData\Local\Temp\RtmpSwl1Ut\output.zip</span></span></code></pre>
 <ol style="list-style-type: decimal">
 <li>
 <strong>saveSettings</strong>: <code>saveSettings</code>
@@ -732,7 +722,7 @@ object.</li>
 <div class="section level3">
 <h3 id="sunburst-plot">Sunburst plot<a class="anchor" aria-label="anchor" href="#sunburst-plot"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sunburstData</span> <span class="op">&lt;-</span> <span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/formatSunburstData.html">formatSunburstData</a></span><span class="op">(</span></span>
 <span>  filePath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">saveSettings</span><span class="op">$</span><span class="va">outputFolder</span>, <span class="st">"freqPerYear.csv"</span><span class="op">)</span>,</span>
 <span>  indexYear <span class="op">=</span> <span class="st">"no year"</span></span>
@@ -749,8 +739,8 @@ object.</li>
 <span>  file <span class="op">=</span> <span class="st">"output/sunburstPlot.png"</span>,</span>
 <span>  selector <span class="op">=</span> <span class="st">"svg"</span>, vwidth <span class="op">=</span> <span class="fl">1200</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="DarwinTreatmentPatternsStudy_files/figure-html/unnamed-chunk-1-1.png" width="700"></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<p><img src="DarwinTreatmentPatternsStudy_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sankeyData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">saveSettings</span><span class="op">$</span><span class="va">outputFolder</span>, <span class="st">"freqPerYear.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/createSankeyDiagram.html">createSankeyDiagram</a></span><span class="op">(</span></span>
@@ -764,7 +754,7 @@ object.</li>
 <span>  outputPath <span class="op">=</span> <span class="st">"output/sankeyDiagram.png"</span>,</span>
 <span>  selector <span class="op">=</span> <span class="st">"svg"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="DarwinTreatmentPatternsStudy_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<p><img src="DarwinTreatmentPatternsStudy_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 </div>
 </div>
   </div>

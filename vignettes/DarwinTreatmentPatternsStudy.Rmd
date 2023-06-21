@@ -276,7 +276,7 @@ Optionally we can add another pathway analysis. Lets say for our analysis we wan
 6. And most importantly we must name our study.
 
 In this example we will change some of the settings: 
-```{r addPathwayAnalysis, eval=FALSE}
+```{r addPathwayAnalysis, eval=TRUE}
 pathwaySettings <- addPathwayAnalysis(
   pathwaySettings = pathwaySettings,
   targetCohortIds = targetCohort$cohortId,
