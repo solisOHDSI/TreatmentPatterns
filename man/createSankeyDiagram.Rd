@@ -6,20 +6,27 @@
 \usage{
 createSankeyDiagram(
   data,
+  studyName = NULL,
   outputFolder,
   groupCombinations,
   fileName = "sankeyDiagram.html"
 )
 }
 \arguments{
-\item{data}{Dataframe with event cohorts of the target cohort in different columns.}
+\item{data}{(\link[base]{data.frame})
+Data frame with event cohorts of the target cohort in different columns.}
 
-\item{outputFolder}{Path to the output folder.}
+\item{studyName}{(\link[base]{character})
+Name of the study, specified in the \code{pathwaySerttings} object.}
 
-\item{groupCombinations}{Select to group all non-fixed combinations in one category "other" in
-the sunburst plot.}
+\item{outputFolder}{(\link[base]{character})
+Path to the output folder.}
 
-\item{fileName}{File name of the html-file to output.}
+\item{groupCombinations}{(\link[base]{logical})
+Select to group all non-fixed combinations in one category "other" in the sunburst plot.}
+
+\item{fileName}{(\link[base]{character})
+File name of the html-file to output.}
 }
 \description{
 createSankeyDiagram
@@ -28,6 +35,7 @@ createSankeyDiagram
 \dontrun{
   creaeSankeyDiagram(
     data = read.csv("freqPerYear.csv"),
+    studyName = "Viral_Sinusitis",
     groupCombinations = FALSE,
     outputFolder = "output")
 }

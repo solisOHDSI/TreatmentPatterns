@@ -29,14 +29,14 @@ out <- TreatmentPatterns:::getPathways(
   minCellCount = 5)
 
 test_that("item 1", {
-  expect_equal(ncol(out[[1]]), expected = 3)
+  expect_equal(ncol(out[[1]]), expected = 4)
   expect_equal(typeof(out[[1]]$freq), "integer")
   expect_equal(typeof(out[[1]]$event_cohort_name1), "character")
   expect_equal(typeof(out[[1]]$event_cohort_name2), "character")
 })
 
 test_that("item 2", {
-  expect_equal(ncol(out[[2]]), expected = 4)
+  expect_equal(ncol(out[[2]]), expected = 5)
   expect_equal(typeof(out[[2]]$freq), "integer")
   expect_equal(typeof(out[[2]]$event_cohort_name1), "character")
   expect_equal(typeof(out[[2]]$event_cohort_name2), "character")

@@ -4,15 +4,18 @@
 \alias{formatSunburstData}
 \title{formatSunburstData}
 \usage{
-formatSunburstData(filePath, indexYear)
+formatSunburstData(filePath, indexYear, studyName = NULL)
 }
 \arguments{
-\item{filePath}{\link[base]{character}\cr
+\item{filePath}{(\link[base]{character})
 Path to file containing \code{event_cohort_name1}, \code{event_cohort_name2},
 \code{event_cohort_name3}, \code{event_cohort_name4}, \code{event_cohort_name5} columns.}
 
-\item{indexYear}{\link[base]{integer} or \link[base]{character}\cr
-Index year to filter on.}
+\item{indexYear}{(\link[base]{integer} | \link[base]{character})
+Index year to filter on. "no year" may be specified, or the year as an integer.}
+
+\item{studyName}{(\link[base]{character})
+Name of the study, specified in the \code{pathwaySerttings} object.}
 }
 \value{
 \link[base]{data.frame}
@@ -27,7 +30,8 @@ Function to format data from files containing event_cohort_name columns.
 \dontrun{
   pathData <- formatSunburstData(
     filePath = "output/treatmentPathways.csv",
-    indexYear = NA
+    indexYear = NA,
+    studyName = "Viral_Sinusitis"
   )
   
   createSunburstPlot(
