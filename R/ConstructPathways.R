@@ -1052,12 +1052,10 @@ doCombinationWindow <- function(
           .default = .data$check_duration
         ))
 
-    treatmentHistory <- treatmentHistory %>% dplyr::bind_rows(addRowsFRFS)
-    
-    treatmentHistory <- treatmentHistory %>% dplyr::bind_rows(addRowsLRFS)
-
     treatmentHistory <- treatmentHistory %>%
-      dplyr::mutate(duration_era = difftime(event_end_date, event_start_date, units = "days"))
+      dplyr::bind_rows(addRowsFRFS, addRowsLRFS) %>%
+      dplyr::mutate(
+        duration_era = difftime(event_end_date, event_start_date, units = "days"))
   
     treatmentHistory <- doStepDuration(
       treatmentHistory, minPostCombinationDuration)
@@ -1209,49 +1207,68 @@ selectRowsCombinationWindow <- function(treatmentHistory) {
 #'
 #' doFilterTreatments(treatmentHistory = th, filterTreatments = "All")}
 doFilterTreatments <- function(treatmentHistory, filterTreatments) {
-  # Assertions
-  checkmate::assertDataFrame(x = treatmentHistory)
-  checkmate::assertChoice(
-    x = filterTreatments,
-    choices = c("First", "Changes", "All"),
-    null.ok = FALSE
-  )
-
+  TH <- doCombinationWindowTH
+  DT <- doCombinationWindowTH_OLD
   # Order treatmentHistory by person_id, event_start_date, event_end_date
-  treatmentHistory <- treatmentHistory[
+  DT <- DT[
     order(person_id, event_start_date, event_end_date), ]
 
+  TH <- TH %>%
+    dplyr::arrange(.data$person_id, .data$event_start_date, .data$event_end_date)
+  
+  identical(DT$person_id, TH$person_id)
+  identical(DT$event_start_date, TH$event_start_date)
+  identical(DT$event_end_date, TH$event_end_date)
+  
+  DT1 <- DT
+  DT2 <- DT
+  
+  TH1 <- TH
+  TH2 <- TH
   if (filterTreatments != "All") {
     # Order the combinations
     message("Order the combinations.")
-    combi <- grep("+", treatmentHistory$event_cohort_id, fixed = TRUE)
-
-    if (length(combi) != 0) {
+    # combi_DT <- grep("+", DT$event_cohort_id, fixed = TRUE)
+    combi_TH <- grep("+", TH$event_cohort_id, fixed = TRUE)
+    
+    identical(combi_DT, combi_TH)
+    
+    if (length(combi) > 0) {
       conceptIds <- strsplit(
-        x = treatmentHistory$event_cohort_id[combi],
+        x = TH$event_cohort_id[combi_TH],
         split = "+",
         fixed = TRUE)
-
-      treatmentHistory$event_cohort_id[combi] <- sapply(
+      
+      TH$event_cohort_id[combi_TH] <- sapply(
         X = conceptIds,
         FUN = function(x) {
           paste(sort(x), collapse = "+")})
     }
-
-    if (filterTreatments == "First") {
-      treatmentHistory <- treatmentHistory[
-        , head(.SD, 1),
-        by = .(person_id, event_cohort_id)]
-
-    } else if (filterTreatments == "Changes") {
-      # Group all rows per person for which previous treatment is same
-      tryCatch({
-        treatmentHistory <- treatmentHistory[
-          , group := rleid(person_id, event_cohort_id)]
-        }, error = function(e) {
-          print(paste0(
-            "Check if treatmentHistory contains sufficient records: ", e))
-          })
+  } else if (filterTreatments == "First") {
+    # DT1 <- DT1[, head(.SD, 1), by = .(person_id, event_cohort_id)]
+    
+    TH1 <- TH1 %>%
+      dplyr::group_by(.data$person_id, .data$event_cohort_id) %>%
+      filter(row_number() == 1)
+    
+    # identical(DT1$person_id, x$person_id)
+    # identical(DT1$event_cohort_id, x$event_cohort_id)
+    # identical(DT1$index_year, x$index_year)
+    # identical(DT1$event_start_date, x$event_start_date)
+    # identical(DT1$event_end_date, x$event_end_date)
+    # identical(DT1$duration_era, x$duration_era)
+  } else if (filterTreatments == "Changes") {
+    # Group all rows per person for which previous treatment is same
+    tryCatch({
+      DT2 <- DT2[, group := data.table::rleid(person_id, event_cohort_id)]
+      
+      # TH %>%
+      #   dplyr::mutate(group = with(rle()), rep(seq_along(lengths), lengths)))
+      
+      }, error = function(e) {
+        print(paste0(
+          "Check if treatmentHistory contains sufficient records: ", e))
+      })
 
       # Remove all rows with same sequential treatments
       treatmentHistory <- treatmentHistory[
@@ -1265,7 +1282,6 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
       warning(
         "filterTreatments input incorrect, return all event cohorts ('All')")
     }
-  }
 
   message(glue::glue("After filterTreatments: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
