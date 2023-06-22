@@ -646,19 +646,18 @@ doEraDuration <- function(treatmentHistory, minEraDuration) {
 #'     minPostCombinationDuration filtered out.
 doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
   # Assertions
-  checkmate::assertDataFrame(x = treatmentHistory)
-  checkmate::assertNumeric(
-    x = minPostCombinationDuration,
-    lower = 0,
-    finite = TRUE,
-    len = 1,
-    null.ok = FALSE
-  )
+  # checkmate::assertDataFrame(x = treatmentHistory)
+  # checkmate::assertNumeric(
+  #   x = minPostCombinationDuration,
+  #   lower = 0,
+  #   finite = TRUE,
+  #   len = 1,
+  #   null.ok = FALSE
+  # )
 
-  treatmentHistory <- subset(
-    x = treatmentHistory,
-    duration_era >= minPostCombinationDuration | is.na(duration_era))
-
+  treatmentHistory <- treatmentHistory %>%
+    subset(duration_era >= minPostCombinationDuration | is.na(duration_era))
+  
   message(
     glue::glue("After minPostCombinationDuration: {nrow(treatmentHistory)}"))
   return(treatmentHistory)
@@ -1146,76 +1145,150 @@ doCombinationWindow <- function(
     identical(DT$event_end_date, TH$event_end_date)
     identical(DT$check_duration, TH$check_duration)
     
-    
     # Change start date of current row -> check minPostCombinationDuration
-    treatmentHistory[
+    DT[
       combination_FRFS == 1,
       c("event_start_date", "check_duration") := list(
         event_end_date_previous, 1)]
     
-    treatmentHistory <- treatmentHistory %>%
-      dplyr::group_by(tmp = combination_FRFS == 1) %>%
+    TH <- TH %>%
       dplyr::mutate(
-        èvent_start_date = ifelse(.data$tmp, .data$event_end_date_previous, NA),
-        check_duration = ifelse(.data$tmp, 1, NA)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-"tmp")
+        event_start_date = dplyr::case_when(
+          .data$combination_FRFS == 1 ~ .data$event_end_date_previous,
+          .default = .data$event_start_date),
+        check_duration = dplyr::case_when(
+          .data$combination_FRFS == 1 ~ 1,
+          .default = .data$check_duration))
+      
+    identical(DT$event_start_date, TH$event_start_date)
+    identical(DT$check_duration, TH$check_duration)
 
     # Case: combination_LRFS
     # Change current row to combination -> no minPostCombinationDuration
-    treatmentHistory[
+    DT[
       combination_LRFS == 1,
       event_cohort_id := paste0(
         event_cohort_id, "+", event_cohort_id_previous)]
-
+    
+    TH <- TH %>%
+      mutate(event_cohort_id = case_when(
+        combination_LRFS == 1 ~ paste0(event_cohort_id, "+", event_cohort_id_previous),
+        .default = event_cohort_id
+      ))
+    
+    identical(DT$event_cohort_id, TH$event_cohort_id)
+    
     # Add a new row with end date (r) and end date (r-1) to split drug era
     # (copy previous row + change end date) -> check minPostCombinationDuration
-    addRowsLRFS <- treatmentHistory[
+    addRowsLRFS_DT <- DT[
       data.table::shift(combination_LRFS, type = "lead") == 1, ]
 
-    addRowsLRFS[
+    addRowsLRFS_TH <- TH %>%
+      filter(lead(combination_LRFS) == 1)
+    
+    identical(addRowsLRFS_DT$person_id, addRowsLRFS_TH$person_id)
+    identical(addRowsLRFS_DT$index_year, addRowsLRFS_TH$index_year)
+    identical(addRowsLRFS_DT$event_cohort_id, addRowsLRFS_TH$event_cohort_id)
+    identical(addRowsLRFS_DT$event_start_date, addRowsLRFS_TH$event_start_date)
+    
+    addRowsLRFS_DT[
       , c("event_start_date", "check_duration") := list(
         event_end_date_next, 1)]
 
+    addRowsLRFS_TH <- addRowsLRFS_TH %>%
+      mutate(
+        event_start_date = event_end_date_next,
+        check_duration = 1)
+    
+    identical(addRowsLRFS_DT$event_start_date, addRowsLRFS_TH$event_start_date)
+    identical(addRowsLRFS_DT$check_duration, addRowsLRFS_TH$check_duration)
+    
     # Change end date of previous row -> check minPostCombinationDuration
-    treatmentHistory[
+    DT[
       data.table::shift(combination_LRFS, type = "lead") == 1,
       c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
-
+    
+    TH <- TH %>%
+      dplyr::mutate(
+        event_end_date = dplyr::case_when(
+          dplyr::lead(.data$combination_LRFS) == 1 ~ .data$event_start_date_next,
+          .default = .data$event_end_date),
+        check_duration = dplyr::case_when(
+          dplyr::lead(.data$combination_LRFS) == 1 ~ 1,
+          .default = .data$check_duration
+        ))
+    
+    identical(DT$event_end_date, TH$event_end_date)
+    identical(DT$check_duration, TH$check_duration)
+    
     # Combine all rows and remove helper columns
-    treatmentHistory <- rbind(treatmentHistory, addRowsFRFS, fill = TRUE)
-    treatmentHistory <- rbind(treatmentHistory, addRowsLRFS)
+    DT <- rbind(DT, addRowsFRFS_DT, fill = TRUE)
+    TH <- TH %>% dplyr::bind_rows(addRowsFRFS_TH)
+    
+    identical(DT$person_id, TH$person_id)
+    identical(DT$event_start_date, TH$event_start_date)
+    identical(DT$event_cohort_id, TH$event_cohort_id)
+    
+    DT <- rbind(DT, addRowsLRFS_DT)
+    TH <- TH %>% dplyr::bind_rows(addRowsLRFS_TH)
+    
+    identical(DT$person_id, TH$person_id)
+    identical(DT$event_start_date, TH$event_start_date)
+    identical(DT$event_cohort_id, TH$event_cohort_id)
 
     # Re-calculate duration_era
-    treatmentHistory[
+    DT[
       , duration_era := difftime(
         event_end_date, event_start_date, units = "days")]
 
+    TH <- TH %>%
+      dplyr::mutate(duration_era = difftime(event_end_date, event_start_date, units = "days"))
+    
+    identical(DT$duration_era, TH$duration_era)
+    
     # Check duration drug eras before/after generated combination treatments
-    treatmentHistory <- doStepDuration(
-      treatmentHistory, minPostCombinationDuration)
+    DT <- doStepDuration(
+      DT, minPostCombinationDuration)
 
+    TH <- doStepDuration(
+      TH, minPostCombinationDuration)
+    
+    identical(TH$person_id, DT$person_id)
+    
     # Preparations for next iteration
-    treatmentHistory <- treatmentHistory[
+    DT <- DT[
       , c("person_id", "index_year", "event_cohort_id",
          "event_start_date", "event_end_date", "duration_era")]
 
-    treatmentHistory <- selectRowsCombinationWindow(treatmentHistory)
+    TH <- TH %>%
+      select("person_id", "index_year", "event_cohort_id",
+             "event_start_date", "event_end_date", "duration_era")
+    
+    identical(nrow(DT), nrow(TH))
+    identical(ncol(DT), ncol(TH))
+    
+    DT <- data.table::data.table(selectRowsCombinationWindow(DT))
+    TH <- selectRowsCombinationWindow(TH)
+    
+    identical(DT$GAP_PREVIOUS, TH$GAP_PREVIOUS)
+    identical(DT$SELECTED_ROWS, TH$SELECTED_ROWS)
+    
     iterations <- iterations + 1
 
-    gc()
+    invisible(gc())
   }
 
-  message(glue::glue("After combinationWindow: {nrow(treatmentHistory)}"))
+  message(glue::glue("After combinationWindow: {nrow(TH)}"))
 
-  # treatmentHistory[, GAP_PREVIOUS := NULL]
-  treatmentHistory <- treatmentHistory %>%
-    dplyr::mutate(
-      GAP_PREVIOUS = NULL,
-      SELECTED_ROWS = NULL)
+  DT[, GAP_PREVIOUS := NULL]
+  DT[, SELECTED_ROWS := NULL]
   
-  # treatmentHistory[, SELECTED_ROWS := NULL]
+  x <- TH %>%
+    select(-"GAP_PREVIOUS", -"SELECTED_ROWS")
 
+  identical(ncol(DT), ncol(x))
+  identical(names(DT), names(x))
+  
   time2 <- Sys.time()
   message(glue::glue(
     "Time needed to execute combination window {difftime(time2, time1, units = 'mins')}"))
