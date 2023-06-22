@@ -1096,62 +1096,55 @@ doCombinationWindow <- function(
       type = "lead") == 1,
       event_end_date := event_start_date_next]
     
-    TH %>%
-      dplyr::mutate(event_end_date = ifelse(
-        test = dplyr::lead(.data$switch) == 1,
-        yes = .data$event_start_date_next,
-        no = event_end_date)) %>%
-      select("event_end_date")
-    
-    x <- TH %>%
+    TH <- TH %>%
       mutate(event_end_date = dplyr::case_when(
-        dplyr::lead(.data$switch) == 1 ~ .data$event_end_date_next,
-        dplyr::lead(.data$switch) != 1 ~ .data$event_end_date))
+        dplyr::lead(.data$switch) == 1 ~ .data$event_start_date_next,
+        .default = .data$event_end_date
+      ))
     
-    DT %>%
-      filter(switch == 1) %>%
-      select("person_id", "event_end_date", "event_end_date_next")
-    
-    DT %>%
-      filter(person_id == 1918)
-    
-    TH %>%
-      filter(person_id == 1918)
-    
-    DT$event_end_date[!DT$event_end_date == x$event_end_date]
-    x$event_end_date[!DT$event_end_date == x$event_end_date]
-    
-    identical(DT$event_end_date, x$event_end_date)
+    identical(TH$event_end_date, DT$event_end_date)
     
     # Case: combination_FRFS
     # Add a new row with start date (r) and end date (r-1) as combination (copy
     # current row + change end date + update concept id) -> no
     # minPostCombinationDuration
-    # addRowsFRFS <- treatmentHistory[combination_FRFS == 1, ]
-    addRowsFRFS <- treatmentHistory %>%
+    addRowsFRFS_DT <- DT[combination_FRFS == 1, ]
+    
+    addRowsFRFS_TH <- TH %>%
       filter(.data$combination_FRFS == 1)
-    # addRowsFRFS[, event_end_date := event_end_date_previous]
-    addRowsFRFS <- addRowsFRFS %>%
+    
+    identical(addRowsFRFS_DT$person_id, addRowsFRFS_TH$person_id)
+    identical(addRowsFRFS_DT$combination_FRFS, addRowsFRFS_TH$combination_FRFS)
+    
+    addRowsFRFS_DT[, event_end_date := event_end_date_previous]
+    
+    addRowsFRFS_TH <- addRowsFRFS_TH %>%
       mutate(event_end_date = .data$event_end_date_previous)
     
-    # addRowsFRFS[, event_cohort_id := paste0(
-    #   event_cohort_id, "+", event_cohort_id_previous)]
+    identical(addRowsFRFS_DT$event_end_date, addRowsFRFS_TH$event_end_date)
     
-    addRowsFRFS <- addRowsFRFS %>%
+    addRowsFRFS_DT[, event_cohort_id := paste0(
+      event_cohort_id, "+", event_cohort_id_previous)]
+    
+    addRowsFRFS_TH <- addRowsFRFS_TH %>%
       mutate(event_cohort_id = paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous))
-
-    # Change end date of previous row -> check minPostCombinationDuration
-    # treatmentHistory[
-    #   data.table::shift(combination_FRFS, type = "lead") == 1,
-    #   c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
     
-    treatmentHistory <- treatmentHistory %>%
-      dplyr::group_by(tmp = dplyr::lead(.data$combination_FRFS) == 1) %>%
-      dplyr::mutate(
-        event_end_date = ifelse(.data$tmp, list(event_start_date_next), NA),
-        check_duration = ifelse(.data$tmp, 1, NA)) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-"tmp")
+    identical(addRowsFRFS_DT$event_cohort_id, addRowsFRFS_TH$event_cohort_id)
+    
+    # Change end date of previous row -> check minPostCombinationDuration
+    DT[
+      data.table::shift(combination_FRFS, type = "lead") == 1,
+      c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
+    
+    TH <- TH %>%
+      mutate(
+        event_end_date = dplyr::case_when(
+          dplyr::lead(.data$combination_FRFS) == 1 ~ event_start_date_next,
+          .default = .data$event_end_date),
+        check_duration = dplyr::case_when(dplyr::lead(.data$combination_FRFS) == 1 ~ 1))
+    
+    identical(DT$event_end_date, TH$event_end_date)
+    identical(DT$check_duration, TH$check_duration)
     
     
     # Change start date of current row -> check minPostCombinationDuration
