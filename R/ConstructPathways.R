@@ -901,114 +901,58 @@ doCombinationWindow <- function(
     minPostCombinationDuration) {
   time1 <- Sys.time()
 
-  treatmentHistory <- doEraCollapseTH
-  DT <- doEraCollapseTH_OLD
-  
-  DT$event_cohort_id <- as.character(
-    DT$event_cohort_id)
-
   treatmentHistory <- treatmentHistory %>%
     dplyr::mutate(event_cohort_id = as.character(.data$event_cohort_id))
   
   # Find which rows contain some overlap
-  DT <- TreatmentPatterns:::selectRowsCombinationWindow(DT)
   treatmentHistory <- selectRowsCombinationWindow(treatmentHistory) %>%
     arrange(.data$person_id, .data$event_start_date, .data$event_end_date, .data$event_cohort_id)
   
-  identical(treatmentHistory$person_id, DT$person_id)
-  identical(treatmentHistory$index_year, DT$index_year)
-  identical(treatmentHistory$event_cohort_id, DT$event_cohort_id)
-  identical(treatmentHistory$event_start_date, DT$event_start_date)
-  identical(treatmentHistory$event_end_date, DT$event_end_date)
-  identical(treatmentHistory$type, DT$type)
-  identical(treatmentHistory$duration_era, DT$duration_era)
-  identical(treatmentHistory$GAP_PREVIOUS, DT$GAP_PREVIOUS)
-  identical(treatmentHistory$SELECTED_ROWS, DT$SELECTED_ROWS)
-  # 
-  # table(treatmentHistory$SELECTED_ROWS)
-  # table(DT$SELECTED_ROWS)
-  
-  sum(treatmentHistory$GAP_PREVIOUS, na.rm = TRUE) == sum(DT$GAP_PREVIOUS, na.rm = TRUE)
-  
   # While rows that need modification exist:
   iterations <- 1
-  # sum(DT$SELECTED_ROWS)
-  
-  TH <- treatmentHistory
-  DT <- data.table::data.table(treatmentHistory)
   
   while (sum(treatmentHistory$SELECTED_ROWS) != 0) {
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
-    DT[
-      SELECTED_ROWS == 1 &
-        (-GAP_PREVIOUS < combinationWindow &
-           !(-GAP_PREVIOUS == duration_era |
-               -GAP_PREVIOUS == data.table::shift(duration_era, type = "lag"))),
-        switch := 1]
-    
-    TH <- TH %>%
-      dplyr::group_by(
-        switch = as.numeric(
-          .data$SELECTED_ROWS == 1 &
-            (-.data$GAP_PREVIOUS < combinationWindow &
-               !(-.data$GAP_PREVIOUS == .data$duration_era |
-                   -GAP_PREVIOUS == dplyr::lag(.data$duration_era))))) %>%
-      arrange(.data$person_id, .data$event_start_date, .data$event_end_date)
-    
-    head(DT)
-    head(treatmentHistory)
-    
-    table(DT$switch)
-    table(TH$switch)
-    
-    # treatmentHistory %>%
-    #   filter(switch == 1)
-    # 
-    # DT %>%
-    #   filter(switch == 1)
+    treatmentHistory <- treatmentHistory %>%
+      mutate(switch = case_when(
+        .data$SELECTED_ROWS == 1 &
+          (-.data$GAP_PREVIOUS < combinationWindow &
+             !(-.data$GAP_PREVIOUS == .data$duration_era |
+                 -GAP_PREVIOUS == dplyr::lag(.data$duration_era))) ~ 1,
+        .default = 0
+      ))
     
     # For rows selected not in column switch ->
     # if treatmentHistory[r - 1, event_end_date] <=
     # treatmentHistory[r, event_end_date] ->
     # add column combination first received, first stopped
-    DT[
-      SELECTED_ROWS == 1 &
-        is.na(switch) &
-        data.table::shift(event_end_date, type = "lag") <= event_end_date,
-      combination_FRFS := 1]
     
-    TH <- TH %>%
-      mutate(combination_FRFS = ifelse(
-        test = SELECTED_ROWS == 1 &
-          switch == 0 &
-          dplyr::lag(event_end_date) <= event_end_date,
-        yes = 1,
-        no = 0))
-    
-    table(DT$combination_FRFS)
-    table(x$combination_FRFS)
+    # TODO: check if the following works:
+    treatmentHistory <- treatmentHistory %>%
+      mutate(combination_FRFS = case_when(
+        SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
+        .default = 0
+      ))
     
     # For rows selected not in column switch ->
     # if treatmentHistory[r - 1, event_end_date] >
     # treatmentHistory[r, event_end_date] ->
     # add column combination last received, first stopped
-    DT[
-      SELECTED_ROWS == 1 &
-        is.na(switch) &
-        data.table::shift(event_end_date, type = "lag") >
-        event_end_date, combination_LRFS := 1]
-    
-    TH <- TH %>%
-      mutate(combination_LRFS = ifelse(
-        test = SELECTED_ROWS == 1 &
-          switch == 0 &
-          dplyr::lag(event_end_date) > event_end_date,
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::mutate(combination_LRFS = ifelse(
+        test = .data$SELECTED_ROWS == 1 &
+          .data$switch == 0 &
+          dplyr::lag(.data$event_end_date) > .data$event_end_date,
         yes = 1,
         no = 0))
     
-    table(DT$combination_LRFS)
-    table(x$combination_LRFS)
+    # TODO: check if the following works:
+    # treatmentHistory %>%
+    #   dplyr::mutate(combination_LRFS = dplyr::case_when(
+    #     .data$SELECTED_ROWS == 1 & .data$switch == 0 & dplyr::lag(.data$event_end_date) > .data$event_end_date ~ 1,
+    #     .default = 0
+    #   ))
     
     message(glue::glue(
       "Selected {sum(treatmentHistory$SELECTED_ROWS)} out of {nrow(treatmentHistory)} rows\n",
@@ -1016,20 +960,13 @@ doCombinationWindow <- function(
       "Switches: {sum(!is.na(treatmentHistory$switch))}\n",
       "FRFS Combinations: {sum(!is.na(treatmentHistory$combination_FRFS))}\n",
       "LRFS Combinations: {sum(!is.na(treatmentHistory$combination_LRFS))}"))
-
-    sumSwitchCombDT <- sum(
-      sum(DT$switch, na.rm = TRUE),
-      sum(DT$combination_FRFS, na.rm = TRUE),
-      sum(DT$combination_LRFS, na.rm = TRUE))
     
     sumSwitchComb <- sum(
-      sum(TH$switch, na.rm = TRUE),
-      sum(TH$combination_FRFS, na.rm = TRUE),
-      sum(TH$combination_LRFS, na.rm = TRUE))
+      sum(treatmentHistory$switch, na.rm = TRUE),
+      sum(treatmentHistory$combination_FRFS, na.rm = TRUE),
+      sum(treatmentHistory$combination_LRFS, na.rm = TRUE))
     
-    sumSelectedRowsDT <- sum(DT$SELECTED_ROWS)
-    
-    sumSelectedRows <- sum(TH$SELECTED_ROWS)
+    sumSelectedRows <- sum(treatmentHistory$SELECTED_ROWS)
 
     if (sumSwitchComb != sumSelectedRows) {
       warning(paste0(
@@ -1042,116 +979,47 @@ doCombinationWindow <- function(
 
     # Do transformations for each of the three newly added columns
     # Construct helpers
-    DT$event_start_date_next <-
-      DT[,
-        data.table::shift(event_start_date, type = "lead"),
-        by = person_id][, 2]
     
-    TH <- TH %>%
-      group_by(person_id) %>%
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_start_date_next = dplyr::lead(.data$event_start_date))
     
-    identical(DT$event_start_date_next, TH$event_start_date_next)
-    
-    DT$event_end_date_previous <-
-      DT[,
-        data.table::shift(event_end_date, type = "lag"),
-        by = person_id][, 2]
-    
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_end_date_previous = dplyr::lag(.data$event_end_date))
-
-    identical(DT$event_end_date_previous, x$event_end_date_previous)
     
-    DT$event_end_date_next <-
-      DT[,
-        data.table::shift(event_end_date, type = "lead"),
-        by = person_id][, 2]
-    
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
-      dplyr::mutate(event_end_date_next = dplyr::lead(event_end_date))
-    
-    identical(DT$event_end_date_next, TH$event_end_date_next)
+      dplyr::mutate(event_end_date_next = dplyr::lead(.data$event_end_date))
 
-    DT$event_cohort_id_previous <-
-      DT[,
-        data.table::shift(event_cohort_id, type = "lag"),
-        by = person_id][, 2]
-
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_cohort_id_previous = dplyr::lag(.data$event_cohort_id)) %>%
       dplyr::ungroup()
     
-    identical(DT$event_cohort_id_previous, TH$event_cohort_id_previous)
-    
-    # Case: switch
-    # Change end treatmentHistory of previous row ->
-    # no minPostCombinationDuration
-    DT[data.table::shift(
-      switch,
-      type = "lead") == 1,
-      event_end_date := event_start_date_next]
-    
-    TH <- TH %>%
-      mutate(event_end_date = dplyr::case_when(
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::mutate(event_end_date = dplyr::case_when(
         dplyr::lead(.data$switch) == 1 ~ .data$event_start_date_next,
         .default = .data$event_end_date
       ))
     
-    identical(TH$event_end_date, DT$event_end_date)
+    addRowsFRFS <- treatmentHistory %>%
+      dplyr::filter(.data$combination_FRFS == 1)
     
-    # Case: combination_FRFS
-    # Add a new row with start date (r) and end date (r-1) as combination (copy
-    # current row + change end date + update concept id) -> no
-    # minPostCombinationDuration
-    addRowsFRFS_DT <- DT[combination_FRFS == 1, ]
+    addRowsFRFS <- addRowsFRFS %>%
+      dplyr::mutate(event_end_date = .data$event_end_date_previous)
     
-    addRowsFRFS_TH <- TH %>%
-      filter(.data$combination_FRFS == 1)
+    addRowsFRFS <- addRowsFRFS %>%
+      dplyr::mutate(event_cohort_id = paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous))
     
-    identical(addRowsFRFS_DT$person_id, addRowsFRFS_TH$person_id)
-    identical(addRowsFRFS_DT$combination_FRFS, addRowsFRFS_TH$combination_FRFS)
-    
-    addRowsFRFS_DT[, event_end_date := event_end_date_previous]
-    
-    addRowsFRFS_TH <- addRowsFRFS_TH %>%
-      mutate(event_end_date = .data$event_end_date_previous)
-    
-    identical(addRowsFRFS_DT$event_end_date, addRowsFRFS_TH$event_end_date)
-    
-    addRowsFRFS_DT[, event_cohort_id := paste0(
-      event_cohort_id, "+", event_cohort_id_previous)]
-    
-    addRowsFRFS_TH <- addRowsFRFS_TH %>%
-      mutate(event_cohort_id = paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous))
-    
-    identical(addRowsFRFS_DT$event_cohort_id, addRowsFRFS_TH$event_cohort_id)
-    
-    # Change end date of previous row -> check minPostCombinationDuration
-    DT[
-      data.table::shift(combination_FRFS, type = "lead") == 1,
-      c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
-    
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       mutate(
         event_end_date = dplyr::case_when(
           dplyr::lead(.data$combination_FRFS) == 1 ~ event_start_date_next,
           .default = .data$event_end_date),
         check_duration = dplyr::case_when(dplyr::lead(.data$combination_FRFS) == 1 ~ 1))
     
-    identical(DT$event_end_date, TH$event_end_date)
-    identical(DT$check_duration, TH$check_duration)
-    
-    # Change start date of current row -> check minPostCombinationDuration
-    DT[
-      combination_FRFS == 1,
-      c("event_start_date", "check_duration") := list(
-        event_end_date_previous, 1)]
-    
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::mutate(
         event_start_date = dplyr::case_when(
           .data$combination_FRFS == 1 ~ .data$event_end_date_previous,
@@ -1159,56 +1027,22 @@ doCombinationWindow <- function(
         check_duration = dplyr::case_when(
           .data$combination_FRFS == 1 ~ 1,
           .default = .data$check_duration))
-      
-    identical(DT$event_start_date, TH$event_start_date)
-    identical(DT$check_duration, TH$check_duration)
-
-    # Case: combination_LRFS
-    # Change current row to combination -> no minPostCombinationDuration
-    DT[
-      combination_LRFS == 1,
-      event_cohort_id := paste0(
-        event_cohort_id, "+", event_cohort_id_previous)]
     
-    TH <- TH %>%
-      mutate(event_cohort_id = case_when(
-        combination_LRFS == 1 ~ paste0(event_cohort_id, "+", event_cohort_id_previous),
-        .default = event_cohort_id
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::mutate(event_cohort_id = dplyr::case_when(
+        .data$combination_LRFS == 1 ~ paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous),
+        .default = .data$event_cohort_id
       ))
-    
-    identical(DT$event_cohort_id, TH$event_cohort_id)
-    
-    # Add a new row with end date (r) and end date (r-1) to split drug era
-    # (copy previous row + change end date) -> check minPostCombinationDuration
-    addRowsLRFS_DT <- DT[
-      data.table::shift(combination_LRFS, type = "lead") == 1, ]
 
-    addRowsLRFS_TH <- TH %>%
-      filter(lead(combination_LRFS) == 1)
-    
-    identical(addRowsLRFS_DT$person_id, addRowsLRFS_TH$person_id)
-    identical(addRowsLRFS_DT$index_year, addRowsLRFS_TH$index_year)
-    identical(addRowsLRFS_DT$event_cohort_id, addRowsLRFS_TH$event_cohort_id)
-    identical(addRowsLRFS_DT$event_start_date, addRowsLRFS_TH$event_start_date)
-    
-    addRowsLRFS_DT[
-      , c("event_start_date", "check_duration") := list(
-        event_end_date_next, 1)]
+    addRowsLRFS <- treatmentHistory %>%
+      dplyr::filter(lead(.data$combination_LRFS) == 1)
 
-    addRowsLRFS_TH <- addRowsLRFS_TH %>%
-      mutate(
-        event_start_date = event_end_date_next,
+    addRowsLRFS <- addRowsLRFS %>%
+      dplyr::mutate(
+        event_start_date = .data$event_end_date_next,
         check_duration = 1)
     
-    identical(addRowsLRFS_DT$event_start_date, addRowsLRFS_TH$event_start_date)
-    identical(addRowsLRFS_DT$check_duration, addRowsLRFS_TH$check_duration)
-    
-    # Change end date of previous row -> check minPostCombinationDuration
-    DT[
-      data.table::shift(combination_LRFS, type = "lead") == 1,
-      c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
-    
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::mutate(
         event_end_date = dplyr::case_when(
           dplyr::lead(.data$combination_LRFS) == 1 ~ .data$event_start_date_next,
@@ -1217,77 +1051,32 @@ doCombinationWindow <- function(
           dplyr::lead(.data$combination_LRFS) == 1 ~ 1,
           .default = .data$check_duration
         ))
-    
-    identical(DT$event_end_date, TH$event_end_date)
-    identical(DT$check_duration, TH$check_duration)
-    
-    # Combine all rows and remove helper columns
-    DT <- rbind(DT, addRowsFRFS_DT, fill = TRUE)
-    TH <- TH %>% dplyr::bind_rows(addRowsFRFS_TH)
-    
-    identical(DT$person_id, TH$person_id)
-    identical(DT$event_start_date, TH$event_start_date)
-    identical(DT$event_cohort_id, TH$event_cohort_id)
-    
-    DT <- rbind(DT, addRowsLRFS_DT)
-    TH <- TH %>% dplyr::bind_rows(addRowsLRFS_TH)
-    
-    identical(DT$person_id, TH$person_id)
-    identical(DT$event_start_date, TH$event_start_date)
-    identical(DT$event_cohort_id, TH$event_cohort_id)
 
-    # Re-calculate duration_era
-    DT[
-      , duration_era := difftime(
-        event_end_date, event_start_date, units = "days")]
+    treatmentHistory <- treatmentHistory %>% dplyr::bind_rows(addRowsFRFS)
+    
+    treatmentHistory <- treatmentHistory %>% dplyr::bind_rows(addRowsLRFS)
 
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       dplyr::mutate(duration_era = difftime(event_end_date, event_start_date, units = "days"))
-    
-    identical(DT$duration_era, TH$duration_era)
-    
-    # Check duration drug eras before/after generated combination treatments
-    DT <- doStepDuration(
-      DT, minPostCombinationDuration)
+  
+    treatmentHistory <- doStepDuration(
+      treatmentHistory, minPostCombinationDuration)
 
-    TH <- doStepDuration(
-      TH, minPostCombinationDuration)
-    
-    identical(TH$person_id, DT$person_id)
-    
-    # Preparations for next iteration
-    DT <- DT[
-      , c("person_id", "index_year", "event_cohort_id",
-         "event_start_date", "event_end_date", "duration_era")]
-
-    TH <- TH %>%
+    treatmentHistory <- treatmentHistory %>%
       select("person_id", "index_year", "event_cohort_id",
              "event_start_date", "event_end_date", "duration_era")
     
-    identical(nrow(DT), nrow(TH))
-    identical(ncol(DT), ncol(TH))
-    
-    DT <- data.table::data.table(selectRowsCombinationWindow(DT))
-    TH <- selectRowsCombinationWindow(TH)
-    
-    identical(DT$GAP_PREVIOUS, TH$GAP_PREVIOUS)
-    identical(DT$SELECTED_ROWS, TH$SELECTED_ROWS)
+    treatmentHistory <- selectRowsCombinationWindow(treatmentHistory)
     
     iterations <- iterations + 1
 
     invisible(gc())
   }
 
-  message(glue::glue("After combinationWindow: {nrow(TH)}"))
-
-  DT[, GAP_PREVIOUS := NULL]
-  DT[, SELECTED_ROWS := NULL]
+  message(glue::glue("After combinationWindow: {nrow(treatmentHistory)}"))
   
-  x <- TH %>%
+  treatmentHistory <- treatmentHistory %>%
     select(-"GAP_PREVIOUS", -"SELECTED_ROWS")
-
-  identical(ncol(DT), ncol(x))
-  identical(names(DT), names(x))
   
   time2 <- Sys.time()
   message(glue::glue(
