@@ -55,7 +55,7 @@ test_that("minimal", {
 test_that("output 1", {
   expect_equal(ncol(df[[1]]), 3)
   expect_equal(typeof(df[[1]]$index_year), "character")
-  expect_equal(typeof(df[[1]]$N), "character")
+  expect_equal(typeof(df[[1]]$n), "character")
 })
 
 test_that("output 2", {

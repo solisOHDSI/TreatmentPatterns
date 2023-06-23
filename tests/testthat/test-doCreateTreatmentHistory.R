@@ -35,7 +35,7 @@ test_that("event cohorts", {
     includeTreatments = includeTreatments)
   expect_gt(nrow(eventCohorts), 0)
   expect_equal(
-    nrow(eventCohorts[!(eventCohorts$event_cohort_id %in% eventCohortIds)]),
+    nrow(eventCohorts[!(eventCohorts$event_cohort_id %in% eventCohortIds), ]),
     0)
 })
 
@@ -120,11 +120,11 @@ test_that("includeTreatments startDate", {
     includeTreatments = "startDate")
   extendedEventCohorts <- inner_join(
     eventCohorts,
-    currentCohorts[currentCohorts$cohort_id == targetCohortId],
+    currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
     by = c("person_id"))
   expect_equal(
     nrow(eventCohorts[extendedEventCohorts$event_start_date <
-                        extendedEventCohorts$start_date]),
+                        extendedEventCohorts$start_date, ]),
     0)
 })
 
@@ -138,11 +138,11 @@ test_that("includeTreatments endDate", {
     includeTreatments = "endDate")
   extendedEventCohorts <- inner_join(
     eventCohorts,
-    currentCohorts[currentCohorts$cohort_id == targetCohortId],
+    currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
     by = c("person_id"))
   expect_equal(
     nrow(eventCohorts[extendedEventCohorts$event_end_date <
-                        extendedEventCohorts$start_date]),
+                        extendedEventCohorts$start_date, ]),
     0)
 })
 
@@ -167,11 +167,11 @@ test_that("periodPriorToIndex", {
     includeTreatments = includeTreatments)
   extendedEventCohorts <- inner_join(
     eventCohorts,
-    currentCohorts[currentCohorts$cohort_id == targetCohortId],
+    currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
     by = c("person_id"))
   expect_equal(
     nrow(eventCohorts[(extendedEventCohorts$event_start_date -
                          extendedEventCohorts$event_start_date) >
-                        periodPriorToIndex]),
+                        periodPriorToIndex, ]),
     0)
 })

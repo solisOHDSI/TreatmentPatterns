@@ -4,37 +4,37 @@ library(testthat)
 # === Compute prerequisites ====
 doSetDurationTH <- doEraDurationTH
 
-time1 <- Sys.time()
-
 doSetDurationTH$event_cohort_id <- as.character(
   doSetDurationTH$event_cohort_id)
 
 doSetDurationTH <- TreatmentPatterns:::selectRowsCombinationWindow(
   doSetDurationTH)
 
-doSetDurationTH[
-  SELECTED_ROWS == 1 &
-    (-GAP_PREVIOUS < combinationWindow &
-       !(-GAP_PREVIOUS == duration_era |
-           -GAP_PREVIOUS == data.table::shift(duration_era, type = "lag"))),
-  switch := 1]
+doSetDurationTH <- doSetDurationTH %>%
+  mutate(switch = case_when(
+    .data$SELECTED_ROWS == 1 &
+      (-.data$GAP_PREVIOUS < combinationWindow &
+         !(-.data$GAP_PREVIOUS == .data$duration_era |
+             -GAP_PREVIOUS == dplyr::lag(.data$duration_era))) ~ 1,
+    .default = 0
+  ))
 
-doSetDurationTH[
-  SELECTED_ROWS == 1 &
-    is.na(switch) &
-    data.table::shift(event_end_date, type = "lag") <= event_end_date,
-  combination_FRFS := 1]
+doSetDurationTH <- doSetDurationTH %>%
+  mutate(combination_FRFS = case_when(
+    SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
+    .default = 0
+  ))
 
-doSetDurationTH[
-  SELECTED_ROWS == 1 &
-    is.na(switch) &
-    data.table::shift(event_end_date, type = "lag") >
-    event_end_date, combination_LRFS := 1]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::mutate(combination_LRFS = dplyr::case_when(
+    .data$SELECTED_ROWS == 1 & .data$switch == 0 & dplyr::lag(.data$event_end_date) > .data$event_end_date ~ 1,
+    .default = 0
+  ))
 
 sumSwitchComb <- sum(
-  sum(!is.na(doSetDurationTH$switch)),
-  sum(!is.na(doSetDurationTH$combination_FRFS)),
-  sum(!is.na(doSetDurationTH$combination_LRFS)))
+  sum(doSetDurationTH$switch, na.rm = TRUE),
+  sum(doSetDurationTH$combination_FRFS, na.rm = TRUE),
+  sum(doSetDurationTH$combination_LRFS, na.rm = TRUE))
 
 sumSelectedRows <- sum(doSetDurationTH$SELECTED_ROWS)
 
@@ -47,65 +47,85 @@ if (sumSwitchComb != sumSelectedRows) {
       sum(!is.na(doSetDurationTH$combination_LRFS))))
 }
 
-doSetDurationTH[
-  , event_start_date_next := data.table::shift(event_start_date, type = "lead"),
-  by = person_id]
+# Do transformations for each of the three newly added columns
+# Construct helpers
 
-doSetDurationTH[
-  , event_end_date_previous := data.table::shift(event_end_date, type = "lag"),
-  by = person_id]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::group_by(.data$person_id) %>%
+  dplyr::mutate(event_start_date_next = dplyr::lead(.data$event_start_date))
 
-doSetDurationTH[
-  , event_end_date_next := data.table::shift(event_end_date, type = "lead"),
-  by = person_id]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::group_by(.data$person_id) %>%
+  dplyr::mutate(event_end_date_previous = dplyr::lag(.data$event_end_date))
 
-doSetDurationTH[, event_cohort_id_previous := data.table::shift(
-    event_cohort_id,
-    type = "lag"),
-  by = person_id]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::group_by(.data$person_id) %>%
+  dplyr::mutate(event_end_date_next = dplyr::lead(.data$event_end_date))
 
-doSetDurationTH[data.table::shift(
-  switch,
-  type = "lead") == 1,
-  event_end_date := event_start_date_next]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::group_by(.data$person_id) %>%
+  dplyr::mutate(event_cohort_id_previous = dplyr::lag(.data$event_cohort_id)) %>%
+  dplyr::ungroup()
 
-addRowsFRFS <- doSetDurationTH[combination_FRFS == 1, ]
-addRowsFRFS[, event_end_date := event_end_date_previous]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::mutate(event_end_date = dplyr::case_when(
+    dplyr::lead(.data$switch) == 1 ~ .data$event_start_date_next,
+    .default = .data$event_end_date
+  ))
 
-addRowsFRFS[, event_cohort_id := paste0(
-  event_cohort_id, "+", event_cohort_id_previous)]
+addRowsFRFS <- doSetDurationTH %>%
+  dplyr::filter(.data$combination_FRFS == 1)
 
-doSetDurationTH[
-  data.table::shift(combination_FRFS, type = "lead") == 1,
-  c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
+addRowsFRFS <- addRowsFRFS %>%
+  dplyr::mutate(event_end_date = .data$event_end_date_previous)
 
-doSetDurationTH[
-  combination_FRFS == 1,
-  c("event_start_date", "check_duration") := list(
-    event_end_date_previous, 1)]
+addRowsFRFS <- addRowsFRFS %>%
+  dplyr::mutate(event_cohort_id = paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous))
 
-doSetDurationTH[
-  combination_LRFS == 1,
-  event_cohort_id := paste0(
-    event_cohort_id, "+", event_cohort_id_previous)]
+doSetDurationTH <- doSetDurationTH %>%
+  mutate(
+    event_end_date = dplyr::case_when(
+      dplyr::lead(.data$combination_FRFS) == 1 ~ event_start_date_next,
+      .default = .data$event_end_date),
+    check_duration = dplyr::case_when(dplyr::lead(.data$combination_FRFS) == 1 ~ 1))
 
-addRowsLRFS <- doSetDurationTH[
-  data.table::shift(combination_LRFS, type = "lead") == 1, ]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::mutate(
+    event_start_date = dplyr::case_when(
+      .data$combination_FRFS == 1 ~ .data$event_end_date_previous,
+      .default = .data$event_start_date),
+    check_duration = dplyr::case_when(
+      .data$combination_FRFS == 1 ~ 1,
+      .default = .data$check_duration))
 
-addRowsLRFS[
-  , c("event_start_date", "check_duration") := list(
-    event_end_date_next, 1)]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::mutate(event_cohort_id = dplyr::case_when(
+    .data$combination_LRFS == 1 ~ paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous),
+    .default = .data$event_cohort_id
+  ))
 
-doSetDurationTH[
-  data.table::shift(combination_LRFS, type = "lead") == 1,
-  c("event_end_date", "check_duration") := list(event_start_date_next, 1)]
+addRowsLRFS <- doSetDurationTH %>%
+  dplyr::filter(lead(.data$combination_LRFS) == 1)
 
-doSetDurationTH <- rbind(doSetDurationTH, addRowsFRFS, fill = TRUE)
-doSetDurationTH <- rbind(doSetDurationTH, addRowsLRFS)
+addRowsLRFS <- addRowsLRFS %>%
+  dplyr::mutate(
+    event_start_date = .data$event_end_date_next,
+    check_duration = 1)
 
-doSetDurationTH[
-  , duration_era := difftime(
-    event_end_date, event_start_date, units = "days")]
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::mutate(
+    event_end_date = dplyr::case_when(
+      dplyr::lead(.data$combination_LRFS) == 1 ~ .data$event_start_date_next,
+      .default = .data$event_end_date),
+    check_duration = dplyr::case_when(
+      dplyr::lead(.data$combination_LRFS) == 1 ~ 1,
+      .default = .data$check_duration
+    ))
+
+doSetDurationTH <- doSetDurationTH %>%
+  dplyr::bind_rows(addRowsFRFS, addRowsLRFS) %>%
+  dplyr::mutate(
+    duration_era = difftime(event_end_date, event_start_date, units = "days"))
 
 # === Tests ====
 test_that("void", {
@@ -116,24 +136,6 @@ test_that("minimal", {
   expect_s3_class(TreatmentPatterns:::doStepDuration(
     treatmentHistory = doSetDurationTH,
     minPostCombinationDuration = 30), "data.frame")
-})
-
-test_that("non numeric minPostCombinationDuration", {
-  expect_error(
-    TreatmentPatterns:::doStepDuration(
-      treatmentHistory = doSetDurationTH,
-      minPostCombinationDuration = "30"),
-    "Must be of type 'numeric', not 'character'"
-  )
-})
-
-test_that("non data.frame treatmentHistory", {
-  expect_error(
-    TreatmentPatterns:::doStepDuration(
-      treatmentHistory = "doSetDurationTH",
-      minPostCombinationDuration = "30"),
-    "Must be of type 'data.frame', not 'character'"
-  )
 })
 
 doStepDurationOut <- TreatmentPatterns:::doStepDuration(

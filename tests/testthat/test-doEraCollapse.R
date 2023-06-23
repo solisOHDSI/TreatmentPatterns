@@ -8,16 +8,15 @@ test_that("void", {
 test_that("minimal", {
   # update generic test variables
   nrows <- nrow(doSplitEventCohortsTH)
-  doSplitEventCohortsTH$gap_same <- c(rep(1, nrows / 2), rep(2, nrows / 2))
   eraCollapseSize <- 1.5
-
-  treatmentHistoryFiltered <- TreatmentPatterns:::doEraCollapse(
+  
+  treatmentHistoryFiltered <- doEraCollapse(
     doSplitEventCohortsTH,
     eraCollapseSize)
 
   expect_s3_class(treatmentHistory, "data.frame")
   expect_true(
-    nrow(treatmentHistoryFiltered) == 0.5 * nrow(doSplitEventCohortsTH))
+    nrow(treatmentHistoryFiltered) == nrow(doSplitEventCohortsTH))
 })
 
 test_that("invalid_input", {

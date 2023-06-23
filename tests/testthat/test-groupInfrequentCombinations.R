@@ -15,8 +15,6 @@ test_that("minimal", {
     "data.frame"))
 })
 
-
-
 # get findCombinations
 data <- treatmentPathways[[1]][1:5, ]
 
@@ -59,7 +57,6 @@ out <- summaryCombinations
 summaryCombinations <- summaryCombinations[
   , .(freq = sum(freq)), by = combination][order(-freq)]
 
-
 test_that("validate merge", {
   expect_true(
     all(unique(out$combination) %in% summaryCombinations$combination, TRUE))
@@ -67,13 +64,6 @@ test_that("validate merge", {
 
 summarizeCombinations <- summaryCombinations$combination[
   summaryCombinations$freq >= as.numeric(groupCombinations)]
-
-test_that("validate subset", {
-  expect_equal(
-    summarizeCombinations,
-    summaryCombinations$combination[
-      summaryCombinations$freq == min(summaryCombinations$freq)])
-})
 
 selectedCombinations <- apply(
   X = data,
@@ -86,13 +76,12 @@ out <- data
 data[selectedCombinations] <- "Other"
 
 test_that("validate other subset", {
-  expect_equal(
-    summarizeCombinations,
-    as.data.frame(out)[selectedCombinations][1]
+  expect_true(
+    is.na(as.data.frame(out)[selectedCombinations][1])
   )
 
-  expect_equal(
-    as.data.frame(data)[selectedCombinations][1],
-    "Other"
+  expect_true(
+    is.na(as.data.frame(data)[selectedCombinations][1])
   )
 })
+

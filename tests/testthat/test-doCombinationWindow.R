@@ -35,7 +35,6 @@ test_that("minimal", {
 # A is finished by B      aaaaaaaa*****
 
 test_that("case: A is equal to B", {
-
   treatmentHistory <- tibble::tribble(
     ~event_cohort_id,     ~person_id,   ~event_start_date,  ~event_end_date,
     101,                   1,           "2020-05-01",       "2020-06-01",

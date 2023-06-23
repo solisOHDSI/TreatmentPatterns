@@ -17,10 +17,16 @@ test_that("validate GAP_PREVIOUS", {
     doEraCollapseTH)
 
   x <- treatmentHistoryCW$GAP_PREVIOUS
-  y <- treatmentHistoryCW[, GAP_PREVIOUS := difftime(
-    event_start_date,
-    data.table::shift(event_end_date, type = "lag"), units = "days"),
-    by = person_id]
+  # Old data.table implementation
+  # y <- treatmentHistoryCW[, GAP_PREVIOUS := difftime(
+  #   event_start_date,
+  #   data.table::shift(event_end_date, type = "lag"), units = "days"),
+  #   by = person_id]
+  
+  y <- treatmentHistoryCW %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::mutate(GAP_PREVIOUS = difftime(.data$event_start_date, dplyr::lag(.data$event_end_date), units = "days"))
+  
   y <- y$GAP_PREVIOUS
   y <- as.integer(y)
 

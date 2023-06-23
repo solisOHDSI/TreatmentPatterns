@@ -1,3 +1,4 @@
+library(TreatmentPatterns)
 library(dplyr)
 
 dataSettings <- TreatmentPatterns::createDataSettings(
@@ -176,6 +177,7 @@ combinationWindow <- settings[
 minPostCombinationDuration <- as.numeric(settings[
   settings$param == "minPostCombinationDuration", "analysis1"])
 
+
 doCombinationWindowTH <- TreatmentPatterns:::doCombinationWindow(
   doEraCollapseTH,
   combinationWindow,
@@ -191,11 +193,12 @@ doFilterTreatmentsTH <- TreatmentPatterns:::doFilterTreatments(
 maxPathLength <- as.integer(settings[
   settings$param == "maxPathLength", "analysis1"])
 
-doFilterTreatmentsTHOrdered <- doFilterTreatmentsTH[
-  order(person_id, event_start_date, event_end_date), ]
+doFilterTreatmentsTHOrdered <- doFilterTreatmentsTH %>%
+  arrange(.data$person_id, .data$event_start_date, .data$event_end_date)
 
-doFilterTreatmentsTHPP <- doFilterTreatmentsTHOrdered[,
-                                                      event_seq := seq_len(.N), by = .(person_id)]
+doFilterTreatmentsTHPP <- doFilterTreatmentsTHOrdered %>%
+  group_by(.data$person_id) %>%
+  dplyr::mutate(event_seq = seq_len(max(dplyr::row_number())))
 
 doMaxPathLengthTH <- TreatmentPatterns:::doMaxPathLength(
   doFilterTreatmentsTHPP,
@@ -213,7 +216,7 @@ TreatmentPatterns::constructPathways(
 )
 
 # Generate output for folder structure etc.
-TreatmentPatterns::generateOutput(saveSettings = saveSettings)
+generateOutput(saveSettings = saveSettings)
 
 treatmentPathways <- TreatmentPatterns:::getPathways(
   outputFolder = saveSettings$outputFolder,
