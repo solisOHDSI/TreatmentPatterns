@@ -26,7 +26,8 @@ Imports:
     googleVis,
     webshot2,
     stats,
-    Andromeda
+    Andromeda,
+    tidyr
 Suggests:
     knitr,
     rmarkdown,
