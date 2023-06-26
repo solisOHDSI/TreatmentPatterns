@@ -83,20 +83,22 @@ constructPathways <- function(dataSettings,
   
   cohortIds <- cohortIds[!is.na(cohortIds)]
   
+  andromeda <- Andromeda::andromeda()
+  
   # Get cohorts from database
-  fullCohorts <- dplyr::tibble(TreatmentPatterns::extractCohortTable(
+  andromeda$fullCohorts <- dplyr::tibble(TreatmentPatterns::extractCohortTable(
     connection = connection,
     resultsSchema = dataSettings$resultSchema,
     cohortTableName = dataSettings$cohortTable,
     cohortIds = cohortIds
   ))
-
-  colnames(fullCohorts) <- c(
-    "cohort_id",
-    "person_id",
-    "start_date",
-    "end_date"
-  )
+  
+  andromeda$fullCohorts <- andromeda$fullCohorts %>%
+    dplyr::rename(
+      cohort_id = "COHORT_DEFINITION_ID",
+      person_id = "SUBJECT_ID",
+      start_date = "COHORT_START_DATE",
+      end_date = "COHORT_END_DATE")
   
   
   if (!dir.exists(saveSettings$outputFolder)) {
@@ -109,7 +111,7 @@ constructPathways <- function(dataSettings,
   )
   
   write.csv(
-    x = fullCohorts,
+    x = andromeda$fullCohorts,
     file = file.path(saveSettings$outputFolder, "cohortTable.csv")
   )
 
@@ -202,16 +204,21 @@ constructPathways <- function(dataSettings,
 
     # Select subset of full cohort including only data for the current target
     # cohort
-    selectPeople <- fullCohorts$person_id[
-      fullCohorts$cohort_id == targetCohortId]
+    # andromeda$selectPeople <- andromeda$fullCohorts$person_id[
+    #   andromeda$fullCohorts$cohort_id == targetCohortId]
     
-    currentCohorts <- fullCohorts[
-      fullCohorts$person_id %in% selectPeople, ]
+    selectPeople <- andromeda$fullCohorts %>%
+      dplyr::filter(.data$cohort_id == targetCohortId) %>%
+      dplyr::select("person_id") %>%
+      dplyr::pull()
     
-    if (nrow(currentCohorts) != 0) {
+    andromeda$currentCohorts <- andromeda$fullCohorts %>%
+      dplyr::filter(.data$person_id %in% selectPeople)
+    
+    if (andromeda$currentCohorts %>% summarise(n = n()) %>% pull() > 0) {
       # Preprocess the target/event cohorts to create treatment history
-      treatmentHistory <- doCreateTreatmentHistory(
-        currentCohorts,
+      andromeda$treatmentHistory <- doCreateTreatmentHistory(
+        andromeda$currentCohorts,
         targetCohortId,
         eventCohortIds,
         exitCohortIds,
@@ -219,37 +226,37 @@ constructPathways <- function(dataSettings,
         includeTreatments
       )
       
-      exitHistory <- treatmentHistory %>%
+      andromeda$exitHistory <- andromeda$treatmentHistory %>%
         dplyr::filter(.data$type == "exit") %>%
         dplyr::select(-"type")
       
-      treatmentHistory <- treatmentHistory %>%
+      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::filter(.data$type == "event")
 
       # Apply pathway settings to create treatment pathways
       message("Construct treatment pathways, this may take a while for larger datasets.")
 
-      message(glue::glue("Original number of rows: {nrow(treatmentHistory)}"))
+      message(glue::glue("Original number of rows: {andromeda$treatmentHistory %>% summarise(n = n()) %>% pull()}"))
 
       # TODO: check what happens if treatmentHistory zero or few rows
       # (throw errors)
 
-      treatmentHistory <- doEraDuration(
-        treatmentHistory,
+      andromeda$treatmentHistory <- doEraDuration(
+        andromeda$treatmentHistory,
         minEraDuration)
 
-      treatmentHistory <- doSplitEventCohorts(
-        treatmentHistory,
+      andromeda$treatmentHistory <- doSplitEventCohorts(
+        andromeda$treatmentHistory,
         splitEventCohorts,
         splitTime,
         saveSettings$outputFolder)
 
-      treatmentHistory <- doEraCollapse(
-        treatmentHistory,
+      andromeda$treatmentHistory <- doEraCollapse(
+        andromeda$treatmentHistory,
         eraCollapseSize)
 
-      treatmentHistory <- doCombinationWindow(
-        treatmentHistory,
+      andromeda$treatmentHistory <- doCombinationWindow(
+        andromeda$treatmentHistory,
         combinationWindow,
         minPostCombinationDuration)
 
@@ -445,45 +452,46 @@ doCreateTreatmentHistory <- function(
     periodPriorToIndex,
     includeTreatments) {
   
-  checkmate::assert(checkmate::check_data_frame(
-    currentCohorts,
-    min.cols = 4,
-    col.names = "named"))
-  checkmate::assert(checkmate::checkNames(
-    names(currentCohorts),
-    permutation.of = c("cohort_id", "person_id", "start_date", "end_date")))
-
-  checkmate::assert(checkmate::checkCharacter(targetCohortId, len = 1))
-  checkmate::assert(checkmate::checkCharacter(eventCohortIds))
-  checkmate::assert(checkmate::checkInt(periodPriorToIndex))
-
+  # checkmate::assert(checkmate::check_data_frame(
+  #   currentCohorts,
+  #   min.cols = 4,
+  #   col.names = "named"))
+  # checkmate::assert(checkmate::checkNames(
+  #   names(currentCohorts),
+  #   permutation.of = c("cohort_id", "person_id", "start_date", "end_date")))
+  # 
+  # checkmate::assert(checkmate::checkCharacter(targetCohortId, len = 1))
+  # checkmate::assert(checkmate::checkCharacter(eventCohortIds))
+  # checkmate::assert(checkmate::checkInt(periodPriorToIndex))
+  
   # Add index year column based on start date target cohort
-  targetCohorts <- currentCohorts %>%
+  # TODO: UNCOMMENT THIS
+  andromeda <- Andromeda::andromeda()
+  # currentCohorts <- andromeda$currentCohorts
+  
+  andromeda$targetCohorts <- currentCohorts %>%
     dplyr::filter(.data$cohort_id %in% targetCohortId) %>%
-    dplyr::mutate(type = "target")
-  
-  targetCohorts <- targetCohorts %>%
+    dplyr::mutate(type = "target") %>%
     dplyr::mutate(index_year = as.numeric(format(.data$start_date, "%Y")))
-  
   
   # Select event cohorts for target cohort and merge with start/end date and
   # index year
-  eventCohorts <- currentCohorts %>%
+  andromeda$eventCohorts <- currentCohorts %>%
     dplyr::filter(.data$cohort_id %in% eventCohortIds) %>%
     dplyr::mutate(type = "event")
   
-  exitCohorts <- currentCohorts %>%
+  andromeda$exitCohorts <- currentCohorts %>%
     dplyr::filter(.data$cohort_id %in% exitCohortIds) %>%
     dplyr::mutate(type = "exit")
   
-  eventCohorts <- dplyr::bind_rows(
-    eventCohorts,
-    exitCohorts
-  )
+  if (andromeda$exitCohorts %>% summarise(n = n()) %>% pull() > 0) {
+    andromeda$eventCohorts <- andromeda$eventCohorts %>% 
+      dplyr::bind_rows(andromeda$exitCohorts)
+  }
   
   currentCohorts <- dplyr::full_join(
-    x = eventCohorts,
-    y = targetCohorts,
+    x = andromeda$eventCohorts,
+    y = andromeda$targetCohorts,
     by = "person_id"
   )
   
@@ -497,21 +505,13 @@ doCreateTreatmentHistory <- function(
   } else if (includeTreatments == "endDate") {
     currentCohorts <- currentCohorts %>%
       dplyr::filter(.data$start_date.y - periodPriorToIndex <= .data$end_date.x) %>%
-      dplyr::filter(.data$start_date.x < .data$end_date.y)
-    
-    currentCohorts %>%
+      dplyr::filter(.data$start_date.x < .data$end_date.y) %>%
       dplyr::mutate(
         start_date.x = pmax(.data$start_date.y - periodPriorToIndex, .data$start_date.x))
   } else {
     warning(paste(
       "includeTreatments input incorrect, ",
       "return all event cohorts ('includeTreatments')"))
-    currentCohorts <- currentCohorts[
-      currentCohorts$start_date.y -
-        as.difftime(periodPriorToIndex, units = "days") <=
-        currentCohorts$start_date.x &
-        currentCohorts$start_date.x <
-        currentCohorts$end_date.y, ]
     
     currentCohorts <- currentCohorts %>%
       dplyr::filter(.data$start_date.y - periodPriorToIndex <= .data$start_date.x) %>%
@@ -535,11 +535,13 @@ doCreateTreatmentHistory <- function(
   currentCohorts <- currentCohorts %>%
     dplyr::arrange(.data$event_start_date, .data$event_end_date)
 
+  # Andromeda::groupApply(andromeda$currentCohorts, groupVariable = "person_id", fun = unique)
+  
   currentCohorts <- currentCohorts %>%
-    group_by(.data$person_id, .data$event_cohort_id) %>%
+    dplyr::group_by(.data$person_id, .data$event_cohort_id) %>%
     dplyr::mutate(lag_variable = dplyr::lag(.data$event_end_date)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(gap_same = difftime(.data$event_start_date, .data$lag_variable, units = "days")) %>%
+    dplyr::mutate(gap_same = .data$event_start_date - .data$lag_variable) %>%
     dplyr::select(-"lag_variable")
 
   return(currentCohorts)
@@ -569,18 +571,18 @@ doCreateTreatmentHistory <- function(
 #' }
 doEraDuration <- function(treatmentHistory, minEraDuration) {
   # Assertions
-  checkmate::assertDataFrame(x = treatmentHistory)
-  checkmate::assertNumeric(
-    x = minEraDuration,
-    lower = 0,
-    finite = TRUE,
-    len = 1,
-    null.ok = FALSE
-  )
+  # checkmate::assertDataFrame(x = treatmentHistory)
+  # checkmate::assertNumeric(
+  #   x = minEraDuration,
+  #   lower = 0,
+  #   finite = TRUE,
+  #   len = 1,
+  #   null.ok = FALSE
+  # )
 
   treatmentHistory <- treatmentHistory %>%
     dplyr::filter(duration_era >= minEraDuration)
-  message(glue::glue("After minEraDuration: {nrow(treatmentHistory)}"))
+  message(glue::glue("After minEraDuration: {andromeda$treatmentHistory %>% summarise(n = n()) %>% pull()}"))
   return(treatmentHistory)
 }
 
@@ -609,12 +611,12 @@ doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
   #   len = 1,
   #   null.ok = FALSE
   # )
-
-  treatmentHistory <- treatmentHistory %>%
-    subset(duration_era >= minPostCombinationDuration | is.na(duration_era))
+  
+  treatmentHistory <- treatmentHistory %>% 
+    dplyr::filter(.data$duration_era >= minPostCombinationDuration | is.na(.data$duration_era))
   
   message(
-    glue::glue("After minPostCombinationDuration: {nrow(treatmentHistory)}"))
+    glue::glue("After minPostCombinationDuration: {treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   return(treatmentHistory)
 }
 
@@ -740,39 +742,45 @@ doSplitEventCohorts <- function(
 #' }
 doEraCollapse <- function(treatmentHistory, eraCollapseSize) {
   # Assertions
-  checkmate::assertDataFrame(x = treatmentHistory)
-  checkmate::assertNumeric(
-    x = eraCollapseSize,
-    lower = 0,
-    finite = TRUE,
-    len = 1,
-    null.ok = FALSE
-  )
+  # checkmate::assertDataFrame(x = treatmentHistory)
+  # checkmate::assertNumeric(
+  #   x = eraCollapseSize,
+  #   lower = 0,
+  #   finite = TRUE,
+  #   len = 1,
+  #   null.ok = FALSE
+  # )
   # Order treatmentHistory by person_id, event_cohort_id, start_date, end_date
+  # treatmentHistory <- andromeda$treatmentHistory
+  
   treatmentHistory <- treatmentHistory %>%
     arrange(.data$person_id, .data$event_cohort_id, .data$event_start_date, .data$event_end_date)
 
-  rows <- which(treatmentHistory$gap_same < eraCollapseSize)
+  # rows <- which(treatmentHistory_OLD$gap_same < eraCollapseSize)
+  rows <- which(andromeda$treatmentHistory %>% select("gap_same") %>% pull() < eraCollapseSize)
   
   for (r in rev(rows)) {
-    treatmentHistory[r - 1, "event_end_date"] <- treatmentHistory[
-      r,
-      event_end_date]
+    # treatmentHistory[r - 1, "event_end_date"] <- treatmentHistory[
+    #   r,
+    #   event_end_date]
+    
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::mutate(event_end_date = dplyr::case_when(dplyr::row_number() == r - 1 ~ event_end_date))
+    
   }
   
   # Remove all rows with gap_same < eraCollapseSize
   if (length(rows) > 0) {
-    treatmentHistory <- treatmentHistory[-rows, ]
+    # treatmentHistory <- treatmentHistory[-rows, ]
+    treatmentHistory <- treatmentHistory %>%
+      dplyr::filter(!dplyr::row_number() %in% rows)
   }
   
   treatmentHistory <- treatmentHistory %>%
     dplyr::select(-"gap_same") %>%
-    dplyr::mutate(duration_era = difftime(
-      time1 = .data$event_end_date,
-      time2 = .data$event_start_date,
-      units = "days"))
+    dplyr::mutate(duration_era = .data$event_end_date - .data$event_start_date)
   
-  message(glue::glue("After eraCollapseSize: {nrow(treatmentHistory)}"))
+  message(glue::glue("After eraCollapseSize: {treatmentHistory %>% summarise(n = n()) %>% pull()}"))
   return(treatmentHistory)
 }
 
@@ -812,22 +820,30 @@ doCombinationWindow <- function(
     treatmentHistory,
     combinationWindow,
     minPostCombinationDuration) {
+  
+  # treatmentHistory <- andromeda$treatmentHistory
+  
+  andromCombWin <- Andromeda::andromeda()
+  
+  andromCombWin$treatmentHistory <- andromeda$treatmentHistory
+  
+  
   time1 <- Sys.time()
 
-  treatmentHistory <- treatmentHistory %>%
+  andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
     dplyr::mutate(event_cohort_id = as.character(.data$event_cohort_id))
   
   # Find which rows contain some overlap
-  treatmentHistory <- selectRowsCombinationWindow(treatmentHistory) %>%
+  andromCombWin$treatmentHistory <- selectRowsCombinationWindow(andromCombWin$treatmentHistory) %>%
     arrange(.data$person_id, .data$event_start_date, .data$event_end_date, .data$event_cohort_id)
   
   # While rows that need modification exist:
   iterations <- 1
   
-  while (sum(treatmentHistory$SELECTED_ROWS) != 0) {
+  while (andromCombWin$treatmentHistory %>% summarise(sum = sum(SELECTED_ROWS)) %>% dplyr::pull() != 0) {
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       mutate(switch = case_when(
         .data$SELECTED_ROWS == 1 &
           (-.data$GAP_PREVIOUS < combinationWindow &
@@ -840,7 +856,7 @@ doCombinationWindow <- function(
     # if treatmentHistory[r - 1, event_end_date] <=
     # treatmentHistory[r, event_end_date] ->
     # add column combination first received, first stopped
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       mutate(combination_FRFS = case_when(
         SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
         .default = 0
@@ -851,78 +867,81 @@ doCombinationWindow <- function(
     # treatmentHistory[r, event_end_date] ->
     # add column combination last received, first stopped
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::mutate(combination_LRFS = dplyr::case_when(
         .data$SELECTED_ROWS == 1 & .data$switch == 0 & dplyr::lag(.data$event_end_date) > .data$event_end_date ~ 1,
         .default = 0
       ))
     
     message(glue::glue(
-      "Selected {sum(treatmentHistory$SELECTED_ROWS)} out of {nrow(treatmentHistory)} rows\n",
+      "Selected {andromCombWin$treatmentHistory %>% summarise(sum = sum(.data$SELECTED_ROWS)) %>% dplyr::pull()} ",
+      "out of {andromCombWin$treatmentHistory %>% summarise(n = n()) %>% dplyr::pull()} rows\n",
       "Iteration: {iterations}\n",
-      "Switches: {sum(!is.na(treatmentHistory$switch))}\n",
-      "FRFS Combinations: {sum(!is.na(treatmentHistory$combination_FRFS))}\n",
-      "LRFS Combinations: {sum(!is.na(treatmentHistory$combination_LRFS))}"))
+      "Switches: {andromCombWin$treatmentHistory %>% summarise(sum = sum(!is.na(.data$switch))) %>% dplyr::pull()}\n",
+      "FRFS Combinations: {andromCombWin$treatmentHistory %>% summarise(sum = sum(.data$combination_FRFS)) %>% dplyr::pull()}\n",
+      "LRFS Combinations: {andromCombWin$treatmentHistory %>% summarise(sum = sum(.data$combination_LRFS)) %>% dplyr::pull()}"))
     
     sumSwitchComb <- sum(
-      sum(treatmentHistory$switch, na.rm = TRUE),
-      sum(treatmentHistory$combination_FRFS, na.rm = TRUE),
-      sum(treatmentHistory$combination_LRFS, na.rm = TRUE))
+      andromCombWin$treatmentHistory %>% dplyr::summarise(sum = sum(.data$switch, na.rm = TRUE)) %>% dplyr::pull(),
+      andromCombWin$treatmentHistory %>% dplyr::summarise(sum = sum(.data$combination_FRFS, na.rm = TRUE)) %>% dplyr::pull(),
+      andromCombWin$treatmentHistory %>% dplyr::summarise(sum = sum(.data$combination_LRFS, na.rm = TRUE)) %>% dplyr::pull()
+    )
     
-    sumSelectedRows <- sum(treatmentHistory$SELECTED_ROWS)
+    # sumSwitchComb <- sum(
+    #   sum(treatmentHistory$switch, na.rm = TRUE),
+    #   sum(treatmentHistory$combination_FRFS, na.rm = TRUE),
+    #   sum(treatmentHistory$combination_LRFS, na.rm = TRUE))
+    
+    sumSelectedRows <- andromCombWin$treatmentHistory %>% dplyr::summarise(sum = sum(.data$SELECTED_ROWS)) %>% dplyr::pull()
 
     if (sumSwitchComb != sumSelectedRows) {
-      warning(paste0(
-        sum(treatmentHistory$SELECTED_ROWS),
-        " does not equal total sum ",
-        sum(!is.na(treatmentHistory$switch)) +
-          sum(!is.na(treatmentHistory$combination_FRFS)) +
-          sum(!is.na(treatmentHistory$combination_LRFS))))
+      warning(glue::glue(
+        "{sumSelectedRows} does not equal total sum {sumSwitchComb}"))
     }
 
     # Do transformations for each of the three newly added columns
     # Construct helpers
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_start_date_next = dplyr::lead(.data$event_start_date))
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_end_date_previous = dplyr::lag(.data$event_end_date))
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_end_date_next = dplyr::lead(.data$event_end_date))
 
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::group_by(.data$person_id) %>%
       dplyr::mutate(event_cohort_id_previous = dplyr::lag(.data$event_cohort_id)) %>%
       dplyr::ungroup()
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::mutate(event_end_date = dplyr::case_when(
         dplyr::lead(.data$switch) == 1 ~ .data$event_start_date_next,
         .default = .data$event_end_date
       ))
     
-    addRowsFRFS <- treatmentHistory %>%
+    andromCombWin$addRowsFRFS <- andromCombWin$treatmentHistory %>%
       dplyr::filter(.data$combination_FRFS == 1)
     
-    addRowsFRFS <- addRowsFRFS %>%
+    andromCombWin$addRowsFRFS <- andromCombWin$addRowsFRFS %>%
       dplyr::mutate(event_end_date = .data$event_end_date_previous)
     
-    addRowsFRFS <- addRowsFRFS %>%
+    andromCombWin$addRowsFRFS <- andromCombWin$addRowsFRFS %>%
       dplyr::mutate(event_cohort_id = paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous))
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       mutate(
         event_end_date = dplyr::case_when(
           dplyr::lead(.data$combination_FRFS) == 1 ~ event_start_date_next,
           .default = .data$event_end_date),
         check_duration = dplyr::case_when(dplyr::lead(.data$combination_FRFS) == 1 ~ 1))
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::mutate(
         event_start_date = dplyr::case_when(
           .data$combination_FRFS == 1 ~ .data$event_end_date_previous,
@@ -931,21 +950,21 @@ doCombinationWindow <- function(
           .data$combination_FRFS == 1 ~ 1,
           .default = .data$check_duration))
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::mutate(event_cohort_id = dplyr::case_when(
         .data$combination_LRFS == 1 ~ paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous),
         .default = .data$event_cohort_id
       ))
 
-    addRowsLRFS <- treatmentHistory %>%
+    andromCombWin$addRowsLRFS <- andromCombWin$treatmentHistory %>%
       dplyr::filter(lead(.data$combination_LRFS) == 1)
 
-    addRowsLRFS <- addRowsLRFS %>%
+    andromCombWin$addRowsLRFS <- andromCombWin$addRowsLRFS %>%
       dplyr::mutate(
         event_start_date = .data$event_end_date_next,
         check_duration = 1)
     
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       dplyr::mutate(
         event_end_date = dplyr::case_when(
           dplyr::lead(.data$combination_LRFS) == 1 ~ .data$event_start_date_next,
@@ -955,35 +974,34 @@ doCombinationWindow <- function(
           .default = .data$check_duration
         ))
 
-    treatmentHistory <- treatmentHistory %>%
-      dplyr::bind_rows(addRowsFRFS, addRowsLRFS) %>%
-      dplyr::mutate(
-        duration_era = difftime(event_end_date, event_start_date, units = "days"))
-  
-    treatmentHistory <- doStepDuration(
-      treatmentHistory, minPostCombinationDuration)
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
+      dplyr::union(andromCombWin$addRowsFRFS, andromCombWin$addRowsLRFS) %>%
+      dplyr::mutate(duration_era = .data$event_end_date - .data$event_start_date)
+    
+    andromCombWin$treatmentHistory <- doStepDuration(
+      andromCombWin$treatmentHistory, minPostCombinationDuration)
 
-    treatmentHistory <- treatmentHistory %>%
+    andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       select("person_id", "index_year", "event_cohort_id",
              "event_start_date", "event_end_date", "duration_era")
     
-    treatmentHistory <- selectRowsCombinationWindow(treatmentHistory)
+    andromCombWin$treatmentHistory <- selectRowsCombinationWindow(andromCombWin$treatmentHistory)
     
     iterations <- iterations + 1
 
     invisible(gc())
   }
 
-  message(glue::glue("After combinationWindow: {nrow(treatmentHistory)}"))
+  message(glue::glue("After combinationWindow: {andromCombWin$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   
-  treatmentHistory <- treatmentHistory %>%
+  andromCombWin$treatmentHistory <- treatmentHistory %>%
     select(-"GAP_PREVIOUS", -"SELECTED_ROWS")
   
   time2 <- Sys.time()
   message(glue::glue(
     "Time needed to execute combination window {difftime(time2, time1, units = 'mins')}"))
 
-  return(treatmentHistory)
+  return(andromCombWin$treatmentHistory)
 }
 
 
@@ -1011,10 +1029,7 @@ selectRowsCombinationWindow <- function(treatmentHistory) {
 
   treatmentHistory <- treatmentHistory %>%
     dplyr::group_by(.data$person_id) %>%
-    dplyr::mutate(GAP_PREVIOUS = as.integer(difftime(
-      time1 = .data$event_start_date,
-      time2 = dplyr::lag(.data$event_end_date),
-      units = "days"))) %>%
+    dplyr::mutate(GAP_PREVIOUS = .data$event_start_date - dplyr::lag(.data$event_end_date)) %>%
     ungroup()
 
   # Find all rows with gap_previous < 0
