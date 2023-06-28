@@ -260,55 +260,56 @@ constructPathways <- function(dataSettings,
         combinationWindow,
         minPostCombinationDuration)
 
-      treatmentHistory <- doFilterTreatments(
-        treatmentHistory,
+      andromeda$treatmentHistory <- doFilterTreatments(
+        andromeda$treatmentHistory,
         filterTreatments)
       
-      exitHistory$event_cohort_id <- as.character(exitHistory$event_cohort_id)
-      treatmentHistory <- treatmentHistory %>% 
-        dplyr::bind_rows(exitHistory)
+      # andromeda$exitHistory$event_cohort_id <- as.character(exitHistory$event_cohort_id)
       
-      if (nrow(treatmentHistory) != 0) {
+      andromeda$exitHistory <- andromeda$exitHistory %>%
+        dplyr::mutate(event_cohort_id = as.character(.data$event_cohort_id))
+      
+      andromeda$treatmentHistory <- andromeda$treatmentHistory %>% 
+        dplyr::union(andromeda$exitHistory)
+      
+      if (andromeda$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% pull() > 0) {
         # Add event_seq number to determine order of treatments in pathway
         message("Adding drug sequence number.")
         
-        treatmentHistory <- treatmentHistory %>%
+        andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
           dplyr::arrange(.data$person_id, .data$event_start_date, .data$event_end_date)
   
-        treatmentHistory <- treatmentHistory %>%
+        andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
           dplyr::group_by(.data$person_id) %>%
-          dplyr::mutate(event_seq = seq_len(max(dplyr::row_number())))
+          dplyr::mutate(event_seq = dplyr::row_number())
         
-        treatmentHistory <- doMaxPathLength(
-          treatmentHistory,
+        andromeda$treatmentHistory <- doMaxPathLength(
+          andromeda$treatmentHistory,
           maxPathLength)
 
         # Add event_cohort_name (instead of only event_cohort_id)
         message("Adding concept names.")
 
-        treatmentHistory <- addLabels(
-          treatmentHistory,
+        andromeda$treatmentHistory <- addLabels(
+          andromeda$treatmentHistory,
           saveSettings$outputFolder)
 
         # Order the combinations
         message("Ordering the combinations.")
-        combi <- grep(
-          pattern = "+",
-          x = treatmentHistory$event_cohort_name,
-          fixed = TRUE)
-
-        cohortNames <- strsplit(
-          x = treatmentHistory$event_cohort_name[combi],
-          split = "+",
-          fixed = TRUE)
-
-        treatmentHistory$event_cohort_name[combi] <- sapply(
-          X = cohortNames,
-          FUN = function(x) {
-            paste(sort(x), collapse = "+")})
-
-        treatmentHistory$event_cohort_name <- unlist(
-          treatmentHistory$event_cohort_name)
+        
+        treatmentHistoryMem <- andromeda$treatmentHistory %>% collect()
+        
+        treatmentHistoryMem %>% mutate(event_cohort_name = treatmentHistoryMem %>%
+          dplyr::select("event_cohort_name") %>%
+          dplyr::pull() %>%
+          stringr::str_split(pattern = "\\+") %>%
+          lapply(FUN = function(x) {
+            paste(sort(x), collapse = "+")
+          }) %>%
+          unlist())
+        
+        andromeda$treatmentHistory <- treatmentHistoryMem
+        rm("treatmentHistoryMem")
       }
       
       # Save the processed treatment history
@@ -983,7 +984,7 @@ doCombinationWindow <- function(
 
     andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
       select("person_id", "index_year", "event_cohort_id",
-             "event_start_date", "event_end_date", "duration_era")
+             "event_start_date", "event_end_date", "duration_era", "GAP_PREVIOUS")
     
     andromCombWin$treatmentHistory <- selectRowsCombinationWindow(andromCombWin$treatmentHistory)
     
@@ -994,7 +995,7 @@ doCombinationWindow <- function(
 
   message(glue::glue("After combinationWindow: {andromCombWin$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   
-  andromCombWin$treatmentHistory <- treatmentHistory %>%
+  andromCombWin$treatmentHistory <- andromCombWin$treatmentHistory %>%
     select(-"GAP_PREVIOUS", -"SELECTED_ROWS")
   
   time2 <- Sys.time()
@@ -1113,7 +1114,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
           "Error encountered:\n{e}\n\n",
           "Using filterTreatments method: 'All'."
         ))
-        message(glue::glue("After filterTreatments: {nrow(treatmentHistory)}"))
+        message(glue::glue("After filterTreatments: {treatmentHistory %>% ungroup() %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
         return(treatmentHistory)
       })
 
@@ -1128,7 +1129,7 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
         dplyr::arrange(.data$person_id, .data$index_year, .data$group) %>%
         dplyr::select(-"group")
     }
-  message(glue::glue("After filterTreatments: {nrow(treatmentHistory)}"))
+  message(glue::glue("After filterTreatments: {treatmentHistory %>% ungroup() %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   return(treatmentHistory)
 }
 
@@ -1156,20 +1157,20 @@ doFilterTreatments <- function(treatmentHistory, filterTreatments) {
 #' doMaxPathLength(treatmentHistory = th, maxPathLength = 1)}
 doMaxPathLength <- function(treatmentHistory, maxPathLength) {
   # Assertions
-  checkmate::assertDataFrame(x = treatmentHistory)
-  checkmate::assertNumeric(
-    x = maxPathLength,
-    lower = 0,
-    finite = TRUE,
-    len = 1,
-    null.ok = FALSE
-  )
+  # checkmate::assertDataFrame(x = treatmentHistory)
+  # checkmate::assertNumeric(
+  #   x = maxPathLength,
+  #   lower = 0,
+  #   finite = TRUE,
+  #   len = 1,
+  #   null.ok = FALSE
+  # )
 
   # Apply maxPathLength
   treatmentHistory <- treatmentHistory %>%
     filter(.data$event_seq <= maxPathLength)
   
-  message(glue::glue("After maxPathLength: {nrow(treatmentHistory)}"))
+  message(glue::glue("After maxPathLength: {treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   return(treatmentHistory)
 }
 
