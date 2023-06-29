@@ -313,7 +313,7 @@ constructPathways <- function(dataSettings,
       }
       
       # Save the processed treatment history
-      write.csv(treatmentHistory, file.path(
+      write.csv(andromeda$treatmentHistory, file.path(
         tempFolders,
         paste0(
           saveSettings$databaseName,
@@ -323,13 +323,14 @@ constructPathways <- function(dataSettings,
         row.names = FALSE)
 
       # Save the treatment pathways
-      if (nrow(treatmentHistory) != 0) {
-        treatmentPathways <- treatmentHistory %>%
+      if (andromeda$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull() > 0) {
+        andromeda$treatmentPathways <- andromeda$treatmentHistory %>%
           tidyr::pivot_wider(
             names_from = event_seq,
             values_from = c(event_cohort_name),
-            id_cols = c("person_id", "index_year")) %>%
-          arrange(.data$person_id)
+            id_cols = c("person_id", "index_year"),
+            names_prefix = "event_cohort_name") %>%
+          dplyr::arrange(.data$person_id)
       
         # TODO: treatmentPathway stored as list
         # treatmentPathways2 <- treatmentHistory %>%
@@ -337,10 +338,6 @@ constructPathways <- function(dataSettings,
         #   summarise(
         #     pathway = list(event_cohort_name[.data$event_seq]),
         #     .groups = "drop")
-        
-        colnames(treatmentPathways)[3:ncol(treatmentPathways)] <- paste0(
-          "event_cohort_name",
-          colnames(treatmentPathways)[3:ncol(treatmentPathways)])
 
         # layers2 <- treatmentPathways2 %>%
         #   rowwise() %>%
@@ -348,12 +345,12 @@ constructPathways <- function(dataSettings,
         #   select("l") %>%
         #   max()
         
-        layers <- c(colnames(treatmentPathways))[
-          3:min(7, ncol(treatmentPathways))] # max first 5
+        layers <- c(colnames(andromeda$treatmentPathways))[
+          3:min(7, ncol(andromeda$treatmentPathways))] # max first 5
         
-        treatmentPathways <- suppressWarnings(treatmentPathways %>%
-          dplyr::group_by(.dots = layers, .data$index_year) %>%
-          dplyr::summarise(freq = length(.data$person_id), .groups = "drop"))
+        andromeda$treatmentPathways <- andromeda$treatmentPathways %>%
+          dplyr::mutate(index_year = floor(.data$index_year / 365.25 + 1970)) %>%
+          dplyr::summarise(freq = length(.data$person_id), across(c(layers, "index_year")))
 
         # TODO: pathways as list
         # treatmentPathways2 <- treatmentPathways2 %>%
@@ -361,7 +358,7 @@ constructPathways <- function(dataSettings,
         #   summarise(freq = length(person_id), .groups = "drop")
         
         write.csv(
-          x = treatmentPathways,
+          x = andromeda$treatmentPathways,
           file = file.path(
             tempFolders,
             glue::glue("{saveSettings$databaseName}_{studyName}_paths.csv")),
@@ -372,31 +369,33 @@ constructPathways <- function(dataSettings,
         # targetCohort <- currentCohorts[
         #   currentCohorts$cohort_id %in% targetCohortId, ]
         
-        targetCohort <- currentCohorts %>%
+        andromeda$targetCohort <- andromeda$currentCohorts %>%
           dplyr::filter(.data$cohort_id %in% targetCohortId)
         
-        targetCohort <- targetCohort %>%
-          dplyr::mutate(index_year = as.numeric(format(.data$start_date, "%Y")))
+        andromeda$targetCohort <- andromeda$targetCohort %>%
+          dplyr::mutate(index_year = floor(.data$start_date / 365.25 + 1970))
         
-        countsTargetCohort <- targetCohort %>%
+        countsTargetCohort <- andromeda$targetCohort %>%
           dplyr::count(.data$index_year)
 
-        countsTargetCohort$index_year <- glue::glue(
-          "# persons in target cohort {countsTargetCohort$index_year}")
+        countsTargetCohort <- countsTargetCohort %>% 
+          dplyr::mutate(index_year = paste("# persons in target cohort", .data$index_year))
         
-        countsPathway <- treatmentPathways %>%
+        countsPathway <- andromeda$treatmentPathways %>%
           dplyr::group_by(.data$index_year) %>%
           dplyr::summarise(n = sum(.data$freq), .groups = "drop")
 
         countsPathway <- countsPathway %>%
-          dplyr::add_row(index_year = NA, n = sum(countsPathway$n))
+          dplyr::union(
+            countsPathway %>% dplyr::summarise(index_year = NA, n = sum(.data$n))
+          )
         
-        countsPathway$index_year <- glue::glue(
-          "# pathways before minCellCount in {countsPathway$index_year}")
-
-        colnames(countsPathway) <- colnames(countsTargetCohort)
-        counts <- rbind(countsTargetCohort, countsPathway)
-
+        countsPathway <- countsPathway %>% 
+          dplyr::mutate(index_year = paste("# pathways before minCellCount in", .data$index_year))
+        
+        counts <- dplyr::union(countsTargetCohort, countsPathway) %>%
+          dplyr::rename(freq = "n")
+        
         write.csv(
           counts,
           file.path(tempFolders, glue::glue(
