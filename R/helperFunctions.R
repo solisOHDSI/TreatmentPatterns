@@ -73,16 +73,16 @@ extractFile <- function(connection, tableName, resultsSchema) {
 #'   )
 #' }
 extractCohortTable <- function(
-    connection,
+    connectionDetails,
     resultsSchema,
     cohortTableName,
     cohortIds = NULL) {
-  checkmate::checkClass(connection, "DatabaseConnectorDbiConnection")
+  checkmate::checkClass(connectionDetails, "ConnectionDetails")
   checkmate::checkCharacter(cohortTableName, len = 1)
   checkmate::checkCharacter(resultsSchema, len = 1)
   checkmate::checkNumeric(cohortIds, null.ok = TRUE)
   
-  if (is.null(cohortIds) | is.null(NA)) {
+  if (all(is.null(cohortIds)) | all(is.na(cohortIds))) {
     renderedSql <- SqlRender::render(
       "SELECT * FROM @resultsSchema.@cohortTableName",
       resultsSchema = resultsSchema,
@@ -97,9 +97,12 @@ extractCohortTable <- function(
     )
   }
   
+  connection <- DatabaseConnector::connect(connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection))
+  
   translatedSql <- SqlRender::translate(
     renderedSql,
-    targetDialect = connection@dbms
+    targetDialect = connectionDetails$dbms
   )
   DatabaseConnector::querySql(connection, translatedSql)
 }
