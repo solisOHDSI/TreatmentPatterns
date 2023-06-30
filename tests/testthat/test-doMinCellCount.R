@@ -46,7 +46,7 @@ df <- TreatmentPatterns:::doMinCellCount(
   studyName = "Viral_Sinusitis",
   groupCombinations = groupCombinations,
   minCellCount = 5,
-  minCellMethod = "remove")
+  minCellMethod = "remove") %>% suppressWarnings()
 
 test_that("minimal", {
     expect_type(df, "list")
@@ -55,7 +55,7 @@ test_that("minimal", {
 test_that("output 1", {
   expect_equal(ncol(df[[1]]), 3)
   expect_equal(typeof(df[[1]]$index_year), "character")
-  expect_equal(typeof(df[[1]]$n), "character")
+  expect_equal(typeof(df[[1]]$freq), "character")
 })
 
 test_that("output 2", {

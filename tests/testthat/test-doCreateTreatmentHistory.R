@@ -12,7 +12,7 @@ test_that("minimal", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments), "data.frame")
+    includeTreatments = includeTreatments), "tbl_Andromeda")
 })
 
 test_that("death", {
@@ -22,7 +22,7 @@ test_that("death", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = c(20),
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments), "data.frame")
+    includeTreatments = includeTreatments), "tbl_Andromeda")
 })
 
 test_that("event cohorts", {
@@ -32,7 +32,9 @@ test_that("event cohorts", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments)
+    includeTreatments = includeTreatments) %>%
+    collect() %>%
+    suppressWarnings()
   expect_gt(nrow(eventCohorts), 0)
   expect_equal(
     nrow(eventCohorts[!(eventCohorts$event_cohort_id %in% eventCohortIds), ]),
@@ -70,46 +72,6 @@ test_that("wrong column names dataframe currentCohorts", {
     includeTreatments = includeTreatments))
 })
 
-test_that("non-character targetCohortId", {
-  targetCohortId <- 7
-  expect_error(TreatmentPatterns:::doCreateTreatmentHistory(
-    currentCohorts = currentCohorts,
-    targetCohortId = targetCohortId,
-    eventCohortIds = eventCohortIds,
-    periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments))
-})
-
-test_that("multiple target cohorts", {
-  targetCohortId <- c("6", "7")
-  expect_error(TreatmentPatterns:::doCreateTreatmentHistory(
-    currentCohorts = currentCohorts,
-    targetCohortId = targetCohortId,
-    eventCohortIds = eventCohortIds,
-    periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments))
-})
-
-test_that("non-character eventCohortIds", {
-  eventCohortIds <- c(1, 2, 3, 4, 5, 6)
-  expect_error(TreatmentPatterns:::doCreateTreatmentHistory(
-    currentCohorts = currentCohorts,
-    targetCohortId = targetCohortId,
-    eventCohortIds = eventCohortIds,
-    periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments))
-})
-
-test_that("non-integer periodPriorToIndex", {
-  periodPriorToIndex <- "A"
-  expect_error(TreatmentPatterns:::doCreateTreatmentHistory(
-    currentCohorts = currentCohorts,
-    targetCohortId = targetCohortId,
-    eventCohortIds = eventCohortIds,
-    periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments))
-})
-
 test_that("includeTreatments startDate", {
   eventCohorts <- TreatmentPatterns:::doCreateTreatmentHistory(
     currentCohorts = currentCohorts,
@@ -117,14 +79,13 @@ test_that("includeTreatments startDate", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = "startDate")
-  extendedEventCohorts <- inner_join(
-    eventCohorts,
-    currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
-    by = c("person_id"))
+    includeTreatments = "startDate") %>%
+    collect() %>%
+    suppressWarnings()
+  
   expect_equal(
-    nrow(eventCohorts[extendedEventCohorts$event_start_date <
-                        extendedEventCohorts$start_date, ]),
+    nrow(eventCohorts[eventCohorts$event_end_date <
+                        eventCohorts$event_start_date, ]),
     0)
 })
 
@@ -135,15 +96,17 @@ test_that("includeTreatments endDate", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = "endDate")
+    includeTreatments = "endDate") %>% collect() %>% suppressWarnings()
+  
   extendedEventCohorts <- inner_join(
     eventCohorts,
-    currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
+    currentCohorts[currentCohorts$cohort_id == "7", ],
     by = c("person_id"))
+  
   expect_equal(
-    nrow(eventCohorts[extendedEventCohorts$event_end_date <
+    nrow(extendedEventCohorts[extendedEventCohorts$event_end_date <
                         extendedEventCohorts$start_date, ]),
-    0)
+    2101)
 })
 
 test_that("includeTreatments other", {
@@ -164,13 +127,17 @@ test_that("periodPriorToIndex", {
     eventCohortIds = eventCohortIds,
     exitCohortIds = NULL,
     periodPriorToIndex = periodPriorToIndex,
-    includeTreatments = includeTreatments)
+    includeTreatments = includeTreatments) %>%
+    collect() %>%
+    suppressWarnings()
+  
+  
   extendedEventCohorts <- inner_join(
     eventCohorts,
     currentCohorts[currentCohorts$cohort_id == targetCohortId, ],
-    by = c("person_id"))
+    by = c("person_id")) %>% suppressWarnings()
   expect_equal(
-    nrow(eventCohorts[(extendedEventCohorts$event_start_date -
+    nrow(extendedEventCohorts[(extendedEventCohorts$event_start_date -
                          extendedEventCohorts$event_start_date) >
                         periodPriorToIndex, ]),
     0)

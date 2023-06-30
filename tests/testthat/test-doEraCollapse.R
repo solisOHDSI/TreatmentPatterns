@@ -7,16 +7,16 @@ test_that("void", {
 
 test_that("minimal", {
   # update generic test variables
-  nrows <- nrow(doSplitEventCohortsTH)
+  nrows <- doSplitEventCohortsTH %>% summarise(n = n()) %>% pull() %>% suppressWarnings()
   eraCollapseSize <- 1.5
   
   treatmentHistoryFiltered <- doEraCollapse(
     doSplitEventCohortsTH,
-    eraCollapseSize)
+    eraCollapseSize) %>% collect() %>% suppressWarnings()
 
-  expect_s3_class(treatmentHistory, "data.frame")
+  expect_s3_class(treatmentHistoryFiltered, "data.frame")
   expect_true(
-    nrow(treatmentHistoryFiltered) == nrow(doSplitEventCohortsTH))
+    nrow(treatmentHistoryFiltered) == nrows)
 })
 
 test_that("invalid_input", {

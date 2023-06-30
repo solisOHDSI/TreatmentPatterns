@@ -8,7 +8,7 @@ doSetDurationTH$event_cohort_id <- as.character(
   doSetDurationTH$event_cohort_id)
 
 doSetDurationTH <- TreatmentPatterns:::selectRowsCombinationWindow(
-  doSetDurationTH)
+  doSetDurationTH) %>% collect() %>% suppressWarnings()
 
 doSetDurationTH <- doSetDurationTH %>%
   mutate(switch = case_when(
@@ -17,19 +17,19 @@ doSetDurationTH <- doSetDurationTH %>%
          !(-.data$GAP_PREVIOUS == .data$duration_era |
              -GAP_PREVIOUS == dplyr::lag(.data$duration_era))) ~ 1,
     .default = 0
-  ))
+  ))  %>% collect() %>% suppressWarnings()
 
 doSetDurationTH <- doSetDurationTH %>%
   mutate(combination_FRFS = case_when(
     SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
     .default = 0
-  ))
+  )) %>% collect() %>% suppressWarnings()
 
 doSetDurationTH <- doSetDurationTH %>%
   dplyr::mutate(combination_LRFS = dplyr::case_when(
     .data$SELECTED_ROWS == 1 & .data$switch == 0 & dplyr::lag(.data$event_end_date) > .data$event_end_date ~ 1,
     .default = 0
-  ))
+  )) %>% collect() %>% suppressWarnings()
 
 sumSwitchComb <- sum(
   sum(doSetDurationTH$switch, na.rm = TRUE),
@@ -100,8 +100,8 @@ doSetDurationTH <- doSetDurationTH %>%
 
 doSetDurationTH <- doSetDurationTH %>%
   dplyr::mutate(event_cohort_id = dplyr::case_when(
-    .data$combination_LRFS == 1 ~ paste0(.data$event_cohort_id, "+", .data$event_cohort_id_previous),
-    .default = .data$event_cohort_id
+    .data$combination_LRFS == 1 ~ paste0(as.character(.data$event_cohort_id), "+", as.character(.data$event_cohort_id_previous)),
+    .default = as.character(.data$event_cohort_id)
   ))
 
 addRowsLRFS <- doSetDurationTH %>%

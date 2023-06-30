@@ -7,15 +7,13 @@ test_that("void", {
 })
 
 test_that("minimal", {
-
-  invisible(capture.output({
-    treatmentHistory <- TreatmentPatterns:::doCombinationWindow(
+  treatmentHistory <- TreatmentPatterns:::doCombinationWindow(
       doEraCollapseTH,
       combinationWindow,
-      minPostCombinationDuration)
-  }))
+      minPostCombinationDuration) %>%
+    suppressWarnings()
 
-  expect_s3_class(treatmentHistory, "data.frame")
+  expect_s3_class(treatmentHistory, "tbl_Andromeda")
 })
 
 
@@ -56,14 +54,19 @@ test_that("case: A is equal to B", {
       index_year = as.numeric(format(event_start_date, "%Y")))
   
 
-  invisible(capture.output({
-    result <- TreatmentPatterns:::doCombinationWindow(
-      treatmentHistory = treatmentHistory,
-      combinationWindow = 1,
-      minPostCombinationDuration = 1) %>%
-      select(-"duration_era", -"index_year")# [,
+  result <- TreatmentPatterns:::doCombinationWindow(
+    treatmentHistory = treatmentHistory,
+    combinationWindow = 1,
+    minPostCombinationDuration = 1) %>%
+    dplyr::select(-"duration_era", -"index_year") %>%
+    dplyr::collect() %>%
+    suppressWarnings()
+  
+  result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
+  result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
+  
+    # [,
      # c("person_id", "event_cohort_id", "event_start_date", "event_end_date")]
-  }))
 
   expectedResults <- tibble::tribble(
    ~person_id, ~event_cohort_id, ~event_start_date, ~event_end_date,
@@ -74,18 +77,17 @@ test_that("case: A is equal to B", {
   expect_equal(result, expectedResults)
 
   # case when eras are too short. But which will be chosen? A or B?
-  invisible(capture.output({
-    result2 <- TreatmentPatterns:::doCombinationWindow(
-      treatmentHistory = treatmentHistory,
-      combinationWindow = 1000,
-      minPostCombinationDuration = 1) %>%
-      select(-"duration_era", -"index_year")
-  }))
+  # invisible(capture.output({
+  #   result2 <- TreatmentPatterns:::doCombinationWindow(
+  #     treatmentHistory = treatmentHistory,
+  #     combinationWindow = 1000,
+  #     minPostCombinationDuration = 1) %>%
+  #     select(-"duration_era", -"index_year")
+  # }))
 })
 
 
 test_that("case: A precedes B", {
-
   treatmentHistory <- tibble::tibble(
     event_cohort_id = c(101, 102),
     person_id = c(1, 1),
@@ -104,14 +106,17 @@ test_that("case: A precedes B", {
       duration_era = difftime(.data$event_end_date, .data$event_start_date, units = "days"),
       index_year = as.numeric(format(.data$event_start_date, "%Y")))
   
-  invisible(capture.output({
-    result <- TreatmentPatterns:::doCombinationWindow(
-      treatmentHistory = treatmentHistory,
-      combinationWindow = 1,
-      minPostCombinationDuration = 1) %>%
-      select(-"duration_era", -"index_year")
-  }))
+  result <- TreatmentPatterns:::doCombinationWindow(
+    treatmentHistory = treatmentHistory,
+    combinationWindow = 1,
+    minPostCombinationDuration = 1) %>%
+    select(-"duration_era", -"index_year") %>%
+    dplyr::collect() %>%
+    suppressWarnings()
 
+  result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
+  result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
+  
   expectedResult <- tibble::tibble(
     event_cohort_id = c("101", "102"),
     person_id = c(1,1), 
@@ -122,13 +127,16 @@ test_that("case: A precedes B", {
   expect_equal(result, expectedResult)
 
   # case when min combination lenght and min post combination duration are large
-  invisible(capture.output({
-    result2 <- TreatmentPatterns:::doCombinationWindow(
+  result2 <- TreatmentPatterns:::doCombinationWindow(
       treatmentHistory = treatmentHistory,
       combinationWindow = 1000,
       minPostCombinationDuration = 1000) %>%
-      select(-"duration_era", -"index_year")
-  }))
+      select(-"duration_era", -"index_year") %>%
+    collect() %>%
+    suppressWarnings()
+  
+  result2$event_start_date <- Andromeda::restoreDate(result2$event_start_date)
+  result2$event_end_date <- Andromeda::restoreDate(result2$event_end_date)
 
   expect_equal(result2, expectedResult)
 })

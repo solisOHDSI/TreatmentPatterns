@@ -198,7 +198,7 @@ doFilterTreatmentsTHOrdered <- doFilterTreatmentsTH %>%
 
 doFilterTreatmentsTHPP <- doFilterTreatmentsTHOrdered %>%
   group_by(.data$person_id) %>%
-  dplyr::mutate(event_seq = seq_len(max(dplyr::row_number())))
+  dplyr::mutate(event_seq = dplyr::row_number())
 
 doMaxPathLengthTH <- TreatmentPatterns:::doMaxPathLength(
   doFilterTreatmentsTHPP,
@@ -216,7 +216,7 @@ TreatmentPatterns::constructPathways(
 )
 
 # Generate output for folder structure etc.
-generateOutput(saveSettings = saveSettings)
+TreatmentPatterns::generateOutput(saveSettings = saveSettings)
 
 treatmentPathways <- TreatmentPatterns:::getPathways(
   outputFolder = saveSettings$outputFolder,

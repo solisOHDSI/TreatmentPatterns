@@ -6,9 +6,12 @@ test_that("void", {
 })
 
 test_that("minimal", {
-  expect_s3_class(treatmentHistory <- TreatmentPatterns:::addLabels(
+  treatmentHistory <- TreatmentPatterns:::addLabels(
     doMaxPathLengthTH,
-    saveSettings$outputFolder), "data.frame")
+    saveSettings$outputFolder) %>%
+      dplyr::collect() %>% suppressWarnings()
+  
+  expect_s3_class(treatmentHistory, "data.frame")
 })
 
 test_that("validate read file", {
@@ -32,7 +35,7 @@ colnames(labels) <- c("event_cohort_id", "event_cohort_name")
 
 test_that("read file correctly", {
   expect_true(
-    all(labels$event_cohort_id[c(1:4, 6:7)] %in% treatmentHistory$event_cohort_id,
+    all(treatmentHistory$event_cohort_id %in% labels$event_cohort_id,
     TRUE))
 })
 
@@ -43,8 +46,14 @@ treatmentHistoryMerged <- merge(
   by = "event_cohort_id")
 
 test_that("Add events to TreatmentHistory", {
+  n <- doMaxPathLengthTH %>% 
+    dplyr::ungroup() %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::pull() %>%
+    suppressWarnings()
+  
   expect_true(ncol(treatmentHistoryMerged) == 1 + ncol(doMaxPathLengthTH))
-  expect_true(nrow(treatmentHistoryMerged) == nrow(doMaxPathLengthTH))
+  expect_true(nrow(treatmentHistoryMerged) == n)
 })
 
 b <- sapply(
