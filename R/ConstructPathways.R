@@ -299,7 +299,6 @@ constructPathways <- function(dataSettings,
 
         treatmentHistoryMem <- andromeda$treatmentHistory %>% collect()
 
-        print(treatmentHistoryMem)
         eventCohortNames <- treatmentHistoryMem %>%
           dplyr::select("event_cohort_name") %>%
           dplyr::pull() %>%
@@ -489,7 +488,7 @@ doCreateTreatmentHistory <- function(
   
   if (andromeda$exitCohorts %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull() > 0) {
     andromeda$eventCohorts <- andromeda$eventCohorts %>% 
-      dplyr::bind_rows(andromeda$exitCohorts)
+      dplyr::union(andromeda$exitCohorts)
   }
   
   currentCohorts <- dplyr::full_join(
@@ -688,7 +687,7 @@ doSplitEventCohorts <- function(
       cohort <- splitEventCohorts[c]
       cutoff <- splitTime[c]
 
-      treatmentHistory <- dplyr::bind_rows(
+      treatmentHistory <- dplyr::union(
         treatmentHistory, 
         treatmentHistory %>%
           dplyr::filter(.data$event_cohort_id == cohort) %>%
@@ -696,7 +695,7 @@ doSplitEventCohorts <- function(
           dplyr::mutate(event_cohort_id = as.integer(paste0(cohort, 1)))
       )
 
-      treatmentHistory <- dplyr::bind_rows(
+      treatmentHistory <- dplyr::union(
         treatmentHistory,
         treatmentHistory %>%
           dplyr::filter(.data$event_cohort_id == cohort) %>%
@@ -835,7 +834,7 @@ doCombinationWindow <- function(
   time1 <- Sys.time()
 
   combWinAndrom$treatmentHistory <- treatmentHistory %>%
-    dplyr::mutate(event_cohort_id = as.character(.data$event_cohort_id))
+    dplyr::mutate(event_cohort_id = as.character(floor(.data$event_cohort_id)))
   
   # Find which rows contain some overlap
   combWinAndrom$treatmentHistory <- selectRowsCombinationWindow(combWinAndrom$treatmentHistory) %>%
