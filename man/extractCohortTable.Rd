@@ -5,16 +5,13 @@
 \title{extractCohortTable}
 \usage{
 extractCohortTable(
-  connection,
+  connectionDetails,
   resultsSchema,
   cohortTableName,
   cohortIds = NULL
 )
 }
 \arguments{
-\item{connection}{\link[DatabaseConnector]{connect}\cr
-Connection object from DatabaseConnector.}
-
 \item{resultsSchema}{\link[base]{character}\cr
 Schema of results.}
 
@@ -23,6 +20,9 @@ Name of table.}
 
 \item{cohortIds}{\link[base]{c} of \link[base]{integer}\cr
 Vector of cohort ID's.}
+
+\item{connection}{\link[DatabaseConnector]{connect}\cr
+Connection object from DatabaseConnector.}
 }
 \value{
 \link[base]{data.frame}

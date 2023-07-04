@@ -4,13 +4,13 @@
 \alias{doFilterTreatments}
 \title{doFilterTreatments}
 \usage{
-doFilterTreatments(treatmentHistory, filterTreatments)
+doFilterTreatments(andromeda, filterTreatments)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
-
 \item{filterTreatments}{Select first occurrence of ('First') / changes between ('Changes') / all
 event cohorts ('All').}
+
+\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
 }
 \value{
 treatmentHistory

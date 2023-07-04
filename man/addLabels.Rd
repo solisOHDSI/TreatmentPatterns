@@ -4,12 +4,10 @@
 \alias{addLabels}
 \title{addLabels}
 \usage{
-addLabels(treatmentHistory, outputFolder)
+addLabels(andromeda)
 }
 \arguments{
 \item{treatmentHistory}{treatmentHistory object}
-
-\item{outputFolder}{Folder of output}
 }
 \value{
 treatmentHistory

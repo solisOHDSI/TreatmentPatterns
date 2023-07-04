@@ -4,24 +4,16 @@
 \alias{doSplitEventCohorts}
 \title{doSplitEventCohorts}
 \usage{
-doSplitEventCohorts(
-  treatmentHistory,
-  splitEventCohorts,
-  splitTime,
-  outputFolder
-)
+doSplitEventCohorts(andromeda, splitEventCohorts, splitTime)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
-
 \item{splitEventCohorts}{Specify event cohort to split in acute (< X days) and therapy
 (>= X days).}
 
 \item{splitTime}{Specify number of days (X) at which each of the split event cohorts
 should be split in acute and therapy}
 
-\item{outputFolder}{Name of local folder to place results; make sure to use forward
-slashes (/).}
+\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
 }
 \value{
 treatmentHistory

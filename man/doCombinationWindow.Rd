@@ -4,16 +4,9 @@
 \alias{doCombinationWindow}
 \title{Combine overlapping events into combinations}
 \usage{
-doCombinationWindow(
-  treatmentHistory,
-  combinationWindow,
-  minPostCombinationDuration
-)
+doCombinationWindow(andromeda, combinationWindow, minPostCombinationDuration)
 }
 \arguments{
-\item{treatmentHistory}{A dataframe of 'event cohorts' with the following columns:
-event_cohort_id, person_id, event_start_date, event_end_date.}
-
 \item{combinationWindow}{Minimum number of days two event cohorts need to overlap to be
 considered a combination event.}
 
@@ -21,6 +14,9 @@ considered a combination event.}
 or ending before a combination event must last to be counted a separate
 event. Events occuring before or after a combination that are less than
 \code{minPostCombinationDuration} days long will be dropped from the analysis.}
+
+\item{treatmentHistory}{A dataframe of 'event cohorts' with the following columns:
+event_cohort_id, person_id, event_start_date, event_end_date.}
 }
 \value{
 A treatmentHistory dataframe with the columns event_cohort_id,

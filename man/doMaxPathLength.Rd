@@ -4,12 +4,12 @@
 \alias{doMaxPathLength}
 \title{doMaxPathLength}
 \usage{
-doMaxPathLength(treatmentHistory, maxPathLength)
+doMaxPathLength(andromeda, maxPathLength)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
-
 \item{maxPathLength}{Maximum number of steps included in treatment pathway.}
+
+\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
 }
 \value{
 treatmentHistory

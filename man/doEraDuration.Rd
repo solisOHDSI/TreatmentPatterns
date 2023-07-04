@@ -4,14 +4,14 @@
 \alias{doEraDuration}
 \title{doEraDuration}
 \usage{
-doEraDuration(treatmentHistory, minEraDuration)
+doEraDuration(andromeda, minEraDuration)
 }
 \arguments{
-\item{treatmentHistory}{(\link[base]{data.frame})\cr
-See \link[TreatmentPatterns]{doCreateTreatmentHistory}.}
-
 \item{minEraDuration}{(\link[base]{numeric})\cr
 minEraDuration from \link[TreatmentPatterns]{addPathwaySettings}.}
+
+\item{treatmentHistory}{(\link[base]{data.frame})\cr
+See \link[TreatmentPatterns]{doCreateTreatmentHistory}.}
 }
 \value{
 (\link[base]{data.frame})

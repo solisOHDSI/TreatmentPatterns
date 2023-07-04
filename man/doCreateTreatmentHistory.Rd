@@ -5,26 +5,15 @@
 \title{doCreateTreatmentHistory}
 \usage{
 doCreateTreatmentHistory(
-  currentCohorts,
-  targetCohortId,
+  andromeda,
+  targetCohortIds,
   eventCohortIds,
-  exitCohortIds = NULL,
+  exitCohortIds,
   periodPriorToIndex,
   includeTreatments
 )
 }
 \arguments{
-\item{currentCohorts}{(\link[base]{data.frame})\cr
-\enumerate{
-\item (\link[base]{numeric}) cohort_id
-\item (\link[base]{numeric}) person_id
-\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) start_date
-\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) end_date
-}}
-
-\item{targetCohortId}{(\link[base]{c}) of (\link[base]{numeric})\cr
-targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.}
-
 \item{eventCohortIds}{(\link[base]{c}) of (\link[base]{numeric})\cr
 eventCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.}
 
@@ -36,6 +25,17 @@ periodPriorToIndex from \link[TreatmentPatterns]{addPathwaySettings}.}
 
 \item{includeTreatments}{(\link[base]{character})\cr
 includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.}
+
+\item{currentCohorts}{(\link[base]{data.frame})\cr
+\enumerate{
+\item (\link[base]{numeric}) cohort_id
+\item (\link[base]{numeric}) person_id
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) start_date
+\item (\link[base]{date}: \verb{\\\%Y-\\\%m-\\\%d}) end_date
+}}
+
+\item{targetCohortId}{(\link[base]{c}) of (\link[base]{numeric})\cr
+targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.}
 }
 \value{
 (\link[base]{data.frame})\cr

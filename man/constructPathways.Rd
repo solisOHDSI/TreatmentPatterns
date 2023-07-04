@@ -4,16 +4,14 @@
 \alias{constructPathways}
 \title{constructPathways}
 \usage{
-constructPathways(dataSettings, pathwaySettings, saveSettings, cohortSettings)
+constructPathways(pathwaySettings, cohortSettings, andromeda)
 }
 \arguments{
-\item{dataSettings}{Settings object as created by \link[TreatmentPatterns]{createDataSettings}.}
-
 \item{pathwaySettings}{Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.}
 
-\item{saveSettings}{Settings object as created by \link[TreatmentPatterns]{createSaveSettings}.}
-
 \item{cohortSettings}{Settings object created by \link[TreatmentPatterns]{createCohortSettings}.}
+
+\item{dataSettings}{Settings object as created by \link[TreatmentPatterns]{createDataSettings}.}
 }
 \description{
 Construct treatment pathways. Also generates output in csv format.

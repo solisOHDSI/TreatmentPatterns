@@ -4,13 +4,13 @@
 \alias{doEraCollapse}
 \title{doEraCollapse}
 \usage{
-doEraCollapse(treatmentHistory, eraCollapseSize)
+doEraCollapse(andromeda, eraCollapseSize)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
-
 \item{eraCollapseSize}{Window of time between which two eras of the same event cohort are
 collapsed into one era.}
+
+\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
 }
 \value{
 treatmentHistory

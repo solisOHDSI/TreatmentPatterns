@@ -4,7 +4,7 @@
 \alias{selectRowsCombinationWindow}
 \title{selectRowsCombinationWindow}
 \usage{
-selectRowsCombinationWindow(treatmentHistory)
+selectRowsCombinationWindow(andromeda)
 }
 \arguments{
 \item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
