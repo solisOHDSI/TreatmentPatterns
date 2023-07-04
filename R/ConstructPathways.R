@@ -1,7 +1,5 @@
 constructPathway <- function(
-    dataParams,
     settings,
-    saveParams,
     cohortParams,
     andromeda,
     localAndromeda) {
@@ -10,11 +8,7 @@ constructPathway <- function(
   eventCohortIds <- unlist(settings$eventCohortIds)
   exitCohortIds <- unlist(settings$exitCohortIds)
   
-  # Check if directories exist and create if necessary
-  tempFolders <- file.path(saveParams$tempFolder, settings$studyName)
-  if (!file.exists(tempFolders)) {
-    dir.create(tempFolders, recursive = TRUE)
-  }
+  localAndromeda$cohortParams <- cohortParams
   
   message(glue::glue("Constructing treatment pathways: {settings$studyName}"))
   
@@ -59,8 +53,7 @@ constructPathway <- function(
     doSplitEventCohorts(
       localAndromeda,
       settings$splitEventCohorts,
-      settings$splitTime,
-      saveParams$outputFolder)
+      settings$splitTime)
     
     doEraCollapse(
       localAndromeda,
@@ -101,8 +94,7 @@ constructPathway <- function(
       message("Adding concept names.")
       
       addLabels(
-        localAndromeda,
-        saveParams$outputFolder)
+        localAndromeda)
       
       # Order the combinations
       message("Ordering the combinations.")
@@ -120,16 +112,6 @@ constructPathway <- function(
         collect() %>%
         mutate(event_cohort_name = eventCohortNames)
     }
-    
-    # Save the processed treatment history
-    write.csv(localAndromeda$treatmentHistory, file.path(
-      tempFolders,
-      paste0(
-        saveParams$databaseName,
-        "_",
-        settings$studyName,
-        "_event_seq_processed.csv")),
-      row.names = FALSE)
     
     # Save the treatment pathways
     if (localAndromeda$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull() > 0) {
@@ -165,50 +147,34 @@ constructPathway <- function(
       # treatmentPathways2 <- treatmentPathways2 %>%
       #   group_by(.data$index_year, .data$pathway) %>%
       #   summarise(freq = length(person_id), .groups = "drop")
-      
-      write.csv(
-        x = localAndromeda$treatmentPathways,
-        file = file.path(
-          tempFolders,
-          glue::glue("{saveParams$databaseName}_{settings$studyName}_paths.csv")),
-        row.names = FALSE)
-      
+
       # Calculate counts of the number of persons in target cohort / with
       # pathways, in total / per year
-      # targetCohort <- currentCohorts[
-      #   currentCohorts$cohort_id %in% targetCohortId, ]
-      
       localAndromeda$targetCohorts <- andromeda$fullCohorts %>%
         dplyr::filter(.data$cohort_id %in% targetCohortIds)
       
       localAndromeda$targetCohorts <- localAndromeda$targetCohorts %>%
         dplyr::mutate(index_year = floor(.data$start_date / 365.25 + 1970))
       
-      countsTargetCohort <- localAndromeda$targetCohorts %>%
+      localAndromeda$countsTargetCohort <- localAndromeda$targetCohorts %>%
         dplyr::count(.data$index_year, name = "freq")
       
-      countsTargetCohort <- countsTargetCohort %>% 
+      localAndromeda$countsTargetCohort <- localAndromeda$countsTargetCohort %>% 
         dplyr::mutate(index_year = paste("# persons in target cohort", .data$index_year))
       
-      countsPathway <- localAndromeda$treatmentPathways %>%
+      localAndromeda$countsPathway <- localAndromeda$treatmentPathways %>%
         dplyr::group_by(.data$index_year) %>%
         dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
       
-      countsPathway <- countsPathway %>%
+      localAndromeda$countsPathway <- localAndromeda$countsPathway %>%
         dplyr::union(
-          countsPathway %>% dplyr::summarise(index_year = NA, freq = sum(.data$freq))
+          localAndromeda$countsPathway %>% dplyr::summarise(index_year = NA, freq = sum(.data$freq))
         )
       
-      countsPathway <- countsPathway %>% 
+      localAndromeda$countsPathway <- localAndromeda$countsPathway %>% 
         dplyr::mutate(index_year = paste("# pathways before minCellCount in", .data$index_year))
       
-      counts <- dplyr::union(countsTargetCohort, countsPathway)
-      
-      write.csv(
-        counts,
-        file.path(tempFolders, glue::glue(
-          "{saveParams$databaseName}_{settings$studyName}_summary_cnt.csv")),
-        row.names = FALSE)
+      localAndromeda$counts <- dplyr::union(localAndromeda$countsTargetCohort, localAndromeda$countsPathway)
     }
   }
 }
@@ -222,8 +188,6 @@ constructPathway <- function(
 #' Settings object as created by \link[TreatmentPatterns]{createDataSettings}.
 #' @param pathwaySettings
 #' Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.
-#' @param saveSettings
-#' Settings object as created by \link[TreatmentPatterns]{createSaveSettings}.
 #' @param cohortSettings
 #' Settings object created by \link[TreatmentPatterns]{createCohortSettings}.
 #'
@@ -238,73 +202,33 @@ constructPathway <- function(
 #'   )
 #' }
 constructPathways <- function(
-    dataSettings,
     pathwaySettings,
-    saveSettings,
     cohortSettings,
     andromeda) {
   
-  dataParams <- dataSettings$get()
-  pathwayParams <- pathwaySettings$get()
-  saveParams <- saveSettings$get()
-  cohortParams <- cohortSettings$get()
-  
-  cohortIds <- cohortParams$cohortId
+  cohortIds <- cohortSettings$cohortId
   
   # Get cohorts from database
-  andromeda$fullCohorts <- extractCohortTable(
-    connection = dataParams$connectionDetails,
-    resultsSchema = dataParams$resultSchema,
-    cohortTableName = dataParams$cohortTable,
-    cohortIds = cohortIds
-  ) %>%
-    dplyr::rename(
-      cohort_id = "COHORT_DEFINITION_ID",
-      person_id = "SUBJECT_ID",
-      start_date = "COHORT_START_DATE",
-      end_date = "COHORT_END_DATE")
+  andromeda$pathwaySettings <- pathwaySettings %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      targetCohortIds = paste(.data$targetCohortIds, collapse = ","),
+      eventCohortIds = paste(.data$eventCohortIds, collapse = ","),
+      exitCohortIds = paste(.data$exitCohortIds, collapse = ","))
   
-  if (!dir.exists(saveParams$outputFolder)) {
-    dir.create(saveParams$outputFolder)
-  }
-  
-  write.csv(
-    x = cohortParams,
-    file = file.path(saveParams$outputFolder, "cohortsToCreate.csv")
-  )
-
-  write.csv(
-    x = andromeda$fullCohorts,
-    file = file.path(saveParams$outputFolder, "cohortTable.csv")
-  )
-
-  # Create output and temp folders
-  fs::dir_create(saveParams$tempFolder)
-  
-  # write.csv(
-  #   pathwayParams,
-  #   file.path(
-  #     saveParams$outputFolder,
-  #     "pathwaySettings.csv"),
-  #   row.names = FALSE)
-  
-  andromedas <- lapply(seq_len(nrow(pathwayParams)), function(i) {
+  andromedas <- lapply(seq_len(nrow(pathwaySettings)), function(i) {
     localAndromeda <- Andromeda::andromeda()
-    settings <- pathwayParams[i, ]
-    constructPathway(dataParams, settings, saveParams, cohortParams, andromeda, localAndromeda)
+    settings <- pathwaySettings[i, ]
+    constructPathway(
+      settings = settings,
+      cohortParams = cohortSettings,
+      andromeda = andromeda,
+      localAndromeda = localAndromeda)
     
-    localAndromeda
+    return(localAndromeda)
   })
   
-  # for (i in seq_len(nrow(pathwayParams))) {
-  #   localAndromeda <- Andromeda::andromeda()
-  #   settings <- pathwayParams[i, ]
-  #   constructPathway(dataParams, settings, saveParams, cohortParams, andromeda, localAndromeda)
-  #   
-  #   andromedas[pathwayParams[1, ]$studyName] <- localAndromeda
-  # }
-  
-  names(andromedas) <- pathwayParams$studyName
+  names(andromedas) <- pathwaySettings$studyName
   suppressWarnings(andromedas["global"] <- andromeda)
   message("constructPathways done.")
   return(andromedas)
@@ -518,9 +442,6 @@ doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
 #'     Specify number of days (X) at which each of the split event cohorts
 #'     should be split in acute and therapy
 #'
-#' @param outputFolder
-#'     Name of local folder to place results; make sure to use forward
-#'     slashes (/).
 #'
 #' @return treatmentHistory
 #'     Updated dataframe, with specified event cohorts now
@@ -544,14 +465,11 @@ doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
 doSplitEventCohorts <- function(
     andromeda,
     splitEventCohorts,
-    splitTime,
-    outputFolder) {
+    splitTime) {
   
   if (all(!splitEventCohorts == "")) {
     # Load in labels cohorts
-    labels <- dplyr::tibble(read.csv(
-      file = file.path(outputFolder, "cohortsToCreate.csv"))
-    )[, -1]
+    labels <- andromeda$cohortParams %>% dplyr::collect()
 
     # Check if splitEventCohorts == splitTime
     checkmate::assertTRUE(length(splitEventCohorts) == length(splitTime))
@@ -1030,18 +948,14 @@ doMaxPathLength <- function(andromeda, maxPathLength) {
 #' Adds back cohort names to concept ids.
 #'
 #' @param treatmentHistory treatmentHistory object
-#' @param outputFolder Folder of output
 #'
 #' @return treatmentHistory
-addLabels <- function(andromeda, outputFolder) {
+addLabels <- function(andromeda) {
   # TH <- treatmentHistory
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
     mutate(event_cohort_id = as.character(as.integer(.data$event_cohort_id)))
 
-  labels <- read.csv(
-      file = file.path(outputFolder, "cohortsToCreate.csv"))
-  # convenrt event_cohort_id to character
-  labels["cohortId"] <- as.character(labels[, "cohortId"])
+  labels <- andromeda$cohortParams %>% dplyr::collect()
 
   labels <- labels[labels$cohortType == "event" | labels$cohortType == "exit", c("cohortId", "cohortName")]
   colnames(labels) <- c("event_cohort_id", "event_cohort_name")

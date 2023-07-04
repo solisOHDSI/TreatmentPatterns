@@ -1,4 +1,6 @@
-# ==== CohortSettings =========================================================
+#' @title CohortSettings
+#' 
+#' @export
 CohortSettings <- R6::R6Class(
   classname = "CohortSettings",
   inherit = Settings,

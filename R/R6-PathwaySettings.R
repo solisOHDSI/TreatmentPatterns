@@ -1,4 +1,6 @@
-# ==== PathwaySettings ========================================================
+#' @title PathwaySettings
+#' 
+#' @export
 PathwaySettings <- R6::R6Class(
   classname = "PathwaySettings",
   inherit = Settings,

@@ -1,4 +1,7 @@
-# ==== AnalysisSettings =======================================================
+#' @title
+#' AnalysisSettings
+#' 
+#' @export
 AnalysisSettings <- R6::R6Class(
   inherit = Settings,
   classname = "AnalysisSettings",
@@ -60,20 +63,15 @@ AnalysisSettings <- R6::R6Class(
         x = private$settings$filterTreatments, len = 1, add = errorMessages)
       checkmate::assertSubset(
         x = private$settings$filterTreatments, choices = c("First", "Changes", "All"), add = errorMessages)
-
       checkmate::assertNumeric(
         x = private$settings$maxPathLength, lower = 0, upper = 5, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
-
       checkmate::assertNumeric(
         x = private$settings$minCellCount, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
-
       # Not used in ConstructPathways.R
       checkmate::assertCharacter(
         x = private$settings$minCellMethod, len = 1, add = errorMessages)
-
       checkmate::assertNumeric(
         x = private$settings$groupCombinations, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
-
       checkmate::assertLogical(
         x = private$settings$addNoPaths, any.missing = FALSE, len = 1, add = errorMessages)
 
