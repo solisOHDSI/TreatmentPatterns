@@ -6,10 +6,14 @@ AnalysisSettings <- R6::R6Class(
   inherit = Settings,
   classname = "AnalysisSettings",
   public = list(
-    initialize = function(cohortSettings, studyName) {
-      private$settings$targetCohortIds <- list(cohortSettings$getTarget()$cohortId)
-      private$settings$eventCohortIds <- list(cohortSettings$getEvent()$cohortId)
-      private$settings$exitCohortIds <- list(cohortSettings$getExit()$cohortId)
+    initialize = function(cohorts, studyName) {
+      private$settings$targetCohortIds <- cohorts %>%
+        filter(.data$type == "target") %>% select("cohortId") %>% pull %>% list()
+      private$settings$eventCohortIds <- cohorts %>%
+        filter(.data$type == "target") %>% select("cohortId") %>% pull %>% list()
+      private$settings$exitCohortIds <- cohorts %>%
+        filter(.data$type == "target") %>% select("cohortId") %>% pull %>% list()
+      
       private$settings$studyName <- studyName
     },
     editSettings = function(

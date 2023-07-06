@@ -1,5 +1,6 @@
 #' generateOutput
 #'
+#' `DEPRECATED`\cr
 #' Generates the output files in the specified output folder. It will also zip
 #' the output folder into a zip-file.
 #'

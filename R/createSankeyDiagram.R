@@ -1,5 +1,6 @@
 #' groupInfrequentCombinations
 #'
+#' `DEPRECATED`\cr
 #' Help function to group combinations
 #'
 #' @param data
@@ -60,75 +61,96 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 
 #' createSankeyDiagram
 #'
-#' @param data (\link[base]{data.frame})
-#' Data frame with event cohorts of the target cohort in different columns.
-#' @param studyName (\link[base]{character})
-#' Name of the study, specified in the `pathwaySerttings` object.
-#' @param outputFolder (\link[base]{character})
-#' Path to the output folder.
-#' @param groupCombinations (\link[base]{logical})
-#' Select to group all non-fixed combinations in one category "other" in the sunburst plot.
-#' @param fileName (\link[base]{character})
-#' File name of the html-file to output.
+#' Writes the Sankey diagram to a HTML-file, to a specified file path. 
 #'
+#' @param treatmentHistory (`data.frame()`)\cr
+#' Treatment history data frame.
+#' @param outputFile (`character(1)`)\cr
+#' Path where the Sankey diagram should be written to.
+#' @param groupCombinations (`logical(1)`: `TRUE`)\cr
+#' \describe{
+#'   \item{`TRUE`}{Group all combination treatments in category `"Combination"`.}
+#'   \item{`FALSE`}{Do not group combination treatments.}
+#' }
+#' @param minFreq (`integer(1)`: `5`)\cr
+#' Censor paths with a frequency smaller than specified. 
 #' @export
 #'
-#' @returns NULL
+#' @returns invisible(NULL)
 #' 
-#' @examples \dontrun{
-#'   creaeSankeyDiagram(
-#'     data = read.csv("freqPerYear.csv"),
-#'     studyName = "Viral_Sinusitis",
+#' @examples
+#' if (FALSE) {
+#'   TH <- andromeda$myStudy$treatmentHistory %>% collect()
+#'
+#'   createSankeyDiagram(
+#'     treatmentHistory = TH,
+#'     outputFile = "./some/path/to/sankeyDiagram.html",
 #'     groupCombinations = FALSE,
-#'     outputFolder = "output")
+#'     minFreq = 0
+#'   )
 #' }
 createSankeyDiagram <- function(
-    data,
-    studyName = NULL,
-    outputFolder,
-    groupCombinations,
-    fileName = "sankeyDiagram.html") {
-  # Group non-fixed combinations in one group according to groupCobinations
-  data <- groupInfrequentCombinations(data, groupCombinations)
+    treatmentHistory,
+    outputFile,
+    groupCombinations = FALSE,
+    minFreq = 5) {
+  # Assertions
   
-  if (!is.null(studyName)) {
-    data <- data %>%
-      dplyr::filter(.data$studyName == studyName)
-  }
+  data <- createTreatmentPathways(treatmentHistory)
   
-  # Define stop treatment
+  data <- data %>%
+    tidyr::unnest_wider(pathway, names_sep = "")
+  
+  data <- data %>%
+    dplyr::group_by_at(grep("pathway", names(data))) %>%
+    dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
+  
   data[is.na(data)] <- "Stopped"
   
-  # Sankey diagram for first three treatment layers
-  data$event_cohort_name1 <- paste0("1. ", data$event_cohort_name1)
-  data$event_cohort_name2 <- paste0("2. ", data$event_cohort_name2)
-  data$event_cohort_name3 <- paste0("3. ", data$event_cohort_name3)
+  result1 <- data %>%
+    mutate(
+      source = paste("1.", .data$pathway1),
+      target = paste("2.", .data$pathway2)) %>%
+    select("source", "target", "freq")
   
-  results1 <- data %>%
-    dplyr::group_by(event_cohort_name1, event_cohort_name2) %>%
-    dplyr::summarise(freq = sum(freq))
   
-  results2 <- data %>%
-    dplyr::group_by(event_cohort_name2, event_cohort_name3) %>%
-    dplyr::summarise(freq = sum(freq))
+  if (suppressWarnings(!is.null(data$pathway3))) {
+    result2 <- data %>%
+      mutate(
+        source = paste("2.", .data$pathway2),
+        target = paste("3.", .data$pathway3)) %>%
+      select("source", "target", "freq")
+    
+    links <- dplyr::bind_rows(
+      result1, result2
+    )
+  } else {
+    links <- result1
+  }
   
-  # Format in prep for sankey diagram
-  colnames(results1) <- c("source", "target", "value")
-  colnames(results2) <- c("source", "target", "value")
-  links <- as.data.frame(rbind(results1, results2))
+  links <- links %>%
+    filter(.data$freq >= minFreq)
+  
+  if (groupCombinations) {
+    links$source <- stringr::str_replace_all(
+      string = links$source, "\\w+\\+\\w+", replacement = "Combination")
+    links$target <- stringr::str_replace_all(
+      string = links$target, "\\w+\\+\\w+", replacement = "Combination")
+  }
   
   # Draw sankey network
   plot <- googleVis::gvisSankey(
     links,
     from = "source",
     to = "target",
-    weight = "value",
+    weight = "freq",
     chartid = 1,
     options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
   )
   
   writeLines(
     text = plot$html$chart,
-    con = normalizePath(paste0(outputFolder, "/", fileName), mustWork = FALSE)
-  )
+    con = file.path(outputFile))
+  return(invisible(NULL))
 }
+

@@ -1,42 +1,100 @@
-#' PathwayConstructor
+#' @title PathwayConstructor
+#' 
+#' @description
+#' PathwayConstructor R6 object.
 #' 
 #' @export
 PathwayConstructor <- R6::R6Class(
   classname = "PathwayConstructor",
   public = list(
     # Public ----
-    initialize = function(cohortSettings, pathwaySettings, cohortTable, connectionDetails = NULL, cdmSchema = NULL, resultSchema = NULL, cdm = NULL) {
-      private$cohortSettings <- cohortSettings$get()
-      private$pathwaySettings <- pathwaySettings$get()
-      private$cohortTable <- cohortTable
-      private$connectionDetails <- connectionDetails
-      private$cdmSchema <- cdmSchema
-      private$resultSchema <- resultSchema
-      private$cdm <- cdm
+    
+    #' @description
+    #' Initialize method called by `PathwayConstructor$new()`.
+    #' \cr\cr
+    #' Choose the way you interface with the CDM, either through `DatabaseConnector` or `CDMConnector`.
+    #' 
+    #' @param cohortSettings (`TreatmentPatterns::CohortSettings`)
+    #' 
+    #' @return (`invisible(self)`)
+    initialize = function(cohorts, cohortTableName, cdmInterface) {
+      private$cohorts <- cohorts
+      private$cohortTableName <- cohortTableName
+      private$cdmInterface <- cdmInterface
       
+      private$settings$targetCohortIds <- cohorts %>%
+        filter(.data$type == "target") %>% select("cohortId") %>% pull %>% paste(collapse = ",")
+      private$settings$eventCohortIds <- cohorts %>%
+        filter(.data$type == "event") %>% select("cohortId") %>% pull %>% paste(collapse = ",")
+      private$settings$exitCohortIds <- cohorts %>%
+        filter(.data$type == "exit") %>% select("cohortId") %>% pull %>% paste(collapse = ",")
+      
+      self$validate()
+      return(invisible(self))
+    },
+    
+    #' @description
+    #' Validation method
+    #' 
+    #' @return (`invisible(self)`)
+    validate = function() {
+      cdmInterface$validate()
+      
+      errorMessages <- checkmate::makeAssertCollection()
+      # Assert ncol = 3
+      # Assert col names = cohortId, cohortName, type
+      # Assert col types = int,      chr,        chr
+      # Assert col type one of target, event, exit
+      
+      checkmate::assertCharacter(
+        x = private$settings$includeTreatments, len = 1, add = errorMessages)
+      checkmate::assertSubset(
+        x = private$settings$includeTreatments, choices = c("startDate", "endDate"), add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$periodPriorToIndex, len = 1, finite = TRUE, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$minEraDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertCharacter(
+        x = private$settings$splitEventCohorts, len = 1, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$splitTime, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$eraCollapseSize, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$combinationWindow, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$minPostCombinationDuration, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertCharacter(
+        x = private$settings$filterTreatments, len = 1, add = errorMessages)
+      checkmate::assertSubset(
+        x = private$settings$filterTreatments, choices = c("First", "Changes", "All"), add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$maxPathLength, lower = 0, upper = 5, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$minCellCount, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      # Not used in constructPathways.R
+      checkmate::assertCharacter(
+        x = private$settings$minCellMethod, len = 1, add = errorMessages)
+      checkmate::assertNumeric(
+        x = private$settings$groupCombinations, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
+      checkmate::assertLogical(
+        x = private$settings$addNoPaths, any.missing = FALSE, len = 1, add = errorMessages)
+      
+      checkmate::reportAssertions(collection = errorMessages)
+      return(invisible(self))
+    },
+    
+    #' @description
+    #' Construct the pathways. Generates `Andromeda::andromeda()` objects,
+    #' which can be fetched using `self$getAndromeda()`.
+    construct = function() {
       # Set up Andromeda sqlite environment
       private$andromeda <- Andromeda::andromeda()
       
-      self$validate()
-    },
-    
-    validate = function() {
-      cohortSettings$validate()
-      pathwaySettings$validate()
-      
-      errorMessages <- checkmate::makeAssertCollection()
-      checkmate::assertTRUE(Andromeda::isAndromeda(private$andromeda), add = errorMessages)
-      checkmate::assertClass(private$connectionDetails, "ConnectionDetails", null.ok = TRUE, add = errorMessages)
-      checkmate::assertCharacter(x = private$connectionDetails$dbms, len = 1, null.ok = TRUE, add = errorMessages)
-      checkmate::assertCharacter(private$cdmDatabaseSchema, null.ok = TRUE, len = 1, add = errorMessages)
-      checkmate::assertCharacter(private$resultSchema, null.ok = TRUE, len = 1, add = errorMessages)
-      checkmate::assertCharacter(private$cohortTable, null.ok = FALSE, len = 1, add = errorMessages)
-      checkmate::assertClass(private$cdm, classes = "cdm_reference", null.ok = TRUE, add = errorMessages)
-      checkmate::reportAssertions(collection = errorMessages)
-    },
-    
-    construct = function() {
-      private$andromeda$fullCohorts <- private$fetchCohortTable()
+      private$andromeda$fullCohorts <- cdmInterface$fetchChortTable(
+        cohortIds = private$cohorts$cohortId,
+        cohortTableName = private$cohortTableName
+      )
       
       private$andromeda$fullCohorts <- private$andromeda$fullCohorts %>%
         dplyr::rename(
@@ -45,57 +103,81 @@ PathwayConstructor <- R6::R6Class(
           start_date = "COHORT_START_DATE",
           end_date = "COHORT_END_DATE")
       
-      constructPathways(
-        pathwaySettings = private$pathwaySettings,
-        cohortSettings = private$cohortSettings,
+      private$andromeda <- constructPathways(
+        settings = private$settings,
+        cohorts = private$cohorts,
         andromeda = private$andromeda
       )
+      return(invisible(self))
     },
     
+    #' @description
+    #' Gets the `Andromeda::andromeda()` objects in a list.
+    #' 
+    #' @return (`list()`)
     getAndromeda = function() {
       return(private$andromeda)
+    },
+    
+    editSettings = function(
+    studyName = "default",
+    includeTreatments = "startDate",
+    periodPriorToIndex = 0,
+    minEraDuration = 0,
+    splitEventCohorts = "",
+    splitTime = 30,
+    eraCollapseSize = 30,
+    combinationWindow = 30,
+    minPostCombinationDuration = 30,
+    filterTreatments = "First",
+    maxPathLength = 5,
+    minCellCount = 5,
+    minCellMethod = "Remove",
+    groupCombinations = 10,
+    addNoPaths = TRUE) {
+      settings <- mget(
+        x = names(formals()),
+        envir = sys.frame(
+          which = sys.nframe()
+        )
+      )
+      private$settings <- utils::modifyList(private$settings, settings)
+      self$validate()
+    },
+    
+    getSettings = function() {
+      return(private$settings)
     }
   ),
   private = list(
     # Private ----
     ## Fields ----
-    pathwaySettings = NULL,
-    cohortSettings = NULL,
-    andromeda = NULL,
-    connectionDetails = NULL,
-    cdmSchema = NULL,
-    resultSchema = NULL,
-    cdm = NULL,
-    cohortTable = NULL,
+    cohorts = NULL,
     
-    fetchCohortTable = function() {
-      if (is.null(private$cdm)) {
-        if (all(is.null(cohortSettings$cohortId)) | all(cohortSettings$cohortId)) {
-          renderedSql <- SqlRender::render(
-            "SELECT * FROM @resultSchema.@cohortTable",
-            resultSchema = private$resultSchema,
-            cohortTable = private$cohortTable
-          )
-        } else {
-          renderedSql <- SqlRender::render(
-            "SELECT * FROM @resultSchema.@cohortTable WHERE cohort_definition_id IN (@cohortIds)",
-            resultSchema = private$resultSchema,
-            cohortTable = private$cohortTable,
-            cohortIds = cohortSettings$cohortId
-          )
-        }
-        
-        connection <- DatabaseConnector::connect(private$connectionDetails)
-        on.exit(DatabaseConnector::disconnect(connection))
-        
-        translatedSql <- SqlRender::translate(
-          renderedSql,
-          targetDialect = connectionDetails$dbms
-        )
-        DatabaseConnector::querySql(connection, translatedSql)
-      } else {
-        return(cdm[[private$cohortTable]])
-      }
-    }
+    cohortTableName = NULL,
+    cdmInterface = NULL,
+    
+    andromeda = NULL,
+    
+    settings = list(
+      studyName = "default",
+      targetCohortIds = NULL,
+      eventCohortIds = NULL,
+      exitCohortIds = NULL,
+      includeTreatments = "startDate",
+      periodPriorToIndex = 0,
+      minEraDuration = 0,
+      splitEventCohorts = "",
+      splitTime = 30,
+      eraCollapseSize = 30,
+      combinationWindow = 30,
+      minPostCombinationDuration = 30,
+      filterTreatments = "First",
+      maxPathLength = 5,
+      minCellCount = 5,
+      minCellMethod = "Remove",
+      groupCombinations = 10,
+      addNoPaths = TRUE
+    )
   )
 )

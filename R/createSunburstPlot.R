@@ -134,18 +134,11 @@ buildHierarchy <- function(csv) {
 #' Help function to transform data in csv format to required JSON format for
 #' HTML.
 #'
-#' @param data input data.frame
-#' @param outcomes character vector containing all event cohorts
-#' @param folder output folder
-#' @param fileName output file name
+#' @param data (`data.frame()`)
+#' @param outcomes (`c()`)
 #'
 #' @return the transformed csv as a json string
-transformCSVtoJSON <- function(data, outcomes, folder, fileName) {
-  # Assertions
-  checkmate::assertDataFrame(x = data)
-  checkmate::assertCharacter(x = outcomes, null.ok = FALSE)
-  #checkmate::assertDirectoryExists(x = folder)
-  checkmate::assertCharacter(x = fileName, len = 1, null.ok = FALSE)
+transformCSVtoJSON <- function(data, outcomes) {
   # Add bitwise numbers to define combination treatments
   bitwiseNumbers <- sapply(
     X = seq_along(outcomes),
@@ -201,45 +194,99 @@ transformCSVtoJSON <- function(data, outcomes, folder, fileName) {
   
   result <- paste0(
     "{ \"data\" : ", transformed_json, ", \"lookup\" : ", lookup, "}")
-  
-  file <- paste0(folder, fileName)
-  writeLines(text = result, con = file)
   # close(file)
   return(result)
 }
+
+
+#' createTreatmentPathways
+#'
+#' @param treatmentHistory (`data.frame()`)
+#'
+#' @return (`data.frame()`)
+createTreatmentPathways <- function(treatmentHistory) {
+  treatmentPathways <- treatmentHistory %>%
+    group_by(.data$person_id, .data$index_year) %>%
+    summarise(
+      pathway = list(.data$event_cohort_name[event_seq]),
+      .groups = "drop")
+  
+  layers <- treatmentPathways %>%
+    rowwise() %>%
+    mutate(l = length(pathway)) %>%
+    select("l") %>%
+    max()
+  
+  treatmentPathways <- treatmentPathways %>%
+    group_by(.data$index_year, .data$pathway) %>%
+    summarise(freq = length(person_id), .groups = "drop")
+  
+  return(treatmentPathways)
+}
+
+#' prepData
+#'
+#' @param treatmentHistory (`data.frame()`)
+#' @param year (`integer(1)`)
+#'
+#' @return (`data.frame()`)
+prepData <- function(treatmentHistory, year) {
+  treatmentPathways <- createTreatmentPathways(treatmentHistory)
+  
+  dat <- treatmentPathways %>%
+    rowwise() %>%
+    mutate(path = paste(.data$pathway, collapse = "-")) %>%
+    select("index_year", "path", "freq")
+
+  if (year == "all") {
+    dat <- dat %>%
+      group_by(.data$path) %>%
+      summarise(freq = sum(.data$freq))
+  } else {
+    dat <- dat %>%
+      filter(.data$index_year == year)
+    if (nrow(dat) == 0) {
+      
+      
+      stop(glue::glue(
+        "Not enough data for year {year}\n",
+        "Select one of the following years: {treatmentPathways %>%
+        group_by(.data$index_year) %>%
+        summarise(sum = sum(.data$freq)) %>%
+        select('index_year') %>%
+        pull() %>% paste(collapse = ', ')}, or 'all'"))
+    }
+  }
+  return(dat)
+}
+
 
 #' createSunburstPlot
 #'
 #' Export a sunburst plot from a data.frame object.
 #'
-#' @param data
-#'     A data frame containing two columns: 1) column "path" should specify the
-#'     event cohorts separated by dashes - (combinations can be indicated using
-#'     &) and 2) column "freq" should specify how often that (unique) path
-#'     occurs.
-#' @param folder
-#'     Root folder to store the results.
-#' @param fileName
-#'     File name for the results.
+#' @param treatmentHistory (`data.frame()`)\cr
+#' Treatment history data.frame from an `Andromeda::andromeda()` environment,
+#' obtained by calling `pathwayConstructor$getAndromedas()`.
+#' @param outputFile (`character(1)`)\cr
+#' Path to output file.
+#' @param year (`integer(1)`)\cr
+#' Year to filter on. May also be `"all"`.
 #'
 #' @export
 #'
 #' @returns NULL
-#'
-#' @examples
-#' \dontrun{
-#' createSunburstPlot(
-#'   data = data.frame(
-#'     path = c("1", "2"),
-#'     freq = c("0.5", "0.5")))
-#' }
-createSunburstPlot <- function(data, folder, fileName) {
-  # Assertions
-  checkmate::assertDataFrame(x = data)
-  checkmate::checkSubset(x = names(data), choices = c("freq", "path"))
-  checkmate::assertCharacter(x = folder, null.ok = TRUE)
-  checkmate::assertCharacter(x = fileName, null.ok = TRUE)
+createSunburstPlot <- function(treatmentHistory, outputFile, year = "all") {
+  if ((year > max(treatmentHistory$index_year) | year > max(treatmentHistory$index_year)) & year != "all") {
+    stop(glue::glue(
+      "Slected year ({year}) out of bounds ",
+      "({min(treatmentHistory$index_year)}:{max(treatmentHistory$index_year)})\n",
+      "Select a value between {min(treatmentHistory$index_year)} and {max(treatmentHistory$index_year)}, or 'all'"))
+  }
   
+  
+  data <- prepData(treatmentHistory, year)
+
   outcomes <- unique(unlist(strsplit(
     data$path,
     split = "-", fixed = TRUE
@@ -248,9 +295,7 @@ createSunburstPlot <- function(data, folder, fileName) {
   # Load CSV file and convert to JSON
   json <- transformCSVtoJSON(
     data = data,
-    outcomes = outcomes,
-    folder = folder,
-    fileName = unlist(stringr::str_split(string = fileName, "\\."))[2])
+    outcomes = outcomes)
   
   # Load template HTML file
   html <- paste(
@@ -262,10 +307,11 @@ createSunburstPlot <- function(data, folder, fileName) {
   
   # Replace @insert_data
   html <- sub("@insert_data", json, html)
-  html <- sub("@name", "Sunburst", html)
+  html <- sub("@name", as.character(year), html)
   
   # Save HTML file
   writeLines(
     text = html,
-    con = normalizePath(paste0(folder, fileName), mustWork = FALSE))
+    con = file.path(outputFile))
+  message(glue::glue("Wrote sunburst plot to {file.path(outputFile)}"))
 }
