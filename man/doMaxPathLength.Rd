@@ -17,15 +17,7 @@ Updated dataframe, where the desired event cohorts all have a seq value of <=
 maxPathLength
 }
 \description{
+\code{DEPRECATED}\cr
 Filters the treatmentHistory data.frame where eventSeq is smaller or equal
 than maxPathLength
-}
-\examples{
-\dontrun{
-th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
-                               targetCohortId = targetCohortId,
-                               eventCohortIds = eventCohortIds,
-                               periodPriorToIndex = periodPriorToIndex,
-                               includeTreatments = includeTreatments)
-doMaxPathLength(treatmentHistory = th, maxPathLength = 1)}
 }

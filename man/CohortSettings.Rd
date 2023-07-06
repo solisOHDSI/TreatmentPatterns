@@ -9,7 +9,7 @@ CohortSettings
 CohortSettings
 }
 \section{Super class}{
-\code{\link[TreatmentPatterns:Settings]{TreatmentPatterns::Settings}} -> \code{CohortSettings}
+\code{TreatmentPatterns::Settings} -> \code{CohortSettings}
 }
 \section{Methods}{
 \subsection{Public methods}{

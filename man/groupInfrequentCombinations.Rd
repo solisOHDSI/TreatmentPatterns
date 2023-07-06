@@ -19,6 +19,7 @@ data.table
 data.table
 }
 \description{
+\code{DEPRECATED}\cr
 Help function to group combinations
 
 Help function to group combinations

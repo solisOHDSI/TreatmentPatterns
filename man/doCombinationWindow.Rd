@@ -7,27 +7,14 @@
 doCombinationWindow(andromeda, combinationWindow, minPostCombinationDuration)
 }
 \arguments{
-\item{combinationWindow}{Minimum number of days two event cohorts need to overlap to be
-considered a combination event.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{minPostCombinationDuration}{Minimum number of days an event era starting after a combination event
-or ending before a combination event must last to be counted a separate
-event. Events occuring before or after a combination that are less than
-\code{minPostCombinationDuration} days long will be dropped from the analysis.}
+\item{combinationWindow}{(\code{integer(1)})}
 
-\item{treatmentHistory}{A dataframe of 'event cohorts' with the following columns:
-event_cohort_id, person_id, event_start_date, event_end_date.}
+\item{minPostCombinationDuration}{(\code{integer(1)})}
 }
 \value{
-A treatmentHistory dataframe with the columns event_cohort_id,
-person_id, event_start_date, event_end_date. event_cohort_id will be
-of character type and combination events will have a new event_cohort_id
-made up of the concatenated event_cohort_ids of each combined
-event_cohort_id. When two events overlap for more than
-\code{combinationWindow} days they will be collapsed into a single combination
-event. Events are collapsed iteratively starting with the first two
-overlapping events per person and continuing until no more overlapping
-events exist in the treatmentHistory.
+(\code{invisible(NULL)})
 }
 \description{
 doCombinationWindow is an internal function that combines overlapping events

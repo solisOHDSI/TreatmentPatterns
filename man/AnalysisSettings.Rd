@@ -9,7 +9,7 @@ AnalysisSettings
 AnalysisSettings
 }
 \section{Super class}{
-\code{\link[TreatmentPatterns:Settings]{TreatmentPatterns::Settings}} -> \code{AnalysisSettings}
+\code{TreatmentPatterns::Settings} -> \code{AnalysisSettings}
 }
 \section{Methods}{
 \subsection{Public methods}{

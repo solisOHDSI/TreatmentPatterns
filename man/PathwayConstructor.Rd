@@ -4,9 +4,7 @@
 \alias{PathwayConstructor}
 \title{PathwayConstructor}
 \description{
-PathwayConstructor
-
-PathwayConstructor
+PathwayConstructor R6 object.
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -14,7 +12,9 @@ PathwayConstructor
 \item \href{#method-PathwayConstructor-new}{\code{PathwayConstructor$new()}}
 \item \href{#method-PathwayConstructor-validate}{\code{PathwayConstructor$validate()}}
 \item \href{#method-PathwayConstructor-construct}{\code{PathwayConstructor$construct()}}
-\item \href{#method-PathwayConstructor-getAndromeda}{\code{PathwayConstructor$getAndromeda()}}
+\item \href{#method-PathwayConstructor-getAndromedas}{\code{PathwayConstructor$getAndromedas()}}
+\item \href{#method-PathwayConstructor-getcohortSettings}{\code{PathwayConstructor$getcohortSettings()}}
+\item \href{#method-PathwayConstructor-getPathwaySettings}{\code{PathwayConstructor$getPathwaySettings()}}
 \item \href{#method-PathwayConstructor-clone}{\code{PathwayConstructor$clone()}}
 }
 }
@@ -22,45 +22,106 @@ PathwayConstructor
 \if{html}{\out{<a id="method-PathwayConstructor-new"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwayConstructor-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize method called by \code{PathwayConstructor$new()}.
+\cr\cr
+Choose the way you interface with the CDM, either through \code{DatabaseConnector} or \code{CDMConnector}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$new(
   cohortSettings,
   pathwaySettings,
   cohortTable,
   connectionDetails = NULL,
-  cdmSchema = "",
-  resultSchema = "",
+  cdmSchema = NULL,
+  resultSchema = NULL,
   cdm = NULL
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{cohortSettings}}{(\code{TreatmentPatterns::CohortSettings})}
+
+\item{\code{pathwaySettings}}{(\code{TreatmentPatterns::PathwaySettings})}
+
+\item{\code{cohortTable}}{(\code{character(1)})}
+
+\item{\code{connectionDetails}}{(\code{DatabaseConnector::createConnectionDetails()}: \code{NULL})}
+
+\item{\code{cdmSchema}}{(\code{character(1)}: \code{NULL})}
+
+\item{\code{resultSchema}}{(\code{character(1)}: \code{NULL})}
+
+\item{\code{cdm}}{(\code{CDMConnector::cdmFromCon()}: \code{NULL})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwayConstructor-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwayConstructor-validate}{}}}
 \subsection{Method \code{validate()}}{
+Validation method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwayConstructor-construct"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwayConstructor-construct}{}}}
 \subsection{Method \code{construct()}}{
+Construct the pathways. Generates \code{Andromeda::andromeda()} objects,
+which can be fetched using \code{self$getAndromedas()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$construct()}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-PathwayConstructor-getAndromeda"></a>}}
-\if{latex}{\out{\hypertarget{method-PathwayConstructor-getAndromeda}{}}}
-\subsection{Method \code{getAndromeda()}}{
+\if{html}{\out{<a id="method-PathwayConstructor-getAndromedas"></a>}}
+\if{latex}{\out{\hypertarget{method-PathwayConstructor-getAndromedas}{}}}
+\subsection{Method \code{getAndromedas()}}{
+Gets the \code{Andromeda::andromeda()} objects in a list.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$getAndromeda()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$getAndromedas()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{list()})
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PathwayConstructor-getcohortSettings"></a>}}
+\if{latex}{\out{\hypertarget{method-PathwayConstructor-getcohortSettings}{}}}
+\subsection{Method \code{getcohortSettings()}}{
+Gets the cohort settings using \code{cohortSettings$get()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$getcohortSettings()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+(\code{data.frame()})
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-PathwayConstructor-getPathwaySettings"></a>}}
+\if{latex}{\out{\hypertarget{method-PathwayConstructor-getPathwaySettings}{}}}
+\subsection{Method \code{getPathwaySettings()}}{
+Gets the pathways ettings using \code{pathwaySettings$get()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$getPathwaySettings()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+(\code{data.frame()})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwayConstructor-clone"></a>}}

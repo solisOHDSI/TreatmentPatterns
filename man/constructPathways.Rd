@@ -7,22 +7,15 @@
 constructPathways(pathwaySettings, cohortSettings, andromeda)
 }
 \arguments{
-\item{pathwaySettings}{Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.}
+\item{pathwaySettings}{(\code{TreatmentPatterns::PathwaySettings})}
 
-\item{cohortSettings}{Settings object created by \link[TreatmentPatterns]{createCohortSettings}.}
+\item{cohortSettings}{(\code{TreatmentPatterns::CohortSettings})}
 
-\item{dataSettings}{Settings object as created by \link[TreatmentPatterns]{createDataSettings}.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
+}
+\value{
+(\code{list}) List containing andromeda objects.
 }
 \description{
-Construct treatment pathways. Also generates output in csv format.
-}
-\examples{
-\dontrun{
-  constructPathways(
-    dataSettings = dataSettings,
-    pathwaySettings = pathwaySettings,
-    saveSettings = saveSettings,
-    cohortSettings = cohortSettings
-  )
-}
+Runs constructPathway for each set of settings in pathwaySettings.
 }

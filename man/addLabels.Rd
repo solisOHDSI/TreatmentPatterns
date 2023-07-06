@@ -7,10 +7,10 @@
 addLabels(andromeda)
 }
 \arguments{
-\item{treatmentHistory}{treatmentHistory object}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 }
 \value{
-treatmentHistory
+(invisible(NULL))
 }
 \description{
 Adds back cohort names to concept ids.

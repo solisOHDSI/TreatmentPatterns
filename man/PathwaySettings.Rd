@@ -9,7 +9,7 @@ PathwaySettings
 PathwaySettings
 }
 \section{Super class}{
-\code{\link[TreatmentPatterns:Settings]{TreatmentPatterns::Settings}} -> \code{PathwaySettings}
+\code{TreatmentPatterns::Settings} -> \code{PathwaySettings}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -34,46 +34,89 @@ PathwaySettings
 \if{html}{\out{<a id="method-PathwaySettings-addAnalysis"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwaySettings-addAnalysis}{}}}
 \subsection{Method \code{addAnalysis()}}{
+addAnalysis method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwaySettings$addAnalysis(analysisSettings)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{analysisSettings}}{(\code{TreatmentPatterns::AnalysisSettings})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwaySettings-exportAnalyses"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwaySettings-exportAnalyses}{}}}
 \subsection{Method \code{exportAnalyses()}}{
+exportAnalyses method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwaySettings$exportAnalyses(filePath)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{filePath}}{(\code{character(1)})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwaySettings-importAnalyses"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwaySettings-importAnalyses}{}}}
 \subsection{Method \code{importAnalyses()}}{
+importAnalyses method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwaySettings$importAnalyses(filePath, validate = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{filePath}}{(\code{character(1)})}
+
+\item{\code{validate}}{(\code{logical(1)})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwaySettings-get"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwaySettings-get}{}}}
 \subsection{Method \code{get()}}{
+Overload get from super
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwaySettings$get()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{data.frame()})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwaySettings-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-PathwaySettings-validate}{}}}
 \subsection{Method \code{validate()}}{
+Validation method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwaySettings$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\verb{return(invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-PathwaySettings-clone"></a>}}

@@ -18,6 +18,7 @@ Updated dataframe, rows with duration_era <
 minPostCombinationDuration filtered out.
 }
 \description{
+\code{DEPRECATED}\cr
 Filters treatmentHistory based on if durationEra is smaller than the
 specified minimum post combination duration (minPostCombinationDuration).
 }

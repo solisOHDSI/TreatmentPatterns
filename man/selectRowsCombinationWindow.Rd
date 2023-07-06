@@ -7,21 +7,12 @@
 selectRowsCombinationWindow(andromeda)
 }
 \arguments{
-\item{treatmentHistory}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 }
 \value{
-Updated treatmentHistory data.frame
+(\code{invisible(NULL)})
 }
 \description{
 Help function for doCombinationWindow that selects one overlapping drug era
 per person to modify in next iteration of the combination window.
-}
-\examples{
-\dontrun{
-source(system.file(
-  package = "TreatmentPatterns",
- "testing", "testParams.R"))
-
-selectRowsCombinationWindow(doEraCollapseTH)
-}
 }

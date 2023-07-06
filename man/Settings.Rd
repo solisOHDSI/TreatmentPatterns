@@ -20,37 +20,53 @@ Settings super object.
 \if{html}{\out{<a id="method-Settings-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Settings-new}{}}}
 \subsection{Method \code{new()}}{
+Initializer method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Settings$new()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Settings-get"></a>}}
 \if{latex}{\out{\hypertarget{method-Settings-get}{}}}
 \subsection{Method \code{get()}}{
+Getter method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Settings$get()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{NULL})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Settings-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Settings-print}{}}}
 \subsection{Method \code{print()}}{
+print overload
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Settings$print()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Settings-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-Settings-validate}{}}}
 \subsection{Method \code{validate()}}{
+Validator method
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Settings$validate()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+(\code{invisible(self)})
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Settings-clone"></a>}}

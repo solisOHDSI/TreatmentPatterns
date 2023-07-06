@@ -5,38 +5,43 @@
 \title{createSankeyDiagram}
 \usage{
 createSankeyDiagram(
-  data,
-  studyName = NULL,
-  outputFolder,
-  groupCombinations,
-  fileName = "sankeyDiagram.html"
+  treatmentHistory,
+  outputFile,
+  groupCombinations = FALSE,
+  minFreq = 5
 )
 }
 \arguments{
-\item{data}{(\link[base]{data.frame})
-Data frame with event cohorts of the target cohort in different columns.}
+\item{treatmentHistory}{(\code{data.frame()})\cr
+Treatment history data frame.}
 
-\item{studyName}{(\link[base]{character})
-Name of the study, specified in the \code{pathwaySerttings} object.}
+\item{outputFile}{(\code{character(1)})\cr
+Path where the Sankey diagram should be written to.}
 
-\item{outputFolder}{(\link[base]{character})
-Path to the output folder.}
+\item{groupCombinations}{(\code{logical(1)}: \code{TRUE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
 
-\item{groupCombinations}{(\link[base]{logical})
-Select to group all non-fixed combinations in one category "other" in the sunburst plot.}
-
-\item{fileName}{(\link[base]{character})
-File name of the html-file to output.}
+\item{minFreq}{(\code{integer(1)}: \code{5})\cr
+Censor paths with a frequency smaller than specified.}
+}
+\value{
+invisible(NULL)
 }
 \description{
-createSankeyDiagram
+Writes the Sankey diagram to a HTML-file, to a specified file path.
 }
 \examples{
-\dontrun{
-  creaeSankeyDiagram(
-    data = read.csv("freqPerYear.csv"),
-    studyName = "Viral_Sinusitis",
+if (FALSE) {
+  TH <- andromeda$myStudy$treatmentHistory \%>\% collect()
+
+  createSankeyDiagram(
+    treatmentHistory = TH,
+    outputFile = "./some/path/to/sankeyDiagram.html",
     groupCombinations = FALSE,
-    outputFolder = "output")
+    minFreq = 0
+  )
 }
 }
