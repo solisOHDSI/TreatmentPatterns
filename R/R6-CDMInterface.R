@@ -64,11 +64,11 @@ CDMInterface <- R6::R6Class(
     #' Stratisfy the treatmentHistory data frame by age.
     #'
     #' @return (`data.frame()`)
-    stratisfyAge = function(andromeda) {
+    addAge = function(andromeda) {
       switch(
         private$type,
-        CDMConnector = private$cdmconStratisfyAge(andromeda),
-        DatabaseConnector = private$dbconStratisfyAge(andromeda)
+        CDMConnector = private$cdmconAddAge(andromeda),
+        DatabaseConnector = private$dbconAddAge(andromeda)
       )
     },
     
@@ -76,11 +76,11 @@ CDMInterface <- R6::R6Class(
     #' Stratisfy the treatmentHistory data frame by sex.
     #'
     #' @return (`data.frame()`)
-    stratisfySex = function(andromeda) {
+    addSex = function(andromeda) {
       switch(
         private$type,
-        CDMConnector = private$cdmconStratisfySex(andromeda),
-        DatabaseConnector = private$dbconStratisfySex(andromeda)
+        CDMConnector = private$cdmconAddSex(andromeda),
+        DatabaseConnector = private$dbconAddSex(andromeda)
       )
     }
   ),
@@ -109,11 +109,37 @@ CDMInterface <- R6::R6Class(
       return(DatabaseConnector::querySql(connection, translatedSql))
     },
     
-    dbconStratisfyAge = function(andromeda) {
+    dbconAddAge = function(andromeda) {
       message("Not yet implemented")
+      
+      personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
+      
+      renderedSql <- SqlRender::render(
+        sql = "SELECT
+                 person_id,
+                 year_of_birth
+               FROM @resultSchema.person
+               WHERE person_id IN (@personIds)",
+        resultSchema = private$resultSchema,
+        personIds = personIds
+      )
+      
+      connection <- DatabaseConnector::connect(private$connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+      
+      translatedSql <- SqlRender::translate(
+        sql = renderedSql,
+        targetDialect = connection@dbms)
+      
+      andromeda$year_of_birth <- DatabaseConnector::querySql(connection, translatedSql)
+      
+      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
+        dplyr::inner_join(andromeda$year_of_birth, by = dplyr::join_by(person_id == PERSON_ID)) %>%
+        dplyr::mutate(age = .data$index_year - .data$YEAR_OF_BIRTH) %>%
+        select(-"YEAR_OF_BIRTH")
     },
     
-    dbconStratisfySex = function(andromeda) {
+    dbconAddSex = function(andromeda) {
       # message("Not yet implemented")
       
       personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
@@ -121,7 +147,7 @@ CDMInterface <- R6::R6Class(
       renderedSql <- SqlRender::render(
         sql = "SELECT
                  person_id,
-                 concept_name
+                 concept_name AS sex
                FROM @resultSchema.person
                INNER JOIN @resultSchema.concept
                ON person.gender_concept_id = concept.concept_id
@@ -141,7 +167,7 @@ CDMInterface <- R6::R6Class(
       
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$sex, by = dplyr::join_by(person_id == PERSON_ID)) %>%
-        dplyr::rename(sex = "CONCEPT_NAME")
+        dplyr::rename(sex = "SEX")
       
       return(invisible(NULL))
     },
@@ -152,11 +178,11 @@ CDMInterface <- R6::R6Class(
           filter(.data$cohort_definition_id %in% cohortIds))
     },
     
-    cdmconStratisfyAge = function() {
+    cdmconAddAge = function() {
       message("Not yet implemented")
     },
     
-    cdmconStratisfySex = function() {
+    cdmconAddSex = function() {
       message("Not yet implemented")
     }
   )

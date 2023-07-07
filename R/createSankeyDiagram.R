@@ -63,8 +63,8 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #'
 #' Writes the Sankey diagram to a HTML-file, to a specified file path. 
 #'
-#' @param treatmentHistory (`data.frame()`)\cr
-#' Treatment history data frame.
+#' @param treatmentPathways (`data.frame()`)\cr
+#' Data frame containing treatmentPathways columsn: path, freq.
 #' @param outputFile (`character(1)`)\cr
 #' Path where the Sankey diagram should be written to.
 #' @param groupCombinations (`logical(1)`: `TRUE`)\cr
@@ -73,52 +73,44 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #'   \item{`FALSE`}{Do not group combination treatments.}
 #' }
 #' @param minFreq (`integer(1)`: `5`)\cr
-#' Censor paths with a frequency smaller than specified. 
+#' Censor paths with a frequency smaller than specified.
+#' @param year (`integer(1)`)\cr
+#' Year
+#' 
 #' @export
 #'
 #' @returns invisible(NULL)
-#' 
-#' @examples
-#' if (FALSE) {
-#'   TH <- andromeda$myStudy$treatmentHistory %>% collect()
-#'
-#'   createSankeyDiagram(
-#'     treatmentHistory = TH,
-#'     outputFile = "./some/path/to/sankeyDiagram.html",
-#'     groupCombinations = FALSE,
-#'     minFreq = 0
-#'   )
-#' }
 createSankeyDiagram <- function(
-    treatmentHistory,
+    treatmentPathways,
     outputFile,
     groupCombinations = FALSE,
-    minFreq = 5) {
-  # Assertions
-  
-  data <- createTreatmentPathways(treatmentHistory)
-  
-  data <- data %>%
-    tidyr::unnest_wider(pathway, names_sep = "")
+    minFreq = 5,
+    year = "all"){
+  data <- treatmentPathways %>%
+    rowwise() %>%
+    mutate(path = stringr::str_split(.data$path, pattern = "-"))
   
   data <- data %>%
-    dplyr::group_by_at(grep("pathway", names(data))) %>%
+    tidyr::unnest_wider(path, names_sep = "")
+  
+  data <- data %>%
+    dplyr::group_by_at(grep("path", names(data))) %>%
     dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
   
   data[is.na(data)] <- "Stopped"
   
   result1 <- data %>%
     mutate(
-      source = paste("1.", .data$pathway1),
-      target = paste("2.", .data$pathway2)) %>%
+      source = paste("1.", .data$path1),
+      target = paste("2.", .data$path2)) %>%
     select("source", "target", "freq")
   
   
-  if (suppressWarnings(!is.null(data$pathway3))) {
+  if (suppressWarnings(!is.null(data$path3))) {
     result2 <- data %>%
       mutate(
-        source = paste("2.", .data$pathway2),
-        target = paste("3.", .data$pathway3)) %>%
+        source = paste("2.", .data$path2),
+        target = paste("3.", .data$path3)) %>%
       select("source", "target", "freq")
     
     links <- dplyr::bind_rows(

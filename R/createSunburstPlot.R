@@ -246,15 +246,8 @@ prepData <- function(treatmentHistory, year) {
     dat <- dat %>%
       filter(.data$index_year == year)
     if (nrow(dat) == 0) {
-      
-      
-      stop(glue::glue(
-        "Not enough data for year {year}\n",
-        "Select one of the following years: {treatmentPathways %>%
-        group_by(.data$index_year) %>%
-        summarise(sum = sum(.data$freq)) %>%
-        select('index_year') %>%
-        pull() %>% paste(collapse = ', ')}, or 'all'"))
+      NULL
+      # message(sprintf("Not enough data for year: %s", year))
     }
   }
   return(dat)
@@ -265,9 +258,8 @@ prepData <- function(treatmentHistory, year) {
 #'
 #' Export a sunburst plot from a data.frame object.
 #'
-#' @param treatmentHistory (`data.frame()`)\cr
-#' Treatment history data.frame from an `Andromeda::andromeda()` environment,
-#' obtained by calling `pathwayConstructor$getAndromedas()`.
+#' @param treatmentPathways (`data.frame()`)\cr
+#' Data frame containing treatmentPathways columns: path, freq.
 #' @param outputFile (`character(1)`)\cr
 #' Path to output file.
 #' @param year (`integer(1)`)\cr
@@ -276,16 +268,16 @@ prepData <- function(treatmentHistory, year) {
 #' @export
 #'
 #' @returns NULL
-createSunburstPlot <- function(treatmentHistory, outputFile, year = "all") {
-  if ((year > max(treatmentHistory$index_year) | year > max(treatmentHistory$index_year)) & year != "all") {
-    stop(glue::glue(
-      "Slected year ({year}) out of bounds ",
-      "({min(treatmentHistory$index_year)}:{max(treatmentHistory$index_year)})\n",
-      "Select a value between {min(treatmentHistory$index_year)} and {max(treatmentHistory$index_year)}, or 'all'"))
-  }
-  
-  
-  data <- prepData(treatmentHistory, year)
+createSunburstPlot <- function(treatmentPathways, outputFile) {
+  data <- treatmentPathways %>%
+    mutate(
+      freq = case_when(
+        startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
+        .default = .data$freq
+      )
+    ) %>%
+    mutate(freq = as.integer(.data$freq)) %>%
+    select("path", "freq")
 
   outcomes <- unique(unlist(strsplit(
     data$path,
@@ -307,7 +299,13 @@ createSunburstPlot <- function(treatmentHistory, outputFile, year = "all") {
   
   # Replace @insert_data
   html <- sub("@insert_data", json, html)
-  html <- sub("@name", as.character(year), html)
+  html <- sub(
+    "@name",
+    sprintf(
+      "Strata:\n\nAges: %s\nYears: %s\n",
+      paste(unique(treatmentPathways$age), collapse = ", "),
+      paste(unique(treatmentPathways$index_year), collapse = ", ")),
+    html)
   
   # Save HTML file
   writeLines(

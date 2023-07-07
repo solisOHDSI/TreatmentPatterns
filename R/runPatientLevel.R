@@ -1,33 +1,35 @@
-runPatientLevel <- function(cohorts,
-                cohortTableName,
-                cdm,
-                connectionDetails,
-                cdmSchema,
-                resultSchema,
-                studyName = "default",
-                includeTreatments = "startDate",
-                periodPriorToIndex = 0,
-                minEraDuration = 0,
-                splitEventCohorts = "",
-                splitTime = 30,
-                eraCollapseSize = 30,
-                combinationWindow = 30,
-                minPostCombinationDuration = 30,
-                filterTreatments = "First",
-                maxPathLength = 5,
-                minCellCount = 5,
-                minCellMethod = "Remove",
-                groupCombinations = 10,
-                addNoPaths = TRUE) {
+runPatientLevel <- function(
+    cohorts,
+    cohortTableName,
+    cdm = NULL,
+    connectionDetails = NULL,
+    cdmSchema = NULL,
+    resultSchema = NULL,
+    studyName = "default",
+    includeTreatments = "startDate",
+    periodPriorToIndex = 0,
+    minEraDuration = 0,
+    splitEventCohorts = "",
+    splitTime = 30,
+    eraCollapseSize = 30,
+    combinationWindow = 30,
+    minPostCombinationDuration = 30,
+    filterTreatments = "First",
+    maxPathLength = 5,
+    minCellCount = 5,
+    minCellMethod = "Remove",
+    groupCombinations = 10,
+    addNoPaths = TRUE) {
   cdmInterface <- CDMInterface$new(
     connectionDetails = connectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
+    cdmSchema = cdmSchema,
+    resultSchema = resultSchema,
+    cdm = cdm
   )
   
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,
-    cohortTableName = "CohortTable",
+    cohortTableName = cohortTableName,
     cdmInterface = cdmInterface
   )
   
@@ -51,5 +53,7 @@ runPatientLevel <- function(cohorts,
   
   pathwayConstructor$construct()
   a <- pathwayConstructor$getAndromeda()
-  cdmInterface$stratisfySex(a)
+  cdmInterface$addSex(a)
+  cdmInterface$addAge(a)
+  return(a)
 }
