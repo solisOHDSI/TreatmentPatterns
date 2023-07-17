@@ -92,8 +92,9 @@ PathwayConstructor <- R6::R6Class(
     construct = function() {
       # Set up Andromeda sqlite environment
       private$andromeda <- Andromeda::andromeda()
+      private$cdmInterface$fetchMetadata(private$andromeda)
       
-      private$andromeda$fullCohorts <- private$cdmInterface$fetchChortTable(
+      private$andromeda$fullCohorts <- private$cdmInterface$fetchCohortTable(
         cohortIds = private$cohorts$cohortId,
         cohortTableName = private$cohortTableName
       )

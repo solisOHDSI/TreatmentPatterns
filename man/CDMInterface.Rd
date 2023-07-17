@@ -11,9 +11,10 @@ Abstract interface to the CDM, using CDMConnector or DatabaseConnector.
 \itemize{
 \item \href{#method-CDMInterface-new}{\code{CDMInterface$new()}}
 \item \href{#method-CDMInterface-validate}{\code{CDMInterface$validate()}}
-\item \href{#method-CDMInterface-fetchChortTable}{\code{CDMInterface$fetchChortTable()}}
+\item \href{#method-CDMInterface-fetchCohortTable}{\code{CDMInterface$fetchCohortTable()}}
 \item \href{#method-CDMInterface-addAge}{\code{CDMInterface$addAge()}}
 \item \href{#method-CDMInterface-addSex}{\code{CDMInterface$addSex()}}
+\item \href{#method-CDMInterface-fetchMetadata}{\code{CDMInterface$fetchMetadata()}}
 \item \href{#method-CDMInterface-clone}{\code{CDMInterface$clone()}}
 }
 }
@@ -66,12 +67,12 @@ Validation method
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-CDMInterface-fetchChortTable"></a>}}
-\if{latex}{\out{\hypertarget{method-CDMInterface-fetchChortTable}{}}}
-\subsection{Method \code{fetchChortTable()}}{
+\if{html}{\out{<a id="method-CDMInterface-fetchCohortTable"></a>}}
+\if{latex}{\out{\hypertarget{method-CDMInterface-fetchCohortTable}{}}}
+\subsection{Method \code{fetchCohortTable()}}{
 Fetch specified cohort IDs from a specified cohort table
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchChortTable(cohortIds, cohortTableName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchCohortTable(cohortIds, cohortTableName)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -106,6 +107,9 @@ Andromeda object.}
 
 \item{\code{andromeda}}{(\code{Andromeda::andromeda()})
 Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
 }
 \if{html}{\out{</div>}}
 }
@@ -130,11 +134,41 @@ Andromeda object.}
 
 \item{\code{andromeda}}{(\code{Andromeda::andromeda()})
 Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 (\code{data.frame()})
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-CDMInterface-fetchMetadata"></a>}}
+\if{latex}{\out{\hypertarget{method-CDMInterface-fetchMetadata}{}}}
+\subsection{Method \code{fetchMetadata()}}{
+Fetch metadata from CDM
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchMetadata(andromeda)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(\code{invisible(NULL)})
 }
 }
 \if{html}{\out{<hr>}}

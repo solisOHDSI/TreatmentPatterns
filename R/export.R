@@ -12,7 +12,17 @@
 #'
 #' @return (`invisible(NULL)`)
 export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, archiveName = NULL) {
-  treatmentHistory <- andromeda$treatmentHistory %>% collect()
+  if (!file.exists(outputPath)) {
+    dir.create(outputPath)
+  }
+  
+  treatmentHistory <- andromeda$treatmentHistory %>% dplyr::collect()
+  
+  # metadata
+  metadataPath <- file.path(outputPath, "metadata.csv")
+  message(sprintf("Writing metadata to %s", metadataPath))
+  metadata <- andromeda$metadata %>% dplyr::collect()
+  write.csv(metadata, file = metadataPath)
   
   # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
@@ -30,15 +40,15 @@ export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, arc
   counts <- computeCounts(treatmentHistory, minFreq)
   
   countsYearPath <- file.path(outputPath, "countsYear.csv")
-  message(sprintf("Writing treatmentPathways to %s", countsYearPath))
+  message(sprintf("Writing countsYearPath to %s", countsYearPath))
   write.csv(counts$year, file = countsYearPath)
   
   countsAgePath <- file.path(outputPath, "countsAge.csv")
-  message(sprintf("Writing treatmentPathways to %s", countsAgePath))
+  message(sprintf("Writing countsAgePath to %s", countsAgePath))
   write.csv(counts$age, file = countsAgePath)
   
   countsSexPath <- file.path(outputPath, "countsSex.csv")
-  message(sprintf("Writing treatmentPathways to %s", countsSexPath))
+  message(sprintf("Writing countsSexPath to %s", countsSexPath))
   write.csv(counts$sex, file = countsSexPath)
   
   if (!is.null(archiveName)) {

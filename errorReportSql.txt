@@ -1,0 +1,41 @@
+DBMS:
+sqlite
+
+Error:
+no such table: main.CONCEPT
+
+SQL:
+INSERT INTO temp.Codesets (codeset_id, concept_id)
+SELECT 0 as codeset_id, c.concept_id FROM (select distinct I.concept_id FROM
+( 
+  select concept_id from main.CONCEPT where concept_id in (1125315)
+UNION  select c.concept_id
+  from main.CONCEPT c
+  join main.CONCEPT_ANCESTOR ca on c.concept_id = ca.descendant_concept_id
+  and ca.ancestor_concept_id in (1125315)
+  and c.invalid_reason is null
+) I
+) C
+
+
+R version:
+R version 4.2.2 (2022-10-31 ucrt)
+
+Platform:
+x86_64-w64-mingw32
+
+Attached base packages:
+- stats
+- graphics
+- grDevices
+- utils
+- datasets
+- methods
+- base
+
+Other attached packages:
+- dplyr (1.1.2)
+- TreatmentPatterns (2.0.0)
+- Capr (2.0.4)
+- duckdb (0.8.1)
+- DBI (1.1.3)

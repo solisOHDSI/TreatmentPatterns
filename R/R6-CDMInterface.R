@@ -55,7 +55,7 @@ CDMInterface <- R6::R6Class(
     #' @template param_cohortTableName
     #'
     #' @return (`data.frame`)
-    fetchChortTable = function(cohortIds, cohortTableName) {
+    fetchCohortTable = function(cohortIds, cohortTableName) {
       switch(
         private$type,
         CDMConnector = private$cdmconFetchChortTable(cohortIds, cohortTableName),
@@ -89,6 +89,21 @@ CDMInterface <- R6::R6Class(
         CDMConnector = private$cdmconAddSex(andromeda),
         DatabaseConnector = private$dbconAddSex(andromeda)
       )
+    },
+    
+    #' @description
+    #' Fetch metadata from CDM
+    #' 
+    #' @template param_andromeda
+    #' 
+    #' @return (`invisible(NULL)`)
+    fetchMetadata = function(andromeda) {
+      switch(
+        private$type,
+        CDMConnector = private$cdmconFetchMetadata(andromeda),
+        DatabaseConnector = private$dbconFetchMetadata(andromeda)
+      )
+      return(invisible(NULL))
     }
   ),
   private = list(
@@ -102,7 +117,10 @@ CDMInterface <- R6::R6Class(
     # cohortTableName (`character(1)`)
     dbconFetchCohortTable = function(cohortIds, cohortTableName) {
       renderedSql <- SqlRender::render(
-        sql = "SELECT * FROM @resultSchema.@cohortTableName WHERE cohort_definition_id IN (@cohortIds)",
+        sql = "
+        SELECT *
+        FROM @resultSchema.@cohortTableName
+        WHERE cohort_definition_id IN (@cohortIds);",
         resultSchema = private$resultSchema,
         cohortTableName = cohortTableName,
         cohortIds = cohortIds
@@ -127,7 +145,7 @@ CDMInterface <- R6::R6Class(
                  person_id,
                  year_of_birth
                FROM @resultSchema.person
-               WHERE person_id IN (@personIds)",
+               WHERE person_id IN (@personIds);",
         resultSchema = private$resultSchema,
         personIds = personIds
       )
@@ -160,7 +178,7 @@ CDMInterface <- R6::R6Class(
                FROM @resultSchema.person
                INNER JOIN @resultSchema.concept
                ON person.gender_concept_id = concept.concept_id
-               WHERE person_id IN (@personIds)",
+               WHERE person_id IN (@personIds);",
         resultSchema = private$resultSchema,
         personIds = personIds
       )
@@ -180,6 +198,33 @@ CDMInterface <- R6::R6Class(
 
       return(invisible(NULL))
     },
+    
+    dbconFetchMetadata = function(andromeda) {
+      renderedSql <- SqlRender::render(
+        sql = "
+        SELECT
+          cdm_source_name,
+          cdm_source_abbreviation,
+          cdm_release_date,
+          vocabulary_version
+        FROM @resultSchema.cdm_source;",
+        resultSchema = private$resultSchema
+      )
+      
+      connection <- DatabaseConnector::connect(private$connectionDetails)
+      on.exit(DatabaseConnector::disconnect(connection))
+      
+      translatedSql <- SqlRender::translate(
+        sql = renderedSql,
+        targetDialect = connection@dbms)
+      
+      andromeda$metadata <- DatabaseConnector::querySql(connection, translatedSql) %>%
+          mutate(
+            execution_start_date = as.character(Sys.Date()),
+            package_version = as.character(utils::packageVersion("TreatmentPatterns")),
+            r_version = version$version.string,
+            platform = version$platform)
+    },
 
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
@@ -189,12 +234,17 @@ CDMInterface <- R6::R6Class(
           filter(.data$cohort_definition_id %in% cohortIds))
     },
 
-    cdmconAddAge = function() {
+    cdmconAddAge = function(andromeda) {
       message("Not yet implemented")
       return(invisible(NULL))
     },
 
-    cdmconAddSex = function() {
+    cdmconAddSex = function(andromeda) {
+      message("Not yet implemented")
+      return(invisible(NULL))
+    },
+    
+    cdmconFetchMetadata = function(andromeda) {
       message("Not yet implemented")
       return(invisible(NULL))
     }

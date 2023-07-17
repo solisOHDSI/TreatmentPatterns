@@ -7,6 +7,7 @@
 executeTreatmentPatterns(
   cohorts,
   cohortTableName,
+  outputPath,
   cdm = NULL,
   connectionDetails = NULL,
   cdmSchema = NULL,
@@ -25,8 +26,7 @@ executeTreatmentPatterns(
   minCellCount = 5,
   minCellMethod = "Remove",
   groupCombinations = 10,
-  addNoPaths = TRUE,
-  outputPath
+  addNoPaths = TRUE
 )
 }
 \arguments{
@@ -35,6 +35,8 @@ Cohort table.}
 
 \item{cohortTableName}{(\code{character(1)})\cr
 Cohort table name.}
+
+\item{outputPath}{(\code{character(1)})\cr}
 
 \item{cdm}{(\code{CDMConnector::cdm_from_con()}: \code{NULL})\cr
 Optional; Ignores \code{connectionDetails}, \code{cdmSchema}, and \code{resultSchema}.}
@@ -77,8 +79,6 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 \item{groupCombinations}{(\code{integer(1)}: \code{10})\cr}
 
 \item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
-
-\item{outputPath}{(\code{character(1)})\cr}
 }
 \value{
 (\code{invisible(NULL)})

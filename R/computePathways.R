@@ -1,4 +1,4 @@
-#' runPatientLevel
+#' computePathways
 #'
 #' @template param_cohorts
 #' @template param_cohortTableName
@@ -27,7 +27,7 @@
 #' data outcomes.
 #' 
 #' @export
-runPatientLevel <- function(
+computePathways <- function(
     cohorts,
     cohortTableName,
     cdm = NULL,
@@ -84,5 +84,9 @@ runPatientLevel <- function(
   andromeda <- pathwayConstructor$getAndromeda()
   cdmInterface$addSex(andromeda)
   cdmInterface$addAge(andromeda)
+  
+  andromeda$metadata <- andromeda$metadata %>%
+    dplyr::collect() %>%
+    dplyr::mutate(execution_end_date = as.character(Sys.Date()))
   return(andromeda)
 }

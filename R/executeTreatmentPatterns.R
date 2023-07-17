@@ -50,7 +50,7 @@ executeTreatmentPatterns <- function(
     addNoPaths = TRUE) {
 
   # Compute pathways on patient level
-  andromeda <- runPatientLevel(
+  andromeda <- computePathways(
     cohorts,
     cohortTableName,
     cdm,
