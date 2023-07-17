@@ -4,12 +4,11 @@
 \alias{createSunburstPlot}
 \title{createSunburstPlot}
 \usage{
-createSunburstPlot(treatmentHistory, outputFile, year = "all")
+createSunburstPlot(treatmentPathways, outputFile)
 }
 \arguments{
-\item{treatmentHistory}{(\code{data.frame()})\cr
-Treatment history data.frame from an \code{Andromeda::andromeda()} environment,
-obtained by calling \code{pathwayConstructor$getAndromedas()}.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+Data frame containing treatmentPathways columns: path, freq.}
 
 \item{outputFile}{(\code{character(1)})\cr
 Path to output file.}

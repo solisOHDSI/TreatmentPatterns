@@ -14,7 +14,9 @@ PathwayConstructor <- R6::R6Class(
     #' \cr\cr
     #' Choose the way you interface with the CDM, either through `DatabaseConnector` or `CDMConnector`.
     #' 
-    #' @param cohortSettings (`TreatmentPatterns::CohortSettings`)
+    #' @template param_cohorts
+    #' @template param_cohortTableName
+    #' @template param_cdmInterface
     #' 
     #' @return (`invisible(self)`)
     initialize = function(cohorts, cohortTableName, cdmInterface) {
@@ -38,7 +40,7 @@ PathwayConstructor <- R6::R6Class(
     #' 
     #' @return (`invisible(self)`)
     validate = function() {
-      cdmInterface$validate()
+      private$cdmInterface$validate()
       
       errorMessages <- checkmate::makeAssertCollection()
       # Assert ncol = 3
@@ -91,7 +93,7 @@ PathwayConstructor <- R6::R6Class(
       # Set up Andromeda sqlite environment
       private$andromeda <- Andromeda::andromeda()
       
-      private$andromeda$fullCohorts <- cdmInterface$fetchChortTable(
+      private$andromeda$fullCohorts <- private$cdmInterface$fetchChortTable(
         cohortIds = private$cohorts$cohortId,
         cohortTableName = private$cohortTableName
       )
@@ -119,6 +121,27 @@ PathwayConstructor <- R6::R6Class(
       return(private$andromeda)
     },
     
+    
+    #' @description
+    #' Edit settings
+    #' 
+    #' @template param_studyName
+    #' @template param_includeTreatments
+    #' @template param_periodPriorToIndex
+    #' @template param_minEraDuration
+    #' @template param_splitEventCohorts
+    #' @template param_splitTime
+    #' @template param_eraCollapseSize
+    #' @template param_combinationWindow
+    #' @template param_minPostCombinationDuration
+    #' @template param_filterTreatments
+    #' @template param_maxPathLength
+    #' @template param_minCellCount
+    #' @template param_minCellMethod
+    #' @template param_groupCombinations
+    #' @template param_addNoPaths
+    #' 
+    #' @return (`data.frame()`)
     editSettings = function(
     studyName = "default",
     includeTreatments = "startDate",
@@ -145,6 +168,10 @@ PathwayConstructor <- R6::R6Class(
       self$validate()
     },
     
+    #' @description
+    #' Getter method to get the specified settings
+    #' 
+    #' @return (`data.frame()`)
     getSettings = function() {
       return(private$settings)
     }

@@ -1,3 +1,32 @@
+#' runPatientLevel
+#'
+#' @template param_cohorts
+#' @template param_cohortTableName
+#' @template param_cdm
+#' @template param_connectionDetails
+#' @template param_cdmSchema
+#' @template param_resultSchema
+#' @template param_studyName
+#' @template param_includeTreatments
+#' @template param_periodPriorToIndex
+#' @template param_minEraDuration
+#' @template param_splitEventCohorts
+#' @template param_splitTime
+#' @template param_eraCollapseSize
+#' @template param_combinationWindow
+#' @template param_minPostCombinationDuration
+#' @template param_filterTreatments
+#' @template param_maxPathLength
+#' @template param_minCellCount
+#' @template param_minCellMethod
+#' @template param_groupCombinations
+#' @template param_addNoPaths
+#'
+#' @return (`Andromeda::andromeda()`)
+#' \link[Andromeda](andromeda) object containing non-sharable patient level
+#' data outcomes.
+#' 
+#' @export
 runPatientLevel <- function(
     cohorts,
     cohortTableName,
@@ -52,8 +81,8 @@ runPatientLevel <- function(
   )
   
   pathwayConstructor$construct()
-  a <- pathwayConstructor$getAndromeda()
-  cdmInterface$addSex(a)
-  cdmInterface$addAge(a)
-  return(a)
+  andromeda <- pathwayConstructor$getAndromeda()
+  cdmInterface$addSex(andromeda)
+  cdmInterface$addAge(andromeda)
+  return(andromeda)
 }

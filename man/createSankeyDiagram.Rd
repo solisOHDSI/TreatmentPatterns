@@ -5,15 +5,16 @@
 \title{createSankeyDiagram}
 \usage{
 createSankeyDiagram(
-  treatmentHistory,
+  treatmentPathways,
   outputFile,
   groupCombinations = FALSE,
-  minFreq = 5
+  minFreq = 5,
+  year = "all"
 )
 }
 \arguments{
-\item{treatmentHistory}{(\code{data.frame()})\cr
-Treatment history data frame.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+Data frame containing treatmentPathways columsn: path, freq.}
 
 \item{outputFile}{(\code{character(1)})\cr
 Path where the Sankey diagram should be written to.}
@@ -26,22 +27,13 @@ Path where the Sankey diagram should be written to.}
 
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Censor paths with a frequency smaller than specified.}
+
+\item{year}{(\code{integer(1)})\cr
+Year}
 }
 \value{
 invisible(NULL)
 }
 \description{
 Writes the Sankey diagram to a HTML-file, to a specified file path.
-}
-\examples{
-if (FALSE) {
-  TH <- andromeda$myStudy$treatmentHistory \%>\% collect()
-
-  createSankeyDiagram(
-    treatmentHistory = TH,
-    outputFile = "./some/path/to/sankeyDiagram.html",
-    groupCombinations = FALSE,
-    minFreq = 0
-  )
-}
 }

@@ -88,7 +88,14 @@ createSankeyDiagram <- function(
     year = "all"){
   data <- treatmentPathways %>%
     rowwise() %>%
-    mutate(path = stringr::str_split(.data$path, pattern = "-"))
+    mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
+    mutate(
+      freq = case_when(
+        startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
+        .default = .data$freq
+      )
+    ) %>%
+    mutate(freq = as.integer(.data$freq))
   
   data <- data %>%
     tidyr::unnest_wider(path, names_sep = "")
@@ -140,6 +147,7 @@ createSankeyDiagram <- function(
     options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
   )
   
+  message(sprintf("Witing Sankey diagram to %s", file.path(outputFile)))
   writeLines(
     text = plot$html$chart,
     con = file.path(outputFile))

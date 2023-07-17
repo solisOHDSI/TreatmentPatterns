@@ -4,21 +4,43 @@
 #' 
 #' @export
 #'
-#' @param andromeda (`Andromeda::andromeda()`)
-#' @param outputPath (`character(1)`)
-#' @param ageWindow (`integer(1)`)
-#' @param minFreq (`integer(1)`)
+#' @template param_andromeda
+#' @template param_outputPath
+#' @template param_ageWindow
+#' @template param_minFreq
+#' @template param_archiveName
 #'
 #' @return (`invisible(NULL)`)
-export <- function(andromeda, outputPath = "./", ageWindow = 10, minFreq = 5) {
+export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, archiveName = NULL) {
   treatmentHistory <- andromeda$treatmentHistory %>% collect()
   treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
   counts <- computeCounts(treatmentHistory, minFreq)
   
-  write.csv(treatmentPathways, file = file.path(outputPath, "treatmentPathways.csv"))
-  write.csv(counts$year, file = file.path(outputPath, "countsYear.csv"))
-  write.csv(counts$age, file = file.path(outputPath, "countsAge.csv"))
-  write.csv(counts$sex, file = file.path(outputPath, "countsSex.csv"))
+  
+  treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
+  countsYearPath <- file.path(outputPath, "countsYear.csv")
+  countsAgePath <- file.path(outputPath, "countsAge.csv")
+  countsSexPath <- file.path(outputPath, "countsSex.csv")
+  
+  message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
+  write.csv(treatmentPathways, file = treatmentPathwaysPath)
+  
+  message(sprintf("Writing treatmentPathways to %s", countsYearPath))
+  write.csv(counts$year, file = countsYearPath)
+  
+  message(sprintf("Writing treatmentPathways to %s", countsAgePath))
+  write.csv(counts$age, file = countsAgePath)
+  
+  message(sprintf("Writing treatmentPathways to %s", countsSexPath))
+  write.csv(counts$sex, file = countsSexPath)
+  
+  if (!is.null(archiveName)) {
+    zipPath <- file.path(outputPath, archiveName)
+    
+    message(sprintf("Zipping files to %s", zipPath))
+    
+    utils::zip(zipPath, c(treatmentPathwaysPath, countsYearPath, countsAgePath, countsSexPath))
+  }
   return(invisible(NULL))
 }
 
