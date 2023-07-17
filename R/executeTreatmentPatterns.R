@@ -2,6 +2,7 @@
 #'
 #' @template param_cohorts
 #' @template param_cohortTableName
+#' @template param_outputPath
 #' @template param_cdm
 #' @template param_connectionDetails
 #' @template param_cdmSchema
@@ -21,13 +22,13 @@
 #' @template param_minCellMethod
 #' @template param_groupCombinations
 #' @template param_addNoPaths
-#' @template param_outputPath
 #'
 #' @return (`invisible(NULL)`)
 #' @export
 executeTreatmentPatterns <- function(
     cohorts,
     cohortTableName,
+    outputPath,
     cdm = NULL,
     connectionDetails = NULL,
     cdmSchema = NULL,
@@ -46,8 +47,7 @@ executeTreatmentPatterns <- function(
     minCellCount = 5,
     minCellMethod = "Remove",
     groupCombinations = 10,
-    addNoPaths = TRUE,
-    outputPath) {
+    addNoPaths = TRUE) {
 
   # Compute pathways on patient level
   andromeda <- runPatientLevel(
@@ -75,6 +75,8 @@ executeTreatmentPatterns <- function(
   )
   
   # Export csv-files
-  TreatmentPatterns::export(andromeda, outputPath = outputpath)
+  TreatmentPatterns::export(andromeda, outputPath = outputPath)
+  
+  Andromeda::close(andromeda)
   return(invisible(NULL))
 }

@@ -20,23 +20,23 @@
 #'   con <- DatabaseConnector::connect(Eunomia::getEunomiaConnectionDetails())
 #'   extractFile(con, "person", "main", "sqlite")
 #'}
-extractFile <- function(connection, tableName, resultsSchema) {
-  # Assertions
-  checkmate::checkClass(connection, "DatabaseConnectorDbiConnection")
-  checkmate::checkCharacter(tableName, len = 1)
-  checkmate::checkCharacter(resultsSchema, len = 1)
-
-  parameterizedSql <- "SELECT * FROM @resultsSchema.@tableName"
-  renderedSql <- SqlRender::render(
-    parameterizedSql,
-    resultsSchema = resultsSchema,
-    tableName = tableName)
-
-  translatedSql <- SqlRender::translate(
-    renderedSql,
-    targetDialect = connection@dbms)
-  DatabaseConnector::querySql(connection, translatedSql)
-}
+# extractFile <- function(connection, tableName, resultsSchema) {
+#   # Assertions
+#   checkmate::checkClass(connection, "DatabaseConnectorDbiConnection")
+#   checkmate::checkCharacter(tableName, len = 1)
+#   checkmate::checkCharacter(resultsSchema, len = 1)
+# 
+#   parameterizedSql <- "SELECT * FROM @resultsSchema.@tableName"
+#   renderedSql <- SqlRender::render(
+#     parameterizedSql,
+#     resultsSchema = resultsSchema,
+#     tableName = tableName)
+# 
+#   translatedSql <- SqlRender::translate(
+#     renderedSql,
+#     targetDialect = connection@dbms)
+#   DatabaseConnector::querySql(connection, translatedSql)
+# }
 
 
 #' extractCohortTable
@@ -72,40 +72,40 @@ extractFile <- function(connection, tableName, resultsSchema) {
 #'     cohortIds = c(1,2,3)
 #'   )
 #' }
-extractCohortTable <- function(
-    connectionDetails,
-    resultsSchema,
-    cohortTableName,
-    cohortIds = NULL) {
-  checkmate::checkClass(connectionDetails, "ConnectionDetails")
-  checkmate::checkCharacter(cohortTableName, len = 1)
-  checkmate::checkCharacter(resultsSchema, len = 1)
-  checkmate::checkNumeric(cohortIds, null.ok = TRUE)
-  
-  if (all(is.null(cohortIds)) | all(is.na(cohortIds))) {
-    renderedSql <- SqlRender::render(
-      "SELECT * FROM @resultsSchema.@cohortTableName",
-      resultsSchema = resultsSchema,
-      cohortTableName = cohortTableName
-    )
-  } else {
-    renderedSql <- SqlRender::render(
-      "SELECT * FROM @resultsSchema.@cohortTableName WHERE cohort_definition_id IN (@cohortIds)",
-      resultsSchema = resultsSchema,
-      cohortTableName = cohortTableName,
-      cohortIds = cohortIds
-    )
-  }
-  
-  connection <- DatabaseConnector::connect(connectionDetails)
-  on.exit(DatabaseConnector::disconnect(connection))
-  
-  translatedSql <- SqlRender::translate(
-    renderedSql,
-    targetDialect = connectionDetails$dbms
-  )
-  DatabaseConnector::querySql(connection, translatedSql)
-}
+# extractCohortTable <- function(
+#     connectionDetails,
+#     resultsSchema,
+#     cohortTableName,
+#     cohortIds = NULL) {
+#   checkmate::checkClass(connectionDetails, "ConnectionDetails")
+#   checkmate::checkCharacter(cohortTableName, len = 1)
+#   checkmate::checkCharacter(resultsSchema, len = 1)
+#   checkmate::checkNumeric(cohortIds, null.ok = TRUE)
+#   
+#   if (all(is.null(cohortIds)) | all(is.na(cohortIds))) {
+#     renderedSql <- SqlRender::render(
+#       "SELECT * FROM @resultsSchema.@cohortTableName",
+#       resultsSchema = resultsSchema,
+#       cohortTableName = cohortTableName
+#     )
+#   } else {
+#     renderedSql <- SqlRender::render(
+#       "SELECT * FROM @resultsSchema.@cohortTableName WHERE cohort_definition_id IN (@cohortIds)",
+#       resultsSchema = resultsSchema,
+#       cohortTableName = cohortTableName,
+#       cohortIds = cohortIds
+#     )
+#   }
+#   
+#   connection <- DatabaseConnector::connect(connectionDetails)
+#   on.exit(DatabaseConnector::disconnect(connection))
+#   
+#   translatedSql <- SqlRender::translate(
+#     renderedSql,
+#     targetDialect = connectionDetails$dbms
+#   )
+#   DatabaseConnector::querySql(connection, translatedSql)
+# }
 
 #' writeCohortTable
 #'
@@ -118,33 +118,33 @@ extractCohortTable <- function(
 #'
 #' @return NULL
 #' @export
-writeCohortTable <- function(
-    saveSettings,
-    cohortSettings,
-    dataSettings,
-    tableName) {
-  # Write cohortTable
-  fs::dir_create(file.path(saveSettings$outputFolder))
-
-  write.csv(
-    x = cohortSettings$cohortsToCreate,
-    file = paste0(saveSettings$outputFolder, "/cohortsToCreate.csv"))
-
-  con <- DatabaseConnector::connect(dataSettings$connectionDetails)
-  # Disconnect from database on exit
-  on.exit(DatabaseConnector::disconnect(con))
-
-  # Extract files from DB, write to outputFolder
-  tbl <- extractCohortTable(
-    connection = con,
-    cohortTableName = tableName,
-    resultsSchema = dataSettings$resultSchema,
-    cohortIds = cohortSettings$cohortsToCreate$cohortId)
-
-  write.csv(
-    tbl,
-    file.path(
-      saveSettings$outputFolder,
-      paste0(tableName, ".csv")),
-    row.names = FALSE)
-}
+# writeCohortTable <- function(
+#     saveSettings,
+#     cohortSettings,
+#     dataSettings,
+#     tableName) {
+#   # Write cohortTable
+#   fs::dir_create(file.path(saveSettings$outputFolder))
+# 
+#   write.csv(
+#     x = cohortSettings$cohortsToCreate,
+#     file = paste0(saveSettings$outputFolder, "/cohortsToCreate.csv"))
+# 
+#   con <- DatabaseConnector::connect(dataSettings$connectionDetails)
+#   # Disconnect from database on exit
+#   on.exit(DatabaseConnector::disconnect(con))
+# 
+#   # Extract files from DB, write to outputFolder
+#   tbl <- extractCohortTable(
+#     connection = con,
+#     cohortTableName = tableName,
+#     resultsSchema = dataSettings$resultSchema,
+#     cohortIds = cohortSettings$cohortsToCreate$cohortId)
+# 
+#   write.csv(
+#     tbl,
+#     file.path(
+#       saveSettings$outputFolder,
+#       paste0(tableName, ".csv")),
+#     row.names = FALSE)
+# }

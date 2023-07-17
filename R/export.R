@@ -13,24 +13,31 @@
 #' @return (`invisible(NULL)`)
 export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, archiveName = NULL) {
   treatmentHistory <- andromeda$treatmentHistory %>% collect()
-  treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
-  counts <- computeCounts(treatmentHistory, minFreq)
   
-  
+  # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
-  countsYearPath <- file.path(outputPath, "countsYear.csv")
-  countsAgePath <- file.path(outputPath, "countsAge.csv")
-  countsSexPath <- file.path(outputPath, "countsSex.csv")
-  
   message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
+  treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
   write.csv(treatmentPathways, file = treatmentPathwaysPath)
   
+  # Summary statistics duration
+  statsTherapyPath <- file.path(outputPath, "summaryStatsTherapyDuraion.csv")
+  message(sprintf("Writing summaryStatsTherapyDuraion to %s", statsTherapyPath))
+  statsTherapy <- computeStatsTherapy(treatmentHistory)
+  write.csv(statsTherapy, file = statsTherapyPath)
+  
+  # Counts
+  counts <- computeCounts(treatmentHistory, minFreq)
+  
+  countsYearPath <- file.path(outputPath, "countsYear.csv")
   message(sprintf("Writing treatmentPathways to %s", countsYearPath))
   write.csv(counts$year, file = countsYearPath)
   
+  countsAgePath <- file.path(outputPath, "countsAge.csv")
   message(sprintf("Writing treatmentPathways to %s", countsAgePath))
   write.csv(counts$age, file = countsAgePath)
   
+  countsSexPath <- file.path(outputPath, "countsSex.csv")
   message(sprintf("Writing treatmentPathways to %s", countsSexPath))
   write.csv(counts$sex, file = countsSexPath)
   
@@ -39,9 +46,36 @@ export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, arc
     
     message(sprintf("Zipping files to %s", zipPath))
     
-    utils::zip(zipPath, c(treatmentPathwaysPath, countsYearPath, countsAgePath, countsSexPath))
+    utils::zip(
+      zipfile = zipPath,
+      files = c(
+        treatmentPathwaysPath, countsYearPath, countsAgePath, countsSexPath,
+        statsTherapyPath))
   }
   return(invisible(NULL))
+}
+
+#' computeStatsTherapy
+#'
+#' @param treatmentHistory (`data.frame()`)
+#'
+#' @return (`data.frame()`)
+computeStatsTherapy <- function(treatmentHistory) {
+  stats <- treatmentHistory %>%
+    mutate(treatmentType = dplyr::case_when(
+      nchar(.data$event_cohort_id) > 1 ~ "combination",
+      .default = "monotherapy")
+    ) %>%
+    group_by(.data$treatmentType) %>%
+    summarise(
+      avgDuration = mean(.data$duration_era),
+      medianDuration = median(.data$duration_era),
+      sd = sd(.data$duration_era),
+      min = min(.data$duration_era),
+      max = max(.data$duration_era),
+      count = n())
+  
+  return(stats)
 }
 
 #' computeCounts
