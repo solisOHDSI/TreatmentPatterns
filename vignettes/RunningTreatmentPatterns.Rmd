@@ -1,0 +1,135 @@
+---
+title: "Running TreatmentPatterns"
+author: "Maarten van Kessel"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r sourceCG, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
+```
+
+```{r libs, message=FALSE, warning=FALSE}
+library(dplyr)
+```
+
+```{r setupCohorts}
+# Select Viral Sinusitis Cohort
+targetCohorts <- cohortsGenerated %>%
+  filter(cohortName == "ViralSinusitis") %>%
+  select(cohortId, cohortName)
+
+# Select everything BUT Viral Sinusitis cohorts
+eventCohorts <- cohortsGenerated %>%
+  filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
+  select(cohortId, cohortName)
+
+exitCohorts <- cohortsGenerated %>%
+  filter(cohortName == "Death") %>%
+  select(cohortId, cohortName)
+
+cohorts <- dplyr::bind_rows(
+  targetCohorts %>% mutate(type = "target"),
+  eventCohorts %>% mutate(type = "event"),
+  exitCohorts %>% mutate(type = "exit")
+)
+```
+
+## DatabaseConnector
+### All-in-one
+```{r warning=FALSE}
+tempDir <- tempdir()
+allDir <- file.path(tempDir, "all_in_one")
+
+TreatmentPatterns::executeTreatmentPatterns(
+  cohorts = cohorts,
+  cohortTableName = "CohortTable",
+  outputPath = allDir,
+  connectionDetails = connectionDetails,
+  cdmSchema = "main",
+  resultSchema = "main",
+  # Optional settings
+  includeTreatments = "startDate",
+  studyName = "myStudy",
+  periodPriorToIndex = 0,
+  minEraDuration = 0,
+  splitEventCohorts = "",
+  splitTime = 30,
+  eraCollapseSize = 30,
+  combinationWindow = 30,
+  minPostCombinationDuration = 30,
+  filterTreatments = "First",
+  maxPathLength = 5,
+  minCellCount = 5,
+  minCellMethod = "Remove",
+  groupCombinations = 10,
+  addNoPaths = TRUE
+)
+```
+### Segmented
+The segmented approach allows you to investigate the patient-level intermediate files by querying the andromeda environment.
+```{r message=FALSE, warning=FALSE, results='hide'}
+andromeda <- TreatmentPatterns::computePathways(
+  cohorts = cohorts,
+  cohortTableName = "CohortTable",
+  connectionDetails = connectionDetails,
+  cdmSchema = "main",
+  resultSchema = "main",
+  studyName = "myStudy"
+)
+```
+
+```{r intermediateResults}
+names(andromeda)
+```
+
+```{r treatmentHistory}
+andromeda$treatmentHistory
+```
+
+The files inside the andromeda environment can be exported using the export function.
+```{r message=FALSE, warning=FALSE, results='hide'}
+segDir <- file.path(tempDir, "segmented")
+TreatmentPatterns::export(andromeda, outputPath = segDir)
+```
+
+## CDMConnector
+```{r eval=FALSE}
+cdmDir <- file.path(tempDir, "CDMCon")
+
+con <- DBI::dbConnect(duckdb::duckdb(), eunomia_dir())
+cdm <- CDMConnector::cdm_from_con(
+  con = con,
+  cdm_schema = "main",
+  write_schema = "main"
+)
+
+TreatmentPatterns::executeTreatmentPatterns(
+  cohorts = cohorts,
+  cohortTableName = "CohortTable",
+  outputPath = cdmDir,
+  cdm = cdm)
+```
+
+## Reviewing outputFiles
+```{r countsAge}
+head(read.csv(file.path(allDir, "countsAge.csv"))[-1])
+head(read.csv(file.path(allDir, "countsSex.csv"))[-1])
+head(read.csv(file.path(allDir, "countsYear.csv"))[-1])
+```
+
+```{r summary}
+head(read.csv(file.path(allDir, "summaryStatsTherapyDuraion.csv"))[-1])
+```
+
+```{r TreatmentPathways}
+head(read.csv(file.path(allDir, "treatmentPathways.csv"))[-1])
+```
+
+```{r metadata}
+head(read.csv(file.path(allDir, "metadata.csv"))[-1])
+```
