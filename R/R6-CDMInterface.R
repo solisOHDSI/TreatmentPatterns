@@ -219,11 +219,11 @@ CDMInterface <- R6::R6Class(
         targetDialect = connection@dbms)
       
       andromeda$metadata <- DatabaseConnector::querySql(connection, translatedSql) %>%
-          mutate(
+        dplyr::mutate(
             execution_start_date = as.character(Sys.Date()),
             package_version = as.character(utils::packageVersion("TreatmentPatterns")),
-            r_version = version$version.string,
-            platform = version$platform)
+            r_version = base::version$version.string,
+            platform = base::version$platform)
     },
 
     # cohortIds (`integer(n)`)
@@ -234,18 +234,53 @@ CDMInterface <- R6::R6Class(
           filter(.data$cohort_definition_id %in% cohortIds))
     },
 
+    # andromeda (`Andromeda::andromeda()`)
     cdmconAddAge = function(andromeda) {
-      message("Not yet implemented")
+      personIds <- andromeda$treatmentHistory %>% dplyr::select("person_id") %>% dplyr::pull()
+      
+      andromeda$year_of_birth <- private$cdm$person %>%
+        dplyr::select("person_id", "year_of_birth")
+      
+      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
+        dplyr::inner_join(andromeda$year_of_birth, by = dplyr::join_by(person_id == person_id)) %>%
+        dplyr::mutate(age = .data$index_year - .data$year_of_birth) %>%
+        dplyr::select(-"year_of_birth")
+      
       return(invisible(NULL))
     },
 
+    # andromeda (`Andromeda::andromeda()`)
     cdmconAddSex = function(andromeda) {
-      message("Not yet implemented")
+      # message("Not yet implemented")
+      personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
+      # personIds <- c(1,2,3,4)
+      
+      andromeda$sex <- private$cdm$person %>%
+        dplyr::filter(.data$person_id %in% personIds) %>%
+        dplyr::inner_join(cdm$concept, by = join_by(gender_concept_id == concept_id)) %>%
+        dplyr::select(person_id, concept_name) %>%
+        dplyr::collect()
+      
+      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
+        dplyr::inner_join(andromeda$sex, by = join_by(person_id == person_id))
+      
       return(invisible(NULL))
     },
-    
+
+    # andromeda (`Andromeda::andromeda()`)
     cdmconFetchMetadata = function(andromeda) {
-      message("Not yet implemented")
+      private$cdm$cdm_source %>%
+        dplyr::select(
+          "cdm_source_name",
+          "cdm_source_abbreviation",
+          "cdm_release_date",
+          "vocabulary_version") %>%
+        dplyr::collect() %>%
+        dplyr::mutate(
+          execution_start_date = as.character(Sys.Date()),
+          package_version = as.character(utils::packageVersion("TreatmentPatterns")),
+          r_version = base::version$version.string,
+          platform = base::version$platform)
       return(invisible(NULL))
     }
   )
