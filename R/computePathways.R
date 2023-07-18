@@ -23,7 +23,7 @@
 #' @template param_addNoPaths
 #'
 #' @return (`Andromeda::andromeda()`)
-#' \link[Andromeda](andromeda) object containing non-sharable patient level
+#' \link[Andromeda]{andromeda} object containing non-sharable patient level
 #' data outcomes.
 #' 
 #' @export

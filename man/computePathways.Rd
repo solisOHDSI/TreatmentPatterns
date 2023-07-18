@@ -79,7 +79,7 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 }
 \value{
 (\code{Andromeda::andromeda()})
-\link\href{andromeda}{Andromeda} object containing non-sharable patient level
+\link[Andromeda]{andromeda} object containing non-sharable patient level
 data outcomes.
 }
 \description{
