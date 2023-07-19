@@ -63,10 +63,9 @@ TreatmentPatterns::executeTreatmentPatterns(
   outputPath = allDir,
   connectionDetails = connectionDetails,
   cdmSchema = "main",
-  resultSchema = "main",
+  resultSchema = "main", 
   # Optional settings
   includeTreatments = "startDate",
-  studyName = "myStudy",
   periodPriorToIndex = 0,
   minEraDuration = 0,
   splitEventCohorts = "",
@@ -75,11 +74,7 @@ TreatmentPatterns::executeTreatmentPatterns(
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5,
-  minCellCount = 5,
-  minCellMethod = "Remove",
-  groupCombinations = 10,
-  addNoPaths = TRUE
+  maxPathLength = 5
 )
 ```
 ### Segmented
@@ -90,8 +85,7 @@ andromeda <- TreatmentPatterns::computePathways(
   cohortTableName = "CohortTable",
   connectionDetails = connectionDetails,
   cdmSchema = "main",
-  resultSchema = "main",
-  studyName = "myStudy"
+  resultSchema = "main"
 )
 ```
 
