@@ -12,9 +12,9 @@ Data frame containing treatmentPathways columns: path, freq.}
 
 \item{outputFile}{(\code{character(1)})\cr
 Path to output file.}
-
-\item{year}{(\code{integer(1)})\cr
-Year to filter on. May also be \code{"all"}.}
+}
+\value{
+(\code{NULL})
 }
 \description{
 Export a sunburst plot from a data.frame object.

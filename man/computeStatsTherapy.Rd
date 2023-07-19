@@ -7,7 +7,8 @@
 computeStatsTherapy(treatmentHistory)
 }
 \arguments{
-\item{treatmentHistory}{(\code{data.frame()})}
+\item{treatmentHistory}{(\code{data.frame()})
+Patient level Treatment History data.frame}
 }
 \value{
 (\code{data.frame()})

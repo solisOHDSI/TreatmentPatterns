@@ -39,7 +39,7 @@ Cohort table.}
 Cohort table name.}
 
 \item{\code{cdmInterface}}{(\code{TreatmentPatterns::cdmInterface})\cr
-A cdmInterface object created by \link[TreatmentPatterns]{cdmInterface}}
+A cdmInterface object created internally}
 }
 \if{html}{\out{</div>}}
 }
