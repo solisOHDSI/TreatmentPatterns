@@ -1,6 +1,6 @@
 library(dplyr)
 
-source("./dev/runCG.R")
+source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
 
 # Select Viral Sinusitis Cohort
 targetCohorts <- cohortsGenerated %>%
@@ -45,5 +45,4 @@ TreatmentPatterns::createSunburstPlot(
 TreatmentPatterns::createSankeyDiagram(
   treatmentPathways = pathways,
   outputFile = file.path(tempDir, "sankey.html"), year = "all")
-
 

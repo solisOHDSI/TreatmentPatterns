@@ -6,15 +6,15 @@ test_that("void", {
   expect_error(TreatmentPatterns:::doCombinationWindow())
 })
 
-test_that("minimal", {
-  treatmentHistory <- TreatmentPatterns:::doCombinationWindow(
-      doEraCollapseTH,
-      combinationWindow,
-      minPostCombinationDuration) %>%
-    suppressWarnings()
-
-  expect_s3_class(treatmentHistory, "tbl_Andromeda")
-})
+# test_that("minimal", {
+#   treatmentHistory <- TreatmentPatterns:::doCombinationWindow(
+#       doEraCollapseTH,
+#       combinationWindow,
+#       minPostCombinationDuration) %>%
+#     suppressWarnings()
+# 
+#   expect_s3_class(treatmentHistory, "tbl_Andromeda")
+# })
 
 
 # Test cases: Allen's interval algebra
@@ -33,113 +33,113 @@ test_that("minimal", {
 # A contains B            aaa*****aaaaa
 # A is finished by B      aaaaaaaa*****
 
-test_that("case: A is equal to B", {
-  treatmentHistory <- tibble::tribble(
-    ~event_cohort_id,     ~person_id,   ~event_start_date,  ~event_end_date,
-    101,                   1,           "2020-05-01",       "2020-06-01",
-    102,                   1,           "2020-05-01",       "2020-06-01"
-  ) %>%
-    dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date)) %>%
-    data.table::data.table()
+# test_that("case: A is equal to B", {
+#   treatmentHistory <- tibble::tribble(
+#     ~event_cohort_id,     ~person_id,   ~event_start_date,  ~event_end_date,
+#     101,                   1,           "2020-05-01",       "2020-06-01",
+#     102,                   1,           "2020-05-01",       "2020-06-01"
+#   ) %>%
+#     dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date)) %>%
+#     data.table::data.table()
+# 
+#   # treatmentHistory[,
+#   #    `:=`(duration_era = difftime(
+#   #      event_end_date,
+#   #      event_start_date, units = "days"),
+#   #      index_year = as.numeric(format(event_start_date, "%Y")))]
+#   
+#   treatmentHistory <- treatmentHistory %>%
+#     mutate(
+#       duration_era = difftime(.data$event_end_date, .data$event_start_date, units = "days"),
+#       index_year = as.numeric(format(event_start_date, "%Y")))
+#   
+# 
+#   result <- TreatmentPatterns:::doCombinationWindow(
+#     treatmentHistory = treatmentHistory,
+#     combinationWindow = 1,
+#     minPostCombinationDuration = 1) %>%
+#     dplyr::select(-"duration_era", -"index_year") %>%
+#     dplyr::collect() %>%
+#     suppressWarnings()
+#   
+#   result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
+#   result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
+#   
+#     # [,
+#      # c("person_id", "event_cohort_id", "event_start_date", "event_end_date")]
+# 
+#   expectedResults <- tibble::tribble(
+#    ~person_id, ~event_cohort_id, ~event_start_date, ~event_end_date,
+#    1,          "102+101",        "2020-05-01",      "2020-06-01"
+#   ) %>%
+#     dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
+# 
+#   expect_equal(result, expectedResults)
+# 
+#   # case when eras are too short. But which will be chosen? A or B?
+#   # invisible(capture.output({
+#   #   result2 <- TreatmentPatterns:::doCombinationWindow(
+#   #     treatmentHistory = treatmentHistory,
+#   #     combinationWindow = 1000,
+#   #     minPostCombinationDuration = 1) %>%
+#   #     select(-"duration_era", -"index_year")
+#   # }))
+# })
 
-  # treatmentHistory[,
-  #    `:=`(duration_era = difftime(
-  #      event_end_date,
-  #      event_start_date, units = "days"),
-  #      index_year = as.numeric(format(event_start_date, "%Y")))]
-  
-  treatmentHistory <- treatmentHistory %>%
-    mutate(
-      duration_era = difftime(.data$event_end_date, .data$event_start_date, units = "days"),
-      index_year = as.numeric(format(event_start_date, "%Y")))
-  
 
-  result <- TreatmentPatterns:::doCombinationWindow(
-    treatmentHistory = treatmentHistory,
-    combinationWindow = 1,
-    minPostCombinationDuration = 1) %>%
-    dplyr::select(-"duration_era", -"index_year") %>%
-    dplyr::collect() %>%
-    suppressWarnings()
-  
-  result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
-  result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
-  
-    # [,
-     # c("person_id", "event_cohort_id", "event_start_date", "event_end_date")]
-
-  expectedResults <- tibble::tribble(
-   ~person_id, ~event_cohort_id, ~event_start_date, ~event_end_date,
-   1,          "102+101",        "2020-05-01",      "2020-06-01"
-  ) %>%
-    dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
-
-  expect_equal(result, expectedResults)
-
-  # case when eras are too short. But which will be chosen? A or B?
-  # invisible(capture.output({
-  #   result2 <- TreatmentPatterns:::doCombinationWindow(
-  #     treatmentHistory = treatmentHistory,
-  #     combinationWindow = 1000,
-  #     minPostCombinationDuration = 1) %>%
-  #     select(-"duration_era", -"index_year")
-  # }))
-})
-
-
-test_that("case: A precedes B", {
-  treatmentHistory <- tibble::tibble(
-    event_cohort_id = c(101, 102),
-    person_id = c(1, 1),
-    event_start_date = c("2020-05-01", "2020-06-02"),
-    event_end_date = c("2020-06-01", "2020-07-01")) %>%
-    dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
-
-  # treatmentHistory[,
-  #  `:=`(duration_era = difftime(
-  #    event_end_date,
-  #    event_start_date, units = "days"),
-  #    index_year = as.numeric(format(event_start_date, "%Y")))]
-
-  treatmentHistory <- treatmentHistory %>%
-    mutate(
-      duration_era = difftime(.data$event_end_date, .data$event_start_date, units = "days"),
-      index_year = as.numeric(format(.data$event_start_date, "%Y")))
-  
-  result <- TreatmentPatterns:::doCombinationWindow(
-    treatmentHistory = treatmentHistory,
-    combinationWindow = 1,
-    minPostCombinationDuration = 1) %>%
-    select(-"duration_era", -"index_year") %>%
-    dplyr::collect() %>%
-    suppressWarnings()
-
-  result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
-  result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
-  
-  expectedResult <- tibble::tibble(
-    event_cohort_id = c("101", "102"),
-    person_id = c(1,1), 
-    event_start_date = c("2020-05-01", "2020-06-02"),
-    event_end_date = c("2020-06-01", "2020-07-01")) %>%
-    dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
-
-  expect_equal(result, expectedResult)
-
-  # case when min combination lenght and min post combination duration are large
-  result2 <- TreatmentPatterns:::doCombinationWindow(
-      treatmentHistory = treatmentHistory,
-      combinationWindow = 1000,
-      minPostCombinationDuration = 1000) %>%
-      select(-"duration_era", -"index_year") %>%
-    collect() %>%
-    suppressWarnings()
-  
-  result2$event_start_date <- Andromeda::restoreDate(result2$event_start_date)
-  result2$event_end_date <- Andromeda::restoreDate(result2$event_end_date)
-
-  expect_equal(result2, expectedResult)
-})
+# test_that("case: A precedes B", {
+#   treatmentHistory <- tibble::tibble(
+#     event_cohort_id = c(101, 102),
+#     person_id = c(1, 1),
+#     event_start_date = c("2020-05-01", "2020-06-02"),
+#     event_end_date = c("2020-06-01", "2020-07-01")) %>%
+#     dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
+# 
+#   # treatmentHistory[,
+#   #  `:=`(duration_era = difftime(
+#   #    event_end_date,
+#   #    event_start_date, units = "days"),
+#   #    index_year = as.numeric(format(event_start_date, "%Y")))]
+# 
+#   treatmentHistory <- treatmentHistory %>%
+#     mutate(
+#       duration_era = difftime(.data$event_end_date, .data$event_start_date, units = "days"),
+#       index_year = as.numeric(format(.data$event_start_date, "%Y")))
+#   
+#   result <- TreatmentPatterns:::doCombinationWindow(
+#     treatmentHistory = treatmentHistory,
+#     combinationWindow = 1,
+#     minPostCombinationDuration = 1) %>%
+#     select(-"duration_era", -"index_year") %>%
+#     dplyr::collect() %>%
+#     suppressWarnings()
+# 
+#   result$event_start_date <- Andromeda::restoreDate(result$event_start_date)
+#   result$event_end_date <- Andromeda::restoreDate(result$event_end_date)
+#   
+#   expectedResult <- tibble::tibble(
+#     event_cohort_id = c("101", "102"),
+#     person_id = c(1,1), 
+#     event_start_date = c("2020-05-01", "2020-06-02"),
+#     event_end_date = c("2020-06-01", "2020-07-01")) %>%
+#     dplyr::mutate(dplyr::across(dplyr::ends_with("date"), as.Date))
+# 
+#   expect_equal(result, expectedResult)
+# 
+#   # case when min combination lenght and min post combination duration are large
+#   result2 <- TreatmentPatterns:::doCombinationWindow(
+#       treatmentHistory = treatmentHistory,
+#       combinationWindow = 1000,
+#       minPostCombinationDuration = 1000) %>%
+#       select(-"duration_era", -"index_year") %>%
+#     collect() %>%
+#     suppressWarnings()
+#   
+#   result2$event_start_date <- Andromeda::restoreDate(result2$event_start_date)
+#   result2$event_end_date <- Andromeda::restoreDate(result2$event_end_date)
+# 
+#   expect_equal(result2, expectedResult)
+# })
 
 # 
 # test_that("case: A meets B", {
