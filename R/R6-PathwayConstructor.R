@@ -2,8 +2,6 @@
 #' 
 #' @description
 #' PathwayConstructor R6 object.
-#' 
-#' @export
 PathwayConstructor <- R6::R6Class(
   classname = "PathwayConstructor",
   public = list(
@@ -72,13 +70,6 @@ PathwayConstructor <- R6::R6Class(
         x = private$settings$filterTreatments, choices = c("First", "Changes", "All"), add = errorMessages)
       checkmate::assertNumeric(
         x = private$settings$maxPathLength, lower = 0, upper = 5, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
-      checkmate::assertNumeric(
-        x = private$settings$minCellCount, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
-      # Not used in constructPathways.R
-      checkmate::assertCharacter(
-        x = private$settings$minCellMethod, len = 1, add = errorMessages)
-      checkmate::assertNumeric(
-        x = private$settings$groupCombinations, lower = 0, finite = TRUE, len = 1, null.ok = FALSE, add = errorMessages)
       checkmate::assertLogical(
         x = private$settings$addNoPaths, any.missing = FALSE, len = 1, add = errorMessages)
       
@@ -125,8 +116,7 @@ PathwayConstructor <- R6::R6Class(
     
     #' @description
     #' Edit settings
-    #' 
-    #' @template param_studyName
+    #'
     #' @template param_includeTreatments
     #' @template param_periodPriorToIndex
     #' @template param_minEraDuration
@@ -137,14 +127,10 @@ PathwayConstructor <- R6::R6Class(
     #' @template param_minPostCombinationDuration
     #' @template param_filterTreatments
     #' @template param_maxPathLength
-    #' @template param_minCellCount
-    #' @template param_minCellMethod
-    #' @template param_groupCombinations
     #' @template param_addNoPaths
     #' 
     #' @return (`data.frame()`)
     editSettings = function(
-    studyName = "default",
     includeTreatments = "startDate",
     periodPriorToIndex = 0,
     minEraDuration = 0,
@@ -155,9 +141,6 @@ PathwayConstructor <- R6::R6Class(
     minPostCombinationDuration = 30,
     filterTreatments = "First",
     maxPathLength = 5,
-    minCellCount = 5,
-    minCellMethod = "Remove",
-    groupCombinations = 10,
     addNoPaths = TRUE) {
       settings <- mget(
         x = names(formals()),
@@ -188,7 +171,6 @@ PathwayConstructor <- R6::R6Class(
     andromeda = NULL,
     
     settings = list(
-      studyName = "default",
       targetCohortIds = NULL,
       eventCohortIds = NULL,
       exitCohortIds = NULL,
@@ -202,9 +184,6 @@ PathwayConstructor <- R6::R6Class(
       minPostCombinationDuration = 30,
       filterTreatments = "First",
       maxPathLength = 5,
-      minCellCount = 5,
-      minCellMethod = "Remove",
-      groupCombinations = 10,
       addNoPaths = TRUE
     )
   )

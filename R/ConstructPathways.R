@@ -125,39 +125,23 @@ constructPathways <- function(
 
 #' createTreatmentHistory
 #'
-#' @param currentCohorts (\link[base]{data.frame})\cr
-#' \enumerate{
-#'   \item (\link[base]{numeric}) cohort_id
-#'   \item (\link[base]{numeric}) person_id
-#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) start_date
-#'   \item (\link[base]{date}: `\%Y-\%m-\%d`) end_date
-#' }
-#' 
-#' @param targetCohortId (\link[base]{c}) of (\link[base]{numeric})\cr
-#' targetCohortId from \link[TreatmentPatterns]{addPathwaySettings}.
-#' 
-#' @param eventCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
-#' eventCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
-#' 
-#' @param exitCohortIds (\link[base]{c}) of (\link[base]{numeric})\cr
-#' exitCohortIds from \link[TreatmentPatterns]{addPathwaySettings}.
-#' 
-#' @param periodPriorToIndex (\link[base]{numeric})\cr
-#' periodPriorToIndex from \link[TreatmentPatterns]{addPathwaySettings}.
-#' 
-#' @param includeTreatments (\link[base]{character})\cr
-#' includeTreatments from \link[TreatmentPatterns]{addPathwaySettings}.
+#' @template param_andromeda
+#' @param targetCohortIds (`numeric(n)`)
+#' @param eventCohortIds (`numeric(n)`)
+#' @param exitCohortIds (`numeric(n)`)
+#' @template param_periodPriorToIndex
+#' @template param_includeTreatments
 #'
-#' @return (\link[base]{data.frame})\cr
+#' @return (`data.frame()`)\cr
 #' \enumerate{
-#'   \item (\link[base]{numeric}) person_id
-#'   \item (\link[base]{numeric}) index_year
-#'   \item (\link[base]{numeric}) event_cohort_id
-#'   \item (\link[base]{date}) event_start_date
-#'   \item (\link[base]{date}) event_end_date
-#'   \item (\link[base]{character}) type
-#'   \item (\link[base]{difftime}) duration_era
-#'   \item (\link[base]{difftime}) gap_same
+#'   \item (`numeric()`) person_id
+#'   \item (`numeric()`) index_year
+#'   \item (`numeric()`) event_cohort_id
+#'   \item (`as.Date()`) event_start_date
+#'   \item (`as.Date()`) event_end_date
+#'   \item (`character()`) type
+#'   \item (`difftime()`) duration_era
+#'   \item (`difftime()`) gap_same
 #' }
 createTreatmentHistory <- function(
     andromeda,
@@ -227,7 +211,7 @@ createTreatmentHistory <- function(
   
   # Calculate duration and gap same
   andromeda$currentCohorts <- andromeda$currentCohorts %>%
-    dplyr::mutate(duration_era = event_end_date - event_start_date)
+    dplyr::mutate(duration_era = .data$event_end_date - .data$event_start_date)
   
   andromeda$currentCohorts <- andromeda$currentCohorts %>%
     dplyr::arrange(.data$event_start_date, .data$event_end_date)
@@ -251,52 +235,10 @@ createTreatmentHistory <- function(
 #' @return (`invisible(NULL)`)
 doEraDuration <- function(andromeda, minEraDuration) {
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-    dplyr::filter(duration_era >= minEraDuration)
+    dplyr::filter(.data$duration_era >= minEraDuration)
   message(glue::glue("After minEraDuration: {andromeda$treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
   return(invisible(NULL))
 }
-
-
-#' doStepDuration
-#'
-#' `DEPRECATED`\cr
-#' Filters treatmentHistory based on if durationEra is smaller than the
-#' specified minimum post combination duration (minPostCombinationDuration).
-#'
-#' @param treatmentHistory
-#'     Dataframe with event cohorts of the target cohort in different rows.
-#' @param minPostCombinationDuration
-#'     Minimum time an event era should last before or after a generated
-#'     combination treatment for it to be included in analysis.
-#'
-#' @return treatmentHistory
-#'     Updated dataframe, rows with duration_era <
-#'     minPostCombinationDuration filtered out.
-doStepDuration <- function(treatmentHistory, minPostCombinationDuration) {
-  # Assertions
-  # checkmate::assertDataFrame(x = treatmentHistory)
-  # checkmate::assertNumeric(
-  #   x = minPostCombinationDuration,
-  #   lower = 0,
-  #   finite = TRUE,
-  #   len = 1,
-  #   null.ok = FALSE
-  # )
-  
-  treatmentHistory <- treatmentHistory %>% 
-    dplyr::filter(.data$duration_era >= minPostCombinationDuration | is.na(.data$duration_era))
-  
-  # print(
-  #   treatmentHistory %>%
-  #     dplyr::ungroup() %>%
-  #     dplyr::summarise(n = dplyr::n())
-  # )
-  
-  message(
-    glue::glue("After minPostCombinationDuration: ??"))
-  return(treatmentHistory)
-}
-
 
 #' doSplitEventCohorts
 #'
@@ -344,7 +286,7 @@ doSplitEventCohorts <- function(
       
       # Add new labels
       original <- labels %>%
-        filter(cohortId == as.integer(cohort))
+        dplyr::filter(.data$cohortId == as.integer(cohort))
       
       acute <- original
       acute$cohortId <- as.integer(paste0(cohort, 1))
@@ -355,7 +297,7 @@ doSplitEventCohorts <- function(
       therapy$cohortName <- paste0(therapy$cohortName, " (therapy)")
       
       labels <- labels %>%
-        filter(.data$cohortId != as.integer(cohort))
+        dplyr::filter(.data$cohortId != as.integer(cohort))
       
       labels <- rbind(labels, acute, therapy)
     }
@@ -426,7 +368,7 @@ doCombinationWindow <- function(
   # While rows that need modification exist:
   iterations <- 1
   
-  while (andromeda$treatmentHistory %>% summarise(sum = sum(SELECTED_ROWS)) %>% dplyr::pull() != 0) {
+  while (andromeda$treatmentHistory %>% summarise(sum = sum(.data$SELECTED_ROWS)) %>% dplyr::pull() != 0) {
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
@@ -444,7 +386,7 @@ doCombinationWindow <- function(
     # add column combination first received, first stopped
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
       mutate(combination_FRFS = case_when(
-        SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
+        .data$SELECTED_ROWS == 1 & switch == 0 & dplyr::lag(event_end_date) <= event_end_date ~ 1,
         .default = 0
       ))
     
@@ -750,30 +692,6 @@ doFilterTreatments <- function(andromeda, filterTreatments) {
   return(invisible(NULL))
 }
 
-
-#' doMaxPathLength
-#'
-#' `DEPRECATED`\cr
-#' Filters the treatmentHistory data.frame where eventSeq is smaller or equal
-#' than maxPathLength
-#'
-#' @param treatmentHistory
-#' Dataframe with event cohorts of the target cohort in different rows.
-#' @param maxPathLength
-#' Maximum number of steps included in treatment pathway.
-#'
-#' @return treatmentHistory
-#' Updated dataframe, where the desired event cohorts all have a seq value of <=
-#' maxPathLength
-doMaxPathLength <- function(andromeda, maxPathLength) {
-  # Apply maxPathLength
-  andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-    dplyr::filter(.data$event_seq <= maxPathLength)
-  
-  message(glue::glue("After maxPathLength: {treatmentHistory %>% dplyr::summarise(n = dplyr::n()) %>% dplyr::pull()}"))
-  return(treatmentHistory)
-}
-
 #' addLabels
 #'
 #' Adds back cohort names to concept ids.
@@ -793,7 +711,7 @@ addLabels <- function(andromeda) {
   colnames(labels) <- c("event_cohort_id", "event_cohort_name")
   
   andromeda$labels <- labels %>%
-    mutate(event_cohort_id = as.character(event_cohort_id))
+    mutate(event_cohort_id = as.character(.data$event_cohort_id))
   
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
     merge(andromeda$labels, all.x = TRUE, by = "event_cohort_id")

@@ -67,7 +67,7 @@ export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, arc
 
 #' computeStatsTherapy
 #'
-#' @param treatmentHistory (`data.frame()`)
+#' @template param_treatmentHistory
 #'
 #' @return (`data.frame()`)
 computeStatsTherapy <- function(treatmentHistory) {
@@ -79,8 +79,8 @@ computeStatsTherapy <- function(treatmentHistory) {
     group_by(.data$treatmentType) %>%
     summarise(
       avgDuration = mean(.data$duration_era),
-      medianDuration = median(.data$duration_era),
-      sd = sd(.data$duration_era),
+      medianDuration = stats::median(.data$duration_era),
+      sd = stats::sd(.data$duration_era),
       min = min(.data$duration_era),
       max = max(.data$duration_era),
       count = n())
@@ -90,32 +90,35 @@ computeStatsTherapy <- function(treatmentHistory) {
 
 #' computeCounts
 #'
-#' @param treatmentHistory (`data.frame()`)
+#' @template param_treatmentHistory
+#' @template param_minFreq
 #'
 #' @return (`list()`)
 computeCounts <- function(treatmentHistory, minFreq) {
   # n per Year
   countYear <- treatmentHistory %>%
-    group_by(.data$index_year) %>%
-    count() %>%
-    ungroup() %>%
-    mutate(n = case_when(
+    dplyr::group_by(.data$index_year) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
       .data$n < minFreq ~ glue::glue("<{minFreq}"),
       .default = as.character(.data$n)))
   
   # n per sex
-  countSex <- treatmentHistory %>% group_by(sex) %>%
-    count() %>%
-    ungroup() %>%
-    mutate(n = case_when(
+  countSex <- treatmentHistory %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
       .data$n < minFreq ~ glue::glue("<{minFreq}"),
       .default = as.character(.data$n)))
   
   # n per age
-  countAge <- treatmentHistory %>% group_by(age) %>%
-    count() %>%
-    ungroup() %>%
-    mutate(n = case_when(
+  countAge <- treatmentHistory %>%
+    group_by(.data$age) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
       .data$n < minFreq ~ glue::glue("<{minFreq}"),
       .default = as.character(.data$n)))
   
@@ -125,9 +128,9 @@ computeCounts <- function(treatmentHistory, minFreq) {
 
 #' computeTreatmentPathways
 #'
-#' @param treatmentHistory (`data.frame()`)
-#' @param ageWindow (`integer(1)`)
-#' @param minFreq (`integer(1)`)
+#' @template param_treatmentHistory
+#' @template param_ageWindow
+#' @template param_minFreq
 #'
 #' @return (`data.frame()`)
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
@@ -136,57 +139,49 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
   treatmentHistory <- treatmentHistory %>%
     rowwise() %>%
     dplyr::mutate(
-      age_bin = paste(unlist(stringr::str_extract_all(as.character(cut(.data$age, seq(0, 100, ageWindow))), "\\d+")), collapse = "-"))
+      age_bin = paste(
+        unlist(stringr::str_extract_all(as.character(cut(.data$age, seq(0, 150, ageWindow))), "\\d+")),
+        collapse = "-"))
   
   ages <- treatmentHistory$age_bin %>% unique()
   
   # Per year
-  treatmentPathways <- stratisfy(treatmentHistory, years, ages, ageWindow, minFreq)
+  treatmentPathways <- stratisfy(treatmentHistory, years, ages)
   
   treatmentPathways <- treatmentPathways %>%
     mutate(index_year = as.character(.data$index_year))
   
   treatmentPathways[is.na(treatmentPathways)] <- "all"
+  
+  a <- nrow(treatmentPathways)
+  
+  treatmentPathways <- treatmentPathways %>%
+    dplyr::filter(.data$freq >= minFreq)
+  b <- nrow(treatmentPathways)
+  
+  message(sprintf("Removed %s pathways with a frequency < %s.", a-b, minFreq))
   return(treatmentPathways)
 }
 
 #' stratisfy
 #'
-#' @param treatmentHistory (`data.frame()`)
+#' @template param_treatmentHistory
 #' @param years (`vector("character")`)
 #' @param ages (`vector("character")`)
-#' @param ageWindow (`integer(1)`)
-#' @param minFreq (`integer(1)`)
 #'
 #' @return (`data.frame()`)
-stratisfy <- function(treatmentHistory, years, ages, ageWindow, minFreq) {
-  dplyr::bind_rows(lapply(years, function(y) {
-    all <- prepData(treatmentHistory = treatmentHistory, year = y) %>%
-      dplyr::mutate(
-        freq = case_when(
-          .data$freq < minFreq ~ glue::glue("<{minFreq}"),
-          .default = as.character(.data$freq)
-        )
-      )
+stratisfy <- function(treatmentHistory, years, ages) {
+  outDf <- dplyr::bind_rows(lapply(years, function(y) {
+    all <- prepData(treatmentHistory = treatmentHistory, year = y)
     
     sex <- dplyr::bind_rows(
       treatmentHistory %>% 
         filter(.data$sex == "MALE") %>%
         prepData(y) %>%
-        dplyr::mutate(freq = case_when(
-          freq < minFreq ~ glue::glue("<{minFreq}"),
-          .default = as.character(freq)
-        )
-        ) %>%
         mutate(sex = "male"),
       treatmentHistory %>%
         filter(.data$sex == "FEMALE") %>%
         prepData(y) %>%
-        dplyr::mutate(freq = case_when(
-          freq < minFreq ~ glue::glue("<{minFreq}"),
-          .default = as.character(freq)
-        )
-        ) %>%
         mutate(sex = "female")
     )
     
@@ -194,14 +189,10 @@ stratisfy <- function(treatmentHistory, years, ages, ageWindow, minFreq) {
       treatmentHistory %>%
         filter(.data$age_bin == ageRange) %>%
         prepData(y) %>%
-        mutate(
-          age = ageRange,
-          freq = case_when(
-            freq < minFreq ~ glue::glue("<{minFreq}"),
-            .default = as.character(freq)
-          )
-        )
+        mutate(age = ageRange)
     }))
-    dplyr::bind_rows(all, sex, age)
+    
+    return(dplyr::bind_rows(all, sex, age))
   }))
+  return(outDf)
 }

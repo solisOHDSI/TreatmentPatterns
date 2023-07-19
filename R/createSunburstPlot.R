@@ -206,20 +206,20 @@ transformCSVtoJSON <- function(data, outcomes) {
 #' @return (`data.frame()`)
 createTreatmentPathways <- function(treatmentHistory) {
   treatmentPathways <- treatmentHistory %>%
-    group_by(.data$person_id, .data$index_year) %>%
-    summarise(
-      pathway = list(.data$event_cohort_name[event_seq]),
+    dplyr::group_by(.data$person_id, .data$index_year) %>%
+    dplyr::summarise(
+      pathway = list(.data$event_cohort_name[.data$event_seq]),
       .groups = "drop")
   
   layers <- treatmentPathways %>%
-    rowwise() %>%
-    mutate(l = length(pathway)) %>%
-    select("l") %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(l = length(.data$pathway)) %>%
+    dplyr::select("l") %>%
     max()
   
   treatmentPathways <- treatmentPathways %>%
-    group_by(.data$index_year, .data$pathway) %>%
-    summarise(freq = length(person_id), .groups = "drop")
+    dplyr::group_by(.data$index_year, .data$pathway) %>%
+    dplyr::summarise(freq = length(.data$person_id), .groups = "drop")
   
   return(treatmentPathways)
 }
@@ -262,20 +262,18 @@ prepData <- function(treatmentHistory, year) {
 #' Data frame containing treatmentPathways columns: path, freq.
 #' @param outputFile (`character(1)`)\cr
 #' Path to output file.
-#' @param year (`integer(1)`)\cr
-#' Year to filter on. May also be `"all"`.
 #'
 #' @export
 #'
-#' @returns NULL
+#' @returns (`NULL`)
 createSunburstPlot <- function(treatmentPathways, outputFile) {
   data <- treatmentPathways %>%
-    mutate(
-      freq = case_when(
-        startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
-        .default = .data$freq
-      )
-    ) %>%
+    # mutate(
+    #   freq = case_when(
+    #     startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
+    #     .default = .data$freq
+    #   )
+    # ) %>%
     mutate(freq = as.integer(.data$freq)) %>%
     select("path", "freq")
 

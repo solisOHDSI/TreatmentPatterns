@@ -162,7 +162,7 @@ CDMInterface <- R6::R6Class(
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$year_of_birth, by = dplyr::join_by(person_id == PERSON_ID)) %>%
         dplyr::mutate(age = .data$index_year - .data$YEAR_OF_BIRTH) %>%
-        select(-"YEAR_OF_BIRTH")
+        dplyr::select(-"YEAR_OF_BIRTH")
 
       return(invisible(NULL))
     },

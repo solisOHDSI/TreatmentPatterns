@@ -5,8 +5,7 @@
 #'
 #' @param data
 #'     Data
-#' @param groupCombinations
-#'     Group combinations
+#' @template param_groupCombinations
 #'
 #' @returns data.table
 groupInfrequentCombinations <- function(data, groupCombinations) {
@@ -56,7 +55,7 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
       data[selectedCombinations] <- "Other"
     }
   }
-  return(data.table::as.data.table(data))
+  return(data.table::data.table(data))
 }
 
 #' createSankeyDiagram
@@ -67,14 +66,9 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #' Data frame containing treatmentPathways columsn: path, freq.
 #' @param outputFile (`character(1)`)\cr
 #' Path where the Sankey diagram should be written to.
-#' @param groupCombinations (`logical(1)`: `TRUE`)\cr
-#' \describe{
-#'   \item{`TRUE`}{Group all combination treatments in category `"Combination"`.}
-#'   \item{`FALSE`}{Do not group combination treatments.}
-#' }
-#' @param minFreq (`integer(1)`: `5`)\cr
-#' Censor paths with a frequency smaller than specified.
-#' @param year (`integer(1)`)\cr
+#' @template param_groupCombinations
+#' @template param_minFreq
+#' @param year (`integer(1)` | `character(1)`)\cr
 #' Year
 #' 
 #' @export
@@ -89,12 +83,12 @@ createSankeyDiagram <- function(
   data <- treatmentPathways %>%
     rowwise() %>%
     mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
-    mutate(
-      freq = case_when(
-        startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
-        .default = .data$freq
-      )
-    ) %>%
+    # mutate(
+    #   freq = case_when(
+    #     startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
+    #     .default = .data$freq
+    #   )
+    # ) %>%
     mutate(freq = as.integer(.data$freq))
   
   data <- data %>%
@@ -128,7 +122,9 @@ createSankeyDiagram <- function(
   }
   
   links <- links %>%
-    filter(.data$freq >= minFreq)
+    dplyr::filter(.data$freq >= minFreq) %>%
+    dplyr::mutate(`%` = round(freq / sum(freq) * 100, 2)) %>%
+    dplyr::select(-"freq")
   
   if (groupCombinations) {
     links$source <- stringr::str_replace_all(
@@ -142,7 +138,7 @@ createSankeyDiagram <- function(
     links,
     from = "source",
     to = "target",
-    weight = "freq",
+    weight = "%",
     chartid = 1,
     options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
   )
@@ -153,4 +149,4 @@ createSankeyDiagram <- function(
     con = file.path(outputFile))
   return(invisible(NULL))
 }
-
+utils::globalVariables(c(".", "freq", "combination"))

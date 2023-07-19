@@ -6,7 +6,6 @@
 #' @template param_connectionDetails
 #' @template param_cdmSchema
 #' @template param_resultSchema
-#' @template param_studyName
 #' @template param_includeTreatments
 #' @template param_periodPriorToIndex
 #' @template param_minEraDuration
@@ -17,9 +16,6 @@
 #' @template param_minPostCombinationDuration
 #' @template param_filterTreatments
 #' @template param_maxPathLength
-#' @template param_minCellCount
-#' @template param_minCellMethod
-#' @template param_groupCombinations
 #' @template param_addNoPaths
 #'
 #' @return (`Andromeda::andromeda()`)
@@ -34,7 +30,6 @@ computePathways <- function(
     connectionDetails = NULL,
     cdmSchema = NULL,
     resultSchema = NULL,
-    studyName = "default",
     includeTreatments = "startDate",
     periodPriorToIndex = 0,
     minEraDuration = 0,
@@ -45,9 +40,6 @@ computePathways <- function(
     minPostCombinationDuration = 30,
     filterTreatments = "First",
     maxPathLength = 5,
-    minCellCount = 5,
-    minCellMethod = "Remove",
-    groupCombinations = 10,
     addNoPaths = TRUE) {
   cdmInterface <- CDMInterface$new(
     connectionDetails = connectionDetails,
@@ -63,7 +55,6 @@ computePathways <- function(
   )
   
   pathwayConstructor$editSettings(
-    studyName = studyName,
     includeTreatments = includeTreatments,
     periodPriorToIndex = periodPriorToIndex,
     minEraDuration = minEraDuration,
@@ -74,9 +65,6 @@ computePathways <- function(
     minPostCombinationDuration = minPostCombinationDuration,
     filterTreatments = filterTreatments,
     maxPathLength = maxPathLength,
-    minCellCount = minCellCount,
-    minCellMethod = minCellMethod,
-    groupCombinations = groupCombinations,
     addNoPaths = addNoPaths
   )
   
