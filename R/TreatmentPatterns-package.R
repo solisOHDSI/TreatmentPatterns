@@ -10,7 +10,7 @@
 #' @import fs
 #' @import dplyr
 #' @import Andromeda
-#' @import data.table
+#' @importFrom data.table data.table
 #' @importFrom stats sd median
 #' @importFrom tidyr pivot_wider
 #' @importFrom googleVis gvisSankey

@@ -42,27 +42,29 @@ executeTreatmentPatterns <- function(
     maxPathLength = 5,
     minFreq = 5,
     addNoPaths = TRUE) {
+  
+  checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
+  checkmate::assert_integer(minFreq, len = 1, null.ok = FALSE, lower = 0)
 
   # Compute pathways on patient level
-  andromeda <- computePathways(
-    cohorts,
-    cohortTableName,
-    cdm,
-    connectionDetails,
-    cdmSchema,
-    resultSchema,
-    includeTreatments,
-    periodPriorToIndex,
-    minEraDuration,
-    splitEventCohorts,
-    splitTime,
-    eraCollapseSize,
-    combinationWindow,
-    minPostCombinationDuration,
-    filterTreatments,
-    maxPathLength,
-    minFreq,
-    addNoPaths
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = cohorts,
+    cohortTableName = cohortTableName,
+    cdm = cdm,
+    connectionDetails = connectionDetails,
+    cdmSchema = cdmSchema,
+    resultSchema = resultSchema,
+    includeTreatments = includeTreatments,
+    periodPriorToIndex = periodPriorToIndex,
+    minEraDuration = minEraDuration,
+    splitEventCohorts = splitEventCohorts,
+    splitTime = splitTime,
+    eraCollapseSize = eraCollapseSize,
+    combinationWindow = combinationWindow,
+    minPostCombinationDuration = minPostCombinationDuration,
+    filterTreatments = filterTreatments,
+    maxPathLength = maxPathLength,
+    addNoPaths = addNoPaths
   )
   
   # Export csv-files
