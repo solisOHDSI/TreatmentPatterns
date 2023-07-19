@@ -27,8 +27,7 @@ andromeda <- TreatmentPatterns::computePathways(
   cohortTableName = "CohortTable",
   connectionDetails = connectionDetails,
   cdmSchema = "main",
-  resultSchema = "main",
-  studyName = "myStudy"
+  resultSchema = "main"
 )
 
 tempDir <- tempdir()
@@ -46,3 +45,5 @@ TreatmentPatterns::createSunburstPlot(
 TreatmentPatterns::createSankeyDiagram(
   treatmentPathways = pathways,
   outputFile = file.path(tempDir, "sankey.html"), year = "all")
+
+
