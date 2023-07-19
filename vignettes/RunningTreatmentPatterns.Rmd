@@ -53,7 +53,7 @@ cohorts <- dplyr::bind_rows(
 
 ## DatabaseConnector
 ### All-in-one
-```{r warning=FALSE}
+```{r warning=FALSE, eval=FALSE}
 tempDir <- tempdir()
 allDir <- file.path(tempDir, "all_in_one")
 
@@ -98,7 +98,7 @@ andromeda$treatmentHistory
 ```
 
 The files inside the andromeda environment can be exported using the export function.
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r message=FALSE, warning=FALSE, results='hide', eval=FALSE}
 segDir <- file.path(tempDir, "segmented")
 TreatmentPatterns::export(andromeda, outputPath = segDir)
 ```
@@ -126,16 +126,4 @@ TreatmentPatterns::executeTreatmentPatterns(
 head(read.csv(file.path(allDir, "countsAge.csv"))[-1])
 head(read.csv(file.path(allDir, "countsSex.csv"))[-1])
 head(read.csv(file.path(allDir, "countsYear.csv"))[-1])
-```
-
-```{r summary}
-head(read.csv(file.path(allDir, "summaryStatsTherapyDuraion.csv"))[-1])
-```
-
-```{r TreatmentPathways}
-head(read.csv(file.path(allDir, "treatmentPathways.csv"))[-1])
-```
-
-```{r metadata}
-head(read.csv(file.path(allDir, "metadata.csv"))[-1])
 ```
