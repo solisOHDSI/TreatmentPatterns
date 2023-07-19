@@ -11,7 +11,6 @@ computePathways(
   connectionDetails = NULL,
   cdmSchema = NULL,
   resultSchema = NULL,
-  studyName = "default",
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,
@@ -22,9 +21,6 @@ computePathways(
   minPostCombinationDuration = 30,
   filterTreatments = "First",
   maxPathLength = 5,
-  minCellCount = 5,
-  minCellMethod = "Remove",
-  groupCombinations = 10,
   addNoPaths = TRUE
 )
 }
@@ -47,8 +43,6 @@ Optional; In congruence with \code{connectionDetails} and \code{resultSchema}. I
 \item{resultSchema}{(\code{character(1)}: \code{NULL})\cr
 Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Ignores \code{cdm}.}
 
-\item{studyName}{(\code{character(1)}: \code{"default"})\cr}
-
 \item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
 
 \item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
@@ -68,12 +62,6 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 \item{filterTreatments}{(\code{character(1)}: \code{"First"})\cr}
 
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr}
-
-\item{minCellCount}{(\code{integer(1)}: \code{5})\cr}
-
-\item{minCellMethod}{(\code{character(1)}: \code{"Remove"})\cr}
-
-\item{groupCombinations}{(\code{integer(1)}: \code{10})\cr}
 
 \item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
 }

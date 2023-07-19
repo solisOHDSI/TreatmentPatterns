@@ -4,7 +4,7 @@
 \alias{stratisfy}
 \title{stratisfy}
 \usage{
-stratisfy(treatmentHistory, years, ages, ageWindow, minFreq)
+stratisfy(treatmentHistory, years, ages)
 }
 \arguments{
 \item{treatmentHistory}{(\code{data.frame()})
@@ -13,13 +13,6 @@ Patient level Treatment History data.frame}
 \item{years}{(\code{vector("character")})}
 
 \item{ages}{(\code{vector("character")})}
-
-\item{ageWindow}{(\code{integer(1)}: \code{10})\cr
-Number of years to bin age groups into.}
-
-\item{minFreq}{(\code{integer(1)}: \code{5})\cr
-Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
-minimum value will carry over to the sankey diagram and sunburst plot.}
 }
 \value{
 (\code{data.frame()})

@@ -9,7 +9,11 @@ groupInfrequentCombinations(data, groupCombinations)
 \arguments{
 \item{data}{Data}
 
-\item{groupCombinations}{Group combinations}
+\item{groupCombinations}{(\code{logical(1)}: \code{FALSE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
 }
 \value{
 data.table

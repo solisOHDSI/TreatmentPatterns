@@ -91,7 +91,6 @@ Gets the \code{Andromeda::andromeda()} objects in a list.
 Edit settings
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{PathwayConstructor$editSettings(
-  studyName = "default",
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,
@@ -102,9 +101,6 @@ Edit settings
   minPostCombinationDuration = 30,
   filterTreatments = "First",
   maxPathLength = 5,
-  minCellCount = 5,
-  minCellMethod = "Remove",
-  groupCombinations = 10,
   addNoPaths = TRUE
 )}\if{html}{\out{</div>}}
 }
@@ -112,8 +108,6 @@ Edit settings
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{studyName}}{(\code{character(1)}: \code{"default"})\cr}
-
 \item{\code{includeTreatments}}{(\code{character(1)}: \code{"startDate"})\cr}
 
 \item{\code{periodPriorToIndex}}{(\code{integer(1)}: \code{0})\cr}
@@ -133,12 +127,6 @@ Edit settings
 \item{\code{filterTreatments}}{(\code{character(1)}: \code{"First"})\cr}
 
 \item{\code{maxPathLength}}{(\code{integer(1)}: \code{5})\cr}
-
-\item{\code{minCellCount}}{(\code{integer(1)}: \code{5})\cr}
-
-\item{\code{minCellMethod}}{(\code{character(1)}: \code{"Remove"})\cr}
-
-\item{\code{groupCombinations}}{(\code{integer(1)}: \code{10})\cr}
 
 \item{\code{addNoPaths}}{(\code{logical(1)}: \code{TRUE})\cr}
 }

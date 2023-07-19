@@ -12,7 +12,6 @@ executeTreatmentPatterns(
   connectionDetails = NULL,
   cdmSchema = NULL,
   resultSchema = NULL,
-  studyName = "default",
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,
@@ -23,9 +22,7 @@ executeTreatmentPatterns(
   minPostCombinationDuration = 30,
   filterTreatments = "First",
   maxPathLength = 5,
-  minCellCount = 5,
-  minCellMethod = "Remove",
-  groupCombinations = 10,
+  minFreq = 5,
   addNoPaths = TRUE
 )
 }
@@ -50,8 +47,6 @@ Optional; In congruence with \code{connectionDetails} and \code{resultSchema}. I
 \item{resultSchema}{(\code{character(1)}: \code{NULL})\cr
 Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Ignores \code{cdm}.}
 
-\item{studyName}{(\code{character(1)}: \code{"default"})\cr}
-
 \item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
 
 \item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
@@ -72,11 +67,9 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr}
 
-\item{minCellCount}{(\code{integer(1)}: \code{5})\cr}
-
-\item{minCellMethod}{(\code{character(1)}: \code{"Remove"})\cr}
-
-\item{groupCombinations}{(\code{integer(1)}: \code{10})\cr}
+\item{minFreq}{(\code{integer(1)}: \code{5})\cr
+Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+minimum value will carry over to the sankey diagram and sunburst plot.}
 
 \item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
 }
