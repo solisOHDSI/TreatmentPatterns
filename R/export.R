@@ -140,7 +140,7 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
     rowwise() %>%
     dplyr::mutate(
       age_bin = paste(
-        unlist(stringr::str_extract_all(as.character(cut(.data$age, seq(0, 150, ageWindow))), "\\d+")),
+        unlist(stringr::str_extract_all(as.character(cut(as.numeric(.data$age), seq(0, 150, ageWindow))), "\\d+")),
         collapse = "-"))
   
   ages <- treatmentHistory$age_bin %>% unique()
