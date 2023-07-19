@@ -44,7 +44,7 @@ executeTreatmentPatterns <- function(
     addNoPaths = TRUE) {
   
   checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
-  checkmate::assert_integer(minFreq, len = 1, null.ok = FALSE, lower = 0)
+  checkmate::assert_integerish(minFreq, len = 1, null.ok = FALSE, lower = 0)
 
   # Compute pathways on patient level
   andromeda <- TreatmentPatterns::computePathways(
