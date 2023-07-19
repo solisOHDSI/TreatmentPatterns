@@ -14,7 +14,6 @@ Depends:
 Imports: 
     DatabaseConnector (>= 6.0.0),
     checkmate,
-    data.table,
     dplyr,
     SqlRender,
     stringr,
@@ -27,7 +26,8 @@ Imports:
     webshot2,
     stats,
     Andromeda,
-    tidyr
+    tidyr,
+    data.table
 Suggests:
     knitr,
     rmarkdown,
