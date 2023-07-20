@@ -368,7 +368,7 @@ doCombinationWindow <- function(
   # While rows that need modification exist:
   iterations <- 1
   
-  while (andromeda$treatmentHistory %>% summarise(sum = sum(.data$SELECTED_ROWS)) %>% dplyr::pull() != 0) {
+  while (suppressWarnings(andromeda$treatmentHistory %>% summarise(sum = sum(.data$SELECTED_ROWS), .groups = "drop") %>% dplyr::pull() != 0)) {
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
