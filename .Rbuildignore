@@ -8,3 +8,5 @@
 ^\.github$
 ^Crashpad$
 ^output$
+^extras$
+^man-roxygen$

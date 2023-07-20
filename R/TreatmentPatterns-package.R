@@ -9,11 +9,13 @@
 #' @import SqlRender
 #' @import fs
 #' @import dplyr
+#' @import Andromeda
+#' @importFrom data.table data.table
+#' @importFrom stats sd median
+#' @importFrom tidyr pivot_wider
 #' @importFrom googleVis gvisSankey
 #' @importFrom rjson toJSON
 #' @importFrom stringi stri_replace_all_fixed
 #' @importFrom DatabaseConnector connect disconnect querySql
-#' @importFrom data.table
-#'   data.table as.data.table rbindlist transpose rollup shift := dcast
 ## usethis namespace: end
 NULL

@@ -5,38 +5,36 @@
 \title{createSankeyDiagram}
 \usage{
 createSankeyDiagram(
-  data,
-  studyName = NULL,
-  outputFolder,
-  groupCombinations,
-  fileName = "sankeyDiagram.html"
+  treatmentPathways,
+  outputFile,
+  groupCombinations = FALSE,
+  minFreq = 5,
+  year = "all"
 )
 }
 \arguments{
-\item{data}{(\link[base]{data.frame})
-Data frame with event cohorts of the target cohort in different columns.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+Data frame containing treatmentPathways columsn: path, freq.}
 
-\item{studyName}{(\link[base]{character})
-Name of the study, specified in the \code{pathwaySerttings} object.}
+\item{outputFile}{(\code{character(1)})\cr
+Path where the Sankey diagram should be written to.}
 
-\item{outputFolder}{(\link[base]{character})
-Path to the output folder.}
+\item{groupCombinations}{(\code{logical(1)}: \code{FALSE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
 
-\item{groupCombinations}{(\link[base]{logical})
-Select to group all non-fixed combinations in one category "other" in the sunburst plot.}
+\item{minFreq}{(\code{integer(1)}: \code{5})\cr
+Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+minimum value will carry over to the sankey diagram and sunburst plot.}
 
-\item{fileName}{(\link[base]{character})
-File name of the html-file to output.}
+\item{year}{(\code{integer(1)} | \code{character(1)})\cr
+Year}
+}
+\value{
+invisible(NULL)
 }
 \description{
-createSankeyDiagram
-}
-\examples{
-\dontrun{
-  creaeSankeyDiagram(
-    data = read.csv("freqPerYear.csv"),
-    studyName = "Viral_Sinusitis",
-    groupCombinations = FALSE,
-    outputFolder = "output")
-}
+Writes the Sankey diagram to a HTML-file, to a specified file path.
 }

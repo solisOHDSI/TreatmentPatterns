@@ -2,29 +2,20 @@
 % Please edit documentation in R/ConstructPathways.R
 \name{constructPathways}
 \alias{constructPathways}
-\title{constructPathways}
+\title{constructPathway}
 \usage{
-constructPathways(dataSettings, pathwaySettings, saveSettings, cohortSettings)
+constructPathways(settings, cohorts, andromeda)
 }
 \arguments{
-\item{dataSettings}{Settings object as created by \link[TreatmentPatterns]{createDataSettings}.}
+\item{settings}{(\code{data.frame})}
 
-\item{pathwaySettings}{Settings object as created by \link[TreatmentPatterns]{createPathwaySettings}.}
+\item{cohorts}{(\code{data.frame})}
 
-\item{saveSettings}{Settings object as created by \link[TreatmentPatterns]{createSaveSettings}.}
-
-\item{cohortSettings}{Settings object created by \link[TreatmentPatterns]{createCohortSettings}.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
+}
+\value{
+\code{invisible(NULL)}
 }
 \description{
-Construct treatment pathways. Also generates output in csv format.
-}
-\examples{
-\dontrun{
-  constructPathways(
-    dataSettings = dataSettings,
-    pathwaySettings = pathwaySettings,
-    saveSettings = saveSettings,
-    cohortSettings = cohortSettings
-  )
-}
+Constructs the pathways.
 }

@@ -4,10 +4,22 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/articles/CreatingCohorts.html</loc>
+  </url>
+  <url>
     <loc>/articles/DarwinTreatmentPatternsStudy.html</loc>
   </url>
   <url>
     <loc>/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>/articles/output/sankeyDiagram.html</loc>
+  </url>
+  <url>
+    <loc>/articles/output/sunburstPlot.html</loc>
+  </url>
+  <url>
+    <loc>/articles/RunningTreatmentPatterns.html</loc>
   </url>
   <url>
     <loc>/articles/TreatmentPatternsStudy.html</loc>
@@ -37,6 +49,9 @@
     <loc>/reference/buildHierarchy.html</loc>
   </url>
   <url>
+    <loc>/reference/CDMInterface.html</loc>
+  </url>
+  <url>
     <loc>/reference/checkAddPathwaySettings.html</loc>
   </url>
   <url>
@@ -56,6 +71,21 @@
   </url>
   <url>
     <loc>/reference/cohortsCheck.html</loc>
+  </url>
+  <url>
+    <loc>/reference/combineData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/computeCounts.html</loc>
+  </url>
+  <url>
+    <loc>/reference/computePathways.html</loc>
+  </url>
+  <url>
+    <loc>/reference/computeStatsTherapy.html</loc>
+  </url>
+  <url>
+    <loc>/reference/computeTreatmentPathways.html</loc>
   </url>
   <url>
     <loc>/reference/constructPathways.html</loc>
@@ -80,6 +110,12 @@
   </url>
   <url>
     <loc>/reference/createSunburstPlot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createTreatmentHistory.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createTreatmentPathways.html</loc>
   </url>
   <url>
     <loc>/reference/depth.html</loc>
@@ -118,6 +154,12 @@
     <loc>/reference/executeTreatmentPatterns.html</loc>
   </url>
   <url>
+    <loc>/reference/export.html</loc>
+  </url>
+  <url>
+    <loc>/reference/exportFigure.html</loc>
+  </url>
+  <url>
     <loc>/reference/extractFile.html</loc>
   </url>
   <url>
@@ -154,6 +196,9 @@
     <loc>/reference/outputTreatedPatients.html</loc>
   </url>
   <url>
+    <loc>/reference/PathwayConstructor.html</loc>
+  </url>
+  <url>
     <loc>/reference/percentageGroupTreated.html</loc>
   </url>
   <url>
@@ -163,6 +208,9 @@
     <loc>/reference/preConfigure.html</loc>
   </url>
   <url>
+    <loc>/reference/prepData.html</loc>
+  </url>
+  <url>
     <loc>/reference/preprocessSunburstData.html</loc>
   </url>
   <url>
@@ -170,6 +218,9 @@
   </url>
   <url>
     <loc>/reference/selectRowsCombinationWindow.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratisfy.html</loc>
   </url>
   <url>
     <loc>/reference/stripname.html</loc>
