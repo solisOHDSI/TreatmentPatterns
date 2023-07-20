@@ -1,8 +1,8 @@
-pandoc: 2.19.2
+pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  DarwinTreatmentPatternsStudy: DarwinTreatmentPatternsStudy.html
-  TreatmentPatternsStudy: TreatmentPatternsStudy.html
-last_built: 2023-03-03T12:11Z
+  CreatingCohorts: CreatingCohorts.html
+  RunningTreatmentPatterns: RunningTreatmentPatterns.html
+last_built: 2023-07-19T13:16Z
 

@@ -33,10 +33,10 @@ and ‘therapy’ cohorts."><!-- mathjax --><script src="https://cdnjs.cloudflar
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/DarwinTreatmentPatternsStudy.html">Perform a Darwin study using the TreatmentPatterns package</a>
+      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
     </li>
     <li>
-      <a href="../articles/TreatmentPatternsStudy.html">Perform a study using the TreatmentPatterns package</a>
+      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -59,63 +59,30 @@ and ‘therapy’ cohorts.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doSplitEventCohorts</span><span class="op">(</span></span>
-<span>  <span class="va">treatment_history</span>,</span>
-<span>  <span class="va">splitEventCohorts</span>,</span>
-<span>  <span class="va">splitTime</span>,</span>
-<span>  <span class="va">outputFolder</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doSplitEventCohorts</span><span class="op">(</span><span class="va">andromeda</span>, <span class="va">splitEventCohorts</span>, <span class="va">splitTime</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>treatment_history</dt>
-<dd><p>Dataframe with event cohorts of the target cohort in different rows.</p></dd>
+    <dl><dt>andromeda</dt>
+<dd><p>(<code><a href="https://rdrr.io/pkg/Andromeda/man/andromeda_constructor.html" class="external-link">Andromeda::andromeda()</a></code>)</p></dd>
 
 
 <dt>splitEventCohorts</dt>
-<dd><p>Specify event cohort to split in acute (&lt; X days) and therapy
-(&gt;= X days).</p></dd>
+<dd><p>(<code>character(n)</code>)</p></dd>
 
 
 <dt>splitTime</dt>
-<dd><p>Specify number of days (X) at which each of the split event cohorts
-should be split in acute and therapy</p></dd>
-
-
-<dt>outputFolder</dt>
-<dd><p>Name of local folder to place results; make sure to use forward
-slashes (/).</p></dd>
+<dd><p>(<code>integer(1)</code>)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>treatment_history
-    Updated dataframe, with specified event cohorts now
-    split in two different event cohorts (acute and therapy).</p>
+<p>(<code>invisible(NULL)</code>)</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"TreatmentPatterns"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"examples"</span>, <span class="st">"SettingObjects"</span>, <span class="st">"createDummySettings.R"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  package <span class="op">=</span> <span class="st">"TreatmentPatterns"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"testing"</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"testParams.R"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">doSplitEventCohorts</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  treatment_history <span class="op">=</span> <span class="va">doEraDurationTH</span>,</span></span>
-<span class="r-in"><span>  splitEventCohorts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  splitTime <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"30"</span>, <span class="st">"20"</span>, <span class="st">"10"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  outputFolder <span class="op">=</span> <span class="va">saveSettings</span><span class="op">$</span><span class="va">outputFolder</span><span class="op">)</span><span class="op">}</span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

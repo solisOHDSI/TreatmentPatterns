@@ -1,0 +1,9 @@
+.Rhistory
+.Rproj.user/
+.RData
+.Ruserdata
+dev/
+diagnostics/
+output/
+output/
+vignettes/output/

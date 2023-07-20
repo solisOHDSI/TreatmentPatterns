@@ -4,29 +4,17 @@
 \alias{doEraCollapse}
 \title{doEraCollapse}
 \usage{
-doEraCollapse(treatment_history, eraCollapseSize)
+doEraCollapse(andromeda, eraCollapseSize)
 }
 \arguments{
-\item{treatment_history}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{eraCollapseSize}{Window of time between which two eras of the same event cohort are
-collapsed into one era.}
+\item{eraCollapseSize}{(\code{integer(1)})}
 }
 \value{
-treatment_history
-    Updated dataframe, where event cohorts with
-    gap_same < eraCollapseSize are collapsed.
+(\code{invisible(NULL)})
 }
 \description{
-Updates the treatmentHistory data.frame where if gapSame is smaller than the specified era collapse size (eraCollapseSize) are collapsed
-}
-\examples{
-\dontrun{
-th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
-                               targetCohortId = targetCohortId,
-                               eventCohortIds = eventCohortIds,
-                               periodPriorToIndex = periodPriorToIndex,
-                               includeTreatments = includeTreatments)
-doEraCollapse(treatment_history = th, eraCollapseSize = 1)
-}
+Updates the treatmentHistory data.frame where if gapSame is smaller than the
+specified era collapse size (eraCollapseSize) are collapsed
 }

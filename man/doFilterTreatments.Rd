@@ -4,29 +4,17 @@
 \alias{doFilterTreatments}
 \title{doFilterTreatments}
 \usage{
-doFilterTreatments(treatment_history, filterTreatments)
+doFilterTreatments(andromeda, filterTreatments)
 }
 \arguments{
-\item{treatment_history}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{filterTreatments}{Select first occurrence of ('First') / changes between ('Changes') / all
-event cohorts ('All').}
+\item{filterTreatments}{(\code{character(1)})}
 }
 \value{
-treatment_history
-    Updated dataframe, where the desired event cohorts are maintained for
-    the visualizations.
+(\code{invisible(NULL)})
 }
 \description{
-Updates the treatmentHistory data.frame where the desired event cohorts are maintained for the visualizations
-}
-\examples{
-\dontrun{
-th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
-                               targetCohortId = targetCohortId,
-                               eventCohortIds = eventCohortIds,
-                               periodPriorToIndex = periodPriorToIndex,
-                               includeTreatments = includeTreatments)
-
-doFilterTreatments(treatment_history = th, filterTreatments = "All")}
+Updates the treatmentHistory data.frame where the desired event cohorts are
+maintained for the visualizations
 }

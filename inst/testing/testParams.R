@@ -1,9 +1,13 @@
+source(system.file(
+  package = "TreatmentPatterns",
+  "examples", "SettingObjects", "createDummySettings.R"))
+
 connection <- DatabaseConnector::connect(dataSettings$connectionDetails)
 
-fullCohorts <- data.table::as.data.table(extractFile(
-  connection, 
-  dataSettings$cohortTable, 
-  dataSettings$resultSchema, 
+fullCohorts <- data.table::as.data.table(TreatmentPatterns::extractFile(
+  connection,
+  dataSettings$cohortTable,
+  dataSettings$resultSchema,
   dataSettings$connectionDetails$dbms))
 
 DatabaseConnector::disconnect(connection)
@@ -37,6 +41,7 @@ treatmentHistory <- TreatmentPatterns:::doCreateTreatmentHistory(
   currentCohorts = currentCohorts,
   targetCohortId = targetCohortId,
   eventCohortIds = eventCohortIds,
+  exitCohortIds = NULL,
   periodPriorToIndex = periodPriorToIndex,
   includeTreatments = includeTreatments)
 
@@ -44,7 +49,7 @@ minEraDuration <- as.integer(settings[
   settings$param == "minEraDuration", "analysis1"])
 
 doEraDurationTH <- TreatmentPatterns:::doEraDuration(
-  treatment_history = treatmentHistory,
+  treatmentHistory = treatmentHistory,
   minEraDuration = minEraDuration)
 
 splitEventCohorts <- settings[
@@ -54,7 +59,7 @@ splitTime <- settings[
   settings$param == "splitTime", "analysis1"]
 
 doSplitEventCohortsTH <- TreatmentPatterns:::doSplitEventCohorts(
-  treatment_history = doEraDurationTH,
+  treatmentHistory = doEraDurationTH,
   splitEventCohorts = splitEventCohorts,
   splitTime = splitTime,
   outputFolder = saveSettings$outputFolder)
@@ -94,9 +99,9 @@ doFilterTreatmentsTHPP <- doFilterTreatmentsTHOrdered[,
                       event_seq := seq_len(.N), by = .(person_id)]
 
 doMaxPathLengthTH <- TreatmentPatterns:::doMaxPathLength(
-  doFilterTreatmentsTHPP, 
+  doFilterTreatmentsTHPP,
   maxPathLength)
 
 addLabelsTH <- TreatmentPatterns:::addLabels(
-  doMaxPathLengthTH, 
+  doMaxPathLengthTH,
   saveSettings$outputFolder)

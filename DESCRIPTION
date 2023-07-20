@@ -14,43 +14,34 @@ Depends:
 Imports: 
     DatabaseConnector (>= 6.0.0),
     checkmate,
-    data.table,
     dplyr,
     SqlRender,
     stringr,
     stringi,
-    readr,
-    rjson,
-    jsonlite,
-    reshape2,
-    googleVis,
-    webshot2 (>= 0.1.0),
-    ParallelLogger,
     fs,
     glue,
-    zip,
-    shiny,
-    OhdsiSharing,
-    rlang
-Remotes:
-    OHDSI/OhdsiSharing,
-    OHDSI/Eunomia,
-    OHDSI/CohortDiagnostics,
-    OHDSI/CirceR,
-    OHDSI/CohortGenerator
+    utils,
+    rjson,
+    googleVis,
+    webshot2,
+    stats,
+    Andromeda,
+    tidyr,
+    data.table
 Suggests:
+    knitr,
+    rmarkdown,
     tibble,
     testthat (>= 3.0.0),
     usethis,
-    knitr,
     Eunomia,
-    CohortDiagnostics,
     CohortGenerator,
-    CirceR,
-    rmarkdown
+    CirceR
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Additional_repositories: https://OHDSI.github.io/drat
+Roxygen: list(markdown = TRUE)

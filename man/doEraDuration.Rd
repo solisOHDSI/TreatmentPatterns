@@ -4,28 +4,16 @@
 \alias{doEraDuration}
 \title{doEraDuration}
 \usage{
-doEraDuration(treatment_history, minEraDuration)
+doEraDuration(andromeda, minEraDuration)
 }
 \arguments{
-\item{treatment_history}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{minEraDuration}{Minimum time an event era should last to be included in analysis.}
+\item{minEraDuration}{(\code{integer(1)})}
 }
 \value{
-treatment_history
-    Updated dataframe, rows with duration < 
-    minEraDuration filtered out.
+(\code{invisible(NULL)})
 }
 \description{
-Filters the treatmentHistory based on the specified minimum era duration
-}
-\examples{
-\dontrun{
-th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
-                               targetCohortId = targetCohortId,
-                               eventCohortIds = eventCohortIds,
-                               periodPriorToIndex = periodPriorToIndex,
-                               includeTreatments = includeTreatments)
-doEraDuration(treatment_history = th, minEraDuration = 1)
-}
+doEraDuration
 }

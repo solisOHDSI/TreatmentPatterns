@@ -4,15 +4,13 @@
 \alias{addLabels}
 \title{addLabels}
 \usage{
-addLabels(treatment_history, outputFolder)
+addLabels(andromeda)
 }
 \arguments{
-\item{treatment_history}{treatment_history object}
-
-\item{outputFolder}{Folder of output}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 }
 \value{
-treatment_history
+(invisible(NULL))
 }
 \description{
 Adds back cohort names to concept ids.

@@ -4,48 +4,19 @@
 \alias{doSplitEventCohorts}
 \title{doSplitEventCohorts}
 \usage{
-doSplitEventCohorts(
-  treatment_history,
-  splitEventCohorts,
-  splitTime,
-  outputFolder
-)
+doSplitEventCohorts(andromeda, splitEventCohorts, splitTime)
 }
 \arguments{
-\item{treatment_history}{Dataframe with event cohorts of the target cohort in different rows.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{splitEventCohorts}{Specify event cohort to split in acute (< X days) and therapy
-(>= X days).}
+\item{splitEventCohorts}{(\code{character(n)})}
 
-\item{splitTime}{Specify number of days (X) at which each of the split event cohorts
-should be split in acute and therapy}
-
-\item{outputFolder}{Name of local folder to place results; make sure to use forward
-slashes (/).}
+\item{splitTime}{(\code{integer(1)})}
 }
 \value{
-treatment_history
-    Updated dataframe, with specified event cohorts now
-    split in two different event cohorts (acute and therapy).
+(\code{invisible(NULL)})
 }
 \description{
 Splits the treatmentHistory data.frame based on event cohorts into ‘acute’
 and ‘therapy’ cohorts.
-}
-\examples{
-\dontrun{
-source(system.file(
-  package = "TreatmentPatterns",
-  "examples", "SettingObjects", "createDummySettings.R"))
-
-source(system.file(
-  package = "TreatmentPatterns",
-  "testing",
-  "testParams.R"))
-
-doSplitEventCohorts(
-  treatment_history = doEraDurationTH,
-  splitEventCohorts = c(1,2,3),
-  splitTime = c("30", "20", "10"),
-  outputFolder = saveSettings$outputFolder)}
 }
