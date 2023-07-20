@@ -120,10 +120,3 @@ TreatmentPatterns::executeTreatmentPatterns(
   outputPath = cdmDir,
   cdm = cdm)
 ```
-
-## Reviewing outputFiles
-```{r countsAge}
-head(read.csv(file.path(allDir, "countsAge.csv"))[-1])
-head(read.csv(file.path(allDir, "countsSex.csv"))[-1])
-head(read.csv(file.path(allDir, "countsYear.csv"))[-1])
-```
