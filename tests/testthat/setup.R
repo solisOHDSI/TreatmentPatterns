@@ -30,19 +30,21 @@ andromeda <- TreatmentPatterns::computePathways(
   resultSchema = "main"
 )
 
-tempDir <- tempdir()
+print(names(andromeda))
 
-TreatmentPatterns::export(andromeda, outputPath = tempDir)
-treatmentPathways <- read.csv(file.path(tempDir, "treatmentPathways.csv"))[-1]
-
-pathways <- treatmentPathways %>%
-  dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
-
-TreatmentPatterns::createSunburstPlot(
-  treatmentPathways = pathways,
-  outputFile = file.path(tempDir, "sunburst.html"))
-
-TreatmentPatterns::createSankeyDiagram(
-  treatmentPathways = pathways,
-  outputFile = file.path(tempDir, "sankey.html"), year = "all")
+# tempDir <- tempdir()
+# 
+# TreatmentPatterns::export(andromeda, outputPath = tempDir)
+# treatmentPathways <- read.csv(file.path(tempDir, "treatmentPathways.csv"))[-1]
+# 
+# pathways <- treatmentPathways %>%
+#   dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
+# 
+# TreatmentPatterns::createSunburstPlot(
+#   treatmentPathways = pathways,
+#   outputFile = file.path(tempDir, "sunburst.html"))
+# 
+# TreatmentPatterns::createSankeyDiagram(
+#   treatmentPathways = pathways,
+#   outputFile = file.path(tempDir, "sankey.html"), year = "all")
 
