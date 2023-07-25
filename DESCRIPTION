@@ -23,7 +23,6 @@ Imports:
     utils,
     rjson,
     googleVis,
-    webshot2,
     stats,
     Andromeda,
     tidyr,
@@ -35,7 +34,9 @@ Suggests:
     testthat (>= 3.0.0),
     usethis,
     Eunomia,
+    CDMConnector,
     CohortGenerator,
+    webshot2,
     CirceR
 License: Apache License 2.0
 Encoding: UTF-8
