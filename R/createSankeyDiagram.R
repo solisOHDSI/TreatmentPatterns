@@ -1,63 +1,3 @@
-#' groupInfrequentCombinations
-#'
-#' `DEPRECATED`\cr
-#' Help function to group combinations
-#'
-#' @param data
-#'     Data
-#' @template param_groupCombinations
-#'
-#' @returns data.table
-groupInfrequentCombinations <- function(data, groupCombinations) {
-  data <- as.data.frame(data)
-  
-  # Find all non-fixed combinations occurring
-  findCombinations <- apply(
-    X = data,
-    MARGIN = 2,
-    FUN = function(x) {
-      grepl("+", x, fixed = TRUE)
-    }
-  )
-  
-  # Group all non-fixed combinations in one group if TRUE
-  if (groupCombinations == TRUE) {
-    data[findCombinations] <- "Other"
-  } else {
-    # Otherwise: group infrequent treatments below groupCombinations as "other"
-    combinations <- as.matrix(data)[findCombinations == TRUE]
-    
-    freqCombinations <- matrix(
-      rep(data$freq, times = ncol(data)),
-      ncol = ncol(data))[findCombinations == TRUE]
-    
-    summaryCombinations <- data.table::data.table(
-      combination = combinations,
-      freq = freqCombinations
-    )
-    
-    if (nrow(summaryCombinations) > 0) {
-      summaryCombinations <- summaryCombinations[
-        , .(freq = sum(freq)),
-        by = combination
-      ][order(-freq)]
-      
-      summarizeCombinations <- summaryCombinations$combination[
-        summaryCombinations$freq <= as.numeric(groupCombinations)]
-      
-      selectedCombinations <- apply(
-        X = data,
-        MARGIN = 2,
-        FUN = function(x) {
-          x %in% summarizeCombinations
-        }
-      )
-      data[selectedCombinations] <- "Other"
-    }
-  }
-  return(data.table::data.table(data))
-}
-
 #' createSankeyDiagram
 #'
 #' Writes the Sankey diagram to a HTML-file, to a specified file path. 
@@ -68,8 +8,6 @@ groupInfrequentCombinations <- function(data, groupCombinations) {
 #' Path where the Sankey diagram should be written to.
 #' @template param_groupCombinations
 #' @template param_minFreq
-#' @param year (`integer(1)` | `character(1)`)\cr
-#' Year
 #' 
 #' @export
 #'
@@ -78,18 +16,11 @@ createSankeyDiagram <- function(
     treatmentPathways,
     outputFile,
     groupCombinations = FALSE,
-    minFreq = 5,
-    year = "all"){
+    minFreq = 5) {
   data <- treatmentPathways %>%
     rowwise() %>%
-    mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
-    # mutate(
-    #   freq = case_when(
-    #     startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
-    #     .default = .data$freq
-    #   )
-    # ) %>%
-    mutate(freq = as.integer(.data$freq))
+    dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
+    dplyr::mutate(freq = as.integer(.data$freq))
   
   data <- data %>%
     tidyr::unnest_wider(path, names_sep = "")
@@ -143,7 +74,7 @@ createSankeyDiagram <- function(
     options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
   )
   
-  message(sprintf("Witing Sankey diagram to %s", file.path(outputFile)))
+  message(sprintf("Writing Sankey diagram to %s", file.path(outputFile)))
   writeLines(
     text = plot$html$chart,
     con = file.path(outputFile))
