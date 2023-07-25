@@ -8,8 +8,7 @@ createSankeyDiagram(
   treatmentPathways,
   outputFile,
   groupCombinations = FALSE,
-  minFreq = 5,
-  year = "all"
+  minFreq = 5
 )
 }
 \arguments{
@@ -28,9 +27,6 @@ Path where the Sankey diagram should be written to.}
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
-
-\item{year}{(\code{integer(1)} | \code{character(1)})\cr
-Year}
 }
 \value{
 invisible(NULL)
