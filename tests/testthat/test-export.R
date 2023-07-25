@@ -1,0 +1,40 @@
+library(TreatmentPatterns)
+library(testthat)
+
+tempDir <- file.path(tempdir(), "testing")
+
+test_that("void", {
+  expect_error(
+    export()
+  )
+})
+
+test_that("default", {
+  expect_message(
+    export(andromeda = andromeda, outputPath = tempDir, archiveName = "output.zip")
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "treatmentPathways.csv"))
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "summaryStatsTherapyDuraion.csv"))
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "countsYear.csv"))
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "countsAge.csv"))
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "countsSex.csv"))
+  )
+  
+  expect_true(
+    file.exists(file.path(tempDir, "output.zip"))
+  )
+})
