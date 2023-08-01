@@ -26,7 +26,8 @@ Imports:
     stats,
     Andromeda,
     tidyr,
-    data.table
+    data.table,
+    R6
 Suggests:
     knitr,
     rmarkdown,
@@ -37,7 +38,9 @@ Suggests:
     CDMConnector,
     CohortGenerator,
     webshot2,
-    CirceR
+    CirceR,
+    duckdb,
+    DBI
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
