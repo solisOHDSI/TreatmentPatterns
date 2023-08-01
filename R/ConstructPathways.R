@@ -505,8 +505,6 @@ doCombinationWindow <- function(
           .default = .data$check_duration
         ))
     
-    # combineData(andromeda, iterations)
-    
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
       dplyr::union_all(andromeda[[glue::glue("addRowsFRFS_{iterations}")]]) %>%
       dplyr::union_all(andromeda[[glue::glue("addRowsLRFS_{iterations}")]]) %>%
@@ -533,59 +531,6 @@ doCombinationWindow <- function(
   message(glue::glue(
     "Time needed to execute combination window {difftime(time2, time1, units = 'mins')}"))
   
-  return(invisible(NULL))
-}
-
-
-#' combineData
-#'
-#' @param andromeda (`Andromeda::andromeda()`)
-#' @param iterations (`integer(1)`)
-#'
-#' @return (`invisible(NULL)`)
-combineData <- function(andromeda, iterations) {
-  andromeda$treatmentHistory <- andromeda$treatmentHistory %>% 
-    dplyr::select(
-      "person_id", "index_year", "event_cohort_id", "event_start_date",
-      "event_end_date", "duration_era", "GAP_PREVIOUS") %>%
-    dplyr::mutate(
-      person_id = as.double(.data$person_id),
-      index_year = as.integer(.data$index_year),
-      event_cohort_id = as.character(.data$event_cohort_id),
-      event_start_date = as.integer(.data$event_start_date),
-      event_end_date = as.integer(.data$event_end_date),
-      duration_era = as.integer(.data$duration_era),
-      GAP_PREVIOUS = as.integer(.data$GAP_PREVIOUS))
-  
-  andromeda[[glue::glue("addRowsFRFS_{iterations}")]] <- andromeda[[glue::glue("addRowsFRFS_{iterations}")]] %>%
-    dplyr::select(
-      "person_id", "index_year", "event_cohort_id", "event_start_date",
-      "event_end_date", "duration_era", "GAP_PREVIOUS") %>%
-    dplyr::mutate(
-      person_id = as.double(.data$person_id),
-      index_year = as.integer(.data$index_year),
-      event_cohort_id = as.character(.data$event_cohort_id),
-      event_start_date = as.integer(.data$event_start_date),
-      event_end_date = as.integer(.data$event_end_date),
-      duration_era = as.integer(.data$duration_era),
-      GAP_PREVIOUS = as.integer(.data$GAP_PREVIOUS))
-  
-  andromeda[[glue::glue("addRowsLRFS_{iterations}")]] <- andromeda[[glue::glue("addRowsLRFS_{iterations}")]] %>%
-    dplyr::select(
-      "person_id", "index_year", "event_cohort_id", "event_start_date",
-      "event_end_date", "duration_era", "GAP_PREVIOUS") %>%
-    dplyr::mutate(
-      person_id = as.double(.data$person_id),
-      index_year = as.integer(.data$index_year),
-      event_cohort_id = as.character(.data$event_cohort_id),
-      event_start_date = as.integer(.data$event_start_date),
-      event_end_date = as.integer(.data$event_end_date),
-      duration_era = as.integer(.data$duration_era),
-      GAP_PREVIOUS = as.integer(.data$GAP_PREVIOUS))
-  
-  andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-    dplyr::union_all(andromeda[[glue::glue("addRowsLRFS_{iterations}")]]) %>%
-    dplyr::union_all(andromeda[[glue::glue("addRowsFRFS_{iterations}")]])
   return(invisible(NULL))
 }
 
