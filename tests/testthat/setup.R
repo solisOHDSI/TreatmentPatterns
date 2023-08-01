@@ -1,6 +1,5 @@
 library(dplyr)
-# library(CDMConnector)
-
+library(CDMConnector)
 source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
 
 # Select Viral Sinusitis Cohort
@@ -31,8 +30,6 @@ andromeda <- TreatmentPatterns::computePathways(
   resultSchema = "main"
 )
 
-# print(names(andromeda))
-
 setupTempDir <- file.path(tempdir(), "setup")
 
 TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
@@ -48,3 +45,6 @@ TreatmentPatterns::createSunburstPlot(
 TreatmentPatterns::createSankeyDiagram(
   treatmentPathways = pathways,
   outputFile = file.path(setupTempDir, "sankey.html"))
+
+con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+cdm <- cdm_from_con(con, cdm_schema = "main")

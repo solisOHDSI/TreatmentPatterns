@@ -1,0 +1,95 @@
+library(testthat)
+library(TreatmentPatterns)
+library(dplyr)
+
+test_that("Method: new", {
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = connectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
+  
+  expect_true(R6::is.R6(cdmInterface))
+})
+
+cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+  connectionDetails = connectionDetails,
+  cdmSchema = "main",
+  resultSchema = "main"
+)
+
+test_that("Method: validate", {
+  expect_true(R6::is.R6(cdmInterface$validate()))
+})
+
+a <- Andromeda::andromeda()
+
+test_that("Method: fetchMetadata", {
+  cdmInterface$fetchMetadata(a)
+  
+  metadata <- a$metadata %>% collect()
+  
+  expect_in(
+    c("CDM_SOURCE_NAME", "CDM_SOURCE_ABBREVIATION", "CDM_RELEASE_DATE", "VOCABULARY_VERSION"),
+    names(metadata)
+  )
+  
+  expect_identical(metadata$r_version, base::version$version.string)
+  expect_identical(metadata$platform, base::version$platform)
+  expect_identical(nrow(metadata), 1L)
+  expect_identical(ncol(metadata), 8L)
+})
+
+a$treatmentHistory <- andromeda$treatmentHistory %>%
+  select(-"age", -"sex")
+
+test_that("Method: addSex", {
+  cdmInterface$addSex(a)
+  
+  sex <- a$sex %>% collect()
+  TH <- a$treatmentHistory %>% collect()
+  
+  expect_identical(ncol(sex), 2L)
+  expect_identical(nrow(sex), 512L)
+  
+  expect_in(c("MALE", "FEMALE"), TH$sex)
+  
+  sexes <- TH %>%
+    inner_join(sex, by = join_by(person_id == PERSON_ID)) %>%
+    select("sex", "SEX")
+  
+  expect_identical(sexes$sex, sexes$SEX)
+})
+
+test_that("Method: addAge", {
+  cdmInterface$addAge(a)
+
+  year_of_birth <- a$year_of_birth %>% collect()
+  TH <- a$treatmentHistory %>% collect()
+
+  expect_identical(ncol(year_of_birth), 2L)
+  expect_identical(nrow(year_of_birth), 512L)
+
+  ages <- TH %>%
+    inner_join(year_of_birth, by = join_by(person_id == PERSON_ID)) %>%
+    mutate(ageCheck = .data$index_year - .data$YEAR_OF_BIRTH) %>% select("age", "ageCheck")
+
+  expect_identical(
+    ages$age,
+    ages$ageCheck
+  )
+})
+
+test_that("Method: fetchCohortTable", {
+  # Viral Sinusitis
+  res <- cdmInterface$fetchCohortTable(1, cohortTableName = "CohortTable")
+  
+  expect_identical(ncol(res), 4L)
+  expect_identical(nrow(res), 2679L)
+  
+  # Empty
+  res <- cdmInterface$fetchCohortTable(23, cohortTableName = "CohortTable")
+  expect_identical(ncol(res), 4L)
+  expect_identical(nrow(res), 0L)
+})
+
