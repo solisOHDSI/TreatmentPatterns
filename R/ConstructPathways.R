@@ -410,15 +410,23 @@ doCombinationWindow <- function(
       "LRFS Combinations: {andromeda$treatmentHistory %>% dplyr::summarise(sum = sum(.data$combination_LRFS)) %>% dplyr::pull()}"))
     
     sumSwitchComb <- sum(
-      andromeda$treatmentHistory %>% dplyr::summarise(sum = sum(.data$switch, na.rm = TRUE)) %>% dplyr::pull(),
-      andromeda$treatmentHistory %>% dplyr::summarise(sum = sum(.data$combination_FRFS, na.rm = TRUE)) %>% dplyr::pull(),
-      andromeda$treatmentHistory %>% dplyr::summarise(sum = sum(.data$combination_LRFS, na.rm = TRUE)) %>% dplyr::pull()
+      andromeda$treatmentHistory %>%
+        dplyr::summarise(sum = sum(.data$switch, na.rm = TRUE)) %>%
+        dplyr::pull(),
+      andromeda$treatmentHistory %>%
+        dplyr::summarise(sum = sum(.data$combination_FRFS, na.rm = TRUE)) %>%
+        dplyr::pull(),
+      andromeda$treatmentHistory %>%
+        dplyr::summarise(sum = sum(.data$combination_LRFS, na.rm = TRUE)) %>%
+        dplyr::pull()
     )
     
-    sumSelectedRows <- andromeda$treatmentHistory %>% dplyr::summarise(sum = sum(.data$SELECTED_ROWS)) %>% dplyr::pull()
+    sumSelectedRows <- andromeda$treatmentHistory %>%
+      dplyr::summarise(sum = sum(.data$SELECTED_ROWS)) %>%
+      dplyr::pull()
     
     if (sumSwitchComb != sumSelectedRows) {
-      warning(glue::glue(
+      stop(glue::glue(
         "{sumSelectedRows} does not equal total sum {sumSwitchComb}"))
     }
     

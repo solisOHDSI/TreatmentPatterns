@@ -58,7 +58,7 @@ CDMInterface <- R6::R6Class(
     fetchCohortTable = function(cohortIds, cohortTableName) {
       switch(
         private$type,
-        CDMConnector = private$cdmconFetchChortTable(cohortIds, cohortTableName),
+        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName),
         DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName)
       )
     },
@@ -228,10 +228,11 @@ CDMInterface <- R6::R6Class(
 
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    cdmconFetchChortTable = function(cohortIds, cohortTableName) {
+    cdmconFetchCohortTable = function(cohortIds, cohortTableName) {
       return(
         private$cdm[[cohortTableName]] %>%
-          filter(.data$cohort_definition_id %in% cohortIds))
+          filter(.data$cohort_definition_id %in% cohortIds)) %>%
+        collect()
     },
 
     # andromeda (`Andromeda::andromeda()`)
