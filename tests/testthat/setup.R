@@ -1,4 +1,5 @@
 library(dplyr)
+# library(CDMConnector)
 
 source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
 
@@ -47,4 +48,3 @@ TreatmentPatterns::createSunburstPlot(
 TreatmentPatterns::createSankeyDiagram(
   treatmentPathways = pathways,
   outputFile = file.path(setupTempDir, "sankey.html"))
-

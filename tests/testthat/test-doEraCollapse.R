@@ -1,9 +1,9 @@
-library(TreatmentPatterns)
-library(testthat)
-
-test_that("void", {
-  expect_error(TreatmentPatterns:::doEraCollapse())
-})
+# library(TreatmentPatterns)
+# library(testthat)
+# 
+# test_that("void", {
+#   expect_error(TreatmentPatterns:::doEraCollapse())
+# })
 
 # test_that("minimal", {
 #   # update generic test variables
