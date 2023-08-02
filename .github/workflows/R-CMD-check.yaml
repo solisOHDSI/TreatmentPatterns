@@ -56,6 +56,9 @@ jobs:
             install.packages("tibble", repos = "https://cloud.r-project.org/")
             install.packages("testthat", repos = "https://cloud.r-project.org/")
             install.packages("usethis")
+            install.packages("CDMConnector")
+            install.packages("DBI")
+            install.packages("duckdb")
         shell: Rscript {0}
         
         
