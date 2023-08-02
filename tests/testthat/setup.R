@@ -32,19 +32,19 @@ andromeda <- TreatmentPatterns::computePathways(
 
 setupTempDir <- file.path(tempdir(), "setup")
 
-TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
-treatmentPathways <- read.csv(file.path(setupTempDir, "treatmentPathways.csv"))
-
-pathways <- treatmentPathways %>%
-  dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
-
-TreatmentPatterns::createSunburstPlot(
-  treatmentPathways = pathways,
-  outputFile = file.path(setupTempDir, "sunburst.html"))
-
-TreatmentPatterns::createSankeyDiagram(
-  treatmentPathways = pathways,
-  outputFile = file.path(setupTempDir, "sankey.html"))
+# TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
+# treatmentPathways <- read.csv(file.path(setupTempDir, "treatmentPathways.csv"))
+# 
+# pathways <- treatmentPathways %>%
+#   dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
+# 
+# TreatmentPatterns::createSunburstPlot(
+#   treatmentPathways = pathways,
+#   outputFile = file.path(setupTempDir, "sunburst.html"))
+# 
+# TreatmentPatterns::createSankeyDiagram(
+#   treatmentPathways = pathways,
+#   outputFile = file.path(setupTempDir, "sankey.html"))
 
 con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
 cdm <- cdm_from_con(con, cdm_schema = "main")
