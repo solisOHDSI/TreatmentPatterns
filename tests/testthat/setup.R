@@ -46,5 +46,13 @@ setupTempDir <- file.path(tempdir(), "setup")
 #   treatmentPathways = pathways,
 #   outputFile = file.path(setupTempDir, "sankey.html"))
 
+withr::local_envvar(
+  EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+)
+
+downloadEunomiaData(
+  overwrite = TRUE
+)
+
 con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
 cdm <- cdm_from_con(con, cdm_schema = "main")

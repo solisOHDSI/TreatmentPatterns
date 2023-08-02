@@ -59,6 +59,7 @@ jobs:
             install.packages("CDMConnector")
             install.packages("DBI")
             install.packages("duckdb")
+            install.packages("withr")
         shell: Rscript {0}
         
         
