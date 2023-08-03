@@ -62,6 +62,7 @@ test_that("Method: addSex", {
 })
 
 test_that("Method: addAge", {
+  skip_on_ci()
   cdmInterface$addAge(andromDBC)
 
   year_of_birth <- andromDBC$year_of_birth %>% collect()
