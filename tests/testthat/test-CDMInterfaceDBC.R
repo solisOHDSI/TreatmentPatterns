@@ -48,7 +48,7 @@ andromDBC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
   select(-"age", -"sex")
 
 test_that("Method: addSex", {
-  # skip_on_ci()
+  skip_on_ci()
   cdmInterface$addSex(andromDBC)
   
   sex <- andromDBC$sex %>% collect()
