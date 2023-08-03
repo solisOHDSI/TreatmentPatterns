@@ -6,16 +6,27 @@ library(DBI)
 library(duckdb)
 
 test_that("Method: new", {
-  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    cdm = cdm
-  )
-  
-  expect_true(R6::is.R6(cdmInterface))
+  expect_true(R6::is.R6(
+    TreatmentPatterns:::CDMInterface$new(
+      cdm = cdm
+    )
+  ))
 })
 
 cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   cdm = cdm
 )
+
+tryCatch({
+  CDMConnector::validateCdm(cdm)
+}, error = function(e) {
+  message("CDM is no longer valid for test")
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  cdm <- cdmFromCon(con, cdmSchema = "main")
+}, warning = function(e) {
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  cdm <- cdmFromCon(con, cdmSchema = "main")
+})
 
 test_that("Method: validate", {
   expect_true(R6::is.R6(cdmInterface$validate()))
