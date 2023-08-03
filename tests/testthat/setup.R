@@ -22,7 +22,7 @@ cohorts <- dplyr::bind_rows(
   exitCohorts %>% mutate(type = "exit")
 )
 
-andromeda <- TreatmentPatterns::computePathways(
+andromedaSetup <- TreatmentPatterns::computePathways(
   cohorts = cohorts,
   cohortTableName = "CohortTable",
   connectionDetails = connectionDetails,

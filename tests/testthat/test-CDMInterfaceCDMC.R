@@ -17,17 +17,6 @@ cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   cdm = cdm
 )
 
-tryCatch({
-  CDMConnector::validateCdm(cdm)
-}, error = function(e) {
-  message("CDM is no longer valid for test")
-  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-  cdm <- cdmFromCon(con, cdmSchema = "main")
-}, warning = function(e) {
-  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-  cdm <- cdmFromCon(con, cdmSchema = "main")
-})
-
 test_that("Method: validate", {
   expect_true(R6::is.R6(cdmInterface$validate()))
 })
@@ -50,7 +39,7 @@ test_that("Method: fetchMetadata", {
   expect_identical(ncol(metadata), 8L)
 })
 
-andromCDMC$treatmentHistory <- andromeda$treatmentHistory %>%
+andromCDMC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
   select(-"age", -"sex")
 
 test_that("Method: addSex", {

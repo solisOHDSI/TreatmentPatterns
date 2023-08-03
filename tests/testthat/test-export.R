@@ -11,7 +11,7 @@ test_that("void", {
 
 test_that("default", {
   expect_message(
-    export(andromeda = andromeda, outputPath = tempDir, archiveName = "output.zip")
+    export(andromeda = andromedaSetup, outputPath = tempDir, archiveName = "output.zip")
   )
   
   expect_true(

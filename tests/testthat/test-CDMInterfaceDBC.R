@@ -40,7 +40,7 @@ test_that("Method: fetchMetadata", {
   expect_identical(ncol(metadata), 8L)
 })
 
-andromDBC$treatmentHistory <- andromeda$treatmentHistory %>%
+andromDBC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
   select(-"age", -"sex")
 
 test_that("Method: addSex", {
