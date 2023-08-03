@@ -50,9 +50,15 @@ withr::local_envvar(
   EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
 )
 
-downloadEunomiaData(
+CDMConnector::downloadEunomiaData(
   overwrite = TRUE
 )
 
 con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-cdm <- cdm_from_con(con, cdm_schema = "main")
+cdm <- cdmFromCon(con, cdmSchema = "main")
+
+cdm$condition_era %>%
+  filter(condition_concept_id == 40481087) %>%
+  summarise(n = n()) %>%
+  pull() %>%
+  message(" Persons with Viral sinusitis")
