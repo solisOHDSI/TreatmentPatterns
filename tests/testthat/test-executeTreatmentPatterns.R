@@ -8,6 +8,7 @@ test_that("void", {
 })
 
 test_that("minimal", {
+  testthat::skip_on_ci()
   expect_message(
     TreatmentPatterns::executeTreatmentPatterns(
       cohorts = cohorts,

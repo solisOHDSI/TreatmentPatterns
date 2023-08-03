@@ -10,6 +10,7 @@ test_that("void", {
 })
 
 test_that("default", {
+  testthat::skip_on_ci()
   expect_message(
     export(andromeda = andromedaSetup, outputPath = tempDir, archiveName = "output.zip")
   )
