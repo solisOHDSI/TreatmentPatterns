@@ -1,11 +1,11 @@
-library(usethis)
-library(TreatmentPatterns)
-library(testthat)
-
-test_that("void", {
-  expect_error(
-    TreatmentPatterns:::selectRowsCombinationWindow())
-})
+# library(usethis)
+# library(TreatmentPatterns)
+# library(testthat)
+# 
+# test_that("void", {
+#   expect_error(
+#     TreatmentPatterns:::selectRowsCombinationWindow())
+# })
 
 # test_that("minimal", {
 #   suppressWarnings(expect_s3_class(

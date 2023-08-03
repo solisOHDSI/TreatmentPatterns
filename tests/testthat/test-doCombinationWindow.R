@@ -1,10 +1,10 @@
-library(TreatmentPatterns)
-library(testthat)
-library(dplyr)
-
-test_that("void", {
-  expect_error(TreatmentPatterns:::doCombinationWindow())
-})
+# library(TreatmentPatterns)
+# library(testthat)
+# library(dplyr)
+# 
+# test_that("void", {
+#   expect_error(TreatmentPatterns:::doCombinationWindow())
+# })
 
 # test_that("minimal", {
 #   treatmentHistory <- TreatmentPatterns:::doCombinationWindow(

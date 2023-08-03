@@ -22,34 +22,52 @@ export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, arc
   metadataPath <- file.path(outputPath, "metadata.csv")
   message(sprintf("Writing metadata to %s", metadataPath))
   metadata <- andromeda$metadata %>% dplyr::collect()
-  write.csv(metadata, file = metadataPath)
+  write.csv(metadata, file = metadataPath, row.names = FALSE)
   
   # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
   message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
   treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
-  write.csv(treatmentPathways, file = treatmentPathwaysPath)
+  
+  nTotal <- andromeda$currentCohorts %>%
+    dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+    dplyr::pull()
+  
+  nTreated <- treatmentHistory %>%
+    dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+    dplyr::pull()
+  
+  treatmentPathways <- treatmentPathways %>%
+    dplyr::add_row(data.frame(
+      path = "None",
+      freq = nTotal - nTreated,
+      sex = "all",
+      age = "all",
+      index_year = "all"
+    ))
+  
+  write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
   
   # Summary statistics duration
   statsTherapyPath <- file.path(outputPath, "summaryStatsTherapyDuraion.csv")
   message(sprintf("Writing summaryStatsTherapyDuraion to %s", statsTherapyPath))
   statsTherapy <- computeStatsTherapy(treatmentHistory)
-  write.csv(statsTherapy, file = statsTherapyPath)
+  write.csv(statsTherapy, file = statsTherapyPath, row.names = FALSE)
   
   # Counts
   counts <- computeCounts(treatmentHistory, minFreq)
   
   countsYearPath <- file.path(outputPath, "countsYear.csv")
   message(sprintf("Writing countsYearPath to %s", countsYearPath))
-  write.csv(counts$year, file = countsYearPath)
+  write.csv(counts$year, file = countsYearPath, row.names = FALSE)
   
   countsAgePath <- file.path(outputPath, "countsAge.csv")
   message(sprintf("Writing countsAgePath to %s", countsAgePath))
-  write.csv(counts$age, file = countsAgePath)
+  write.csv(counts$age, file = countsAgePath, row.names = FALSE)
   
   countsSexPath <- file.path(outputPath, "countsSex.csv")
   message(sprintf("Writing countsSexPath to %s", countsSexPath))
-  write.csv(counts$sex, file = countsSexPath)
+  write.csv(counts$sex, file = countsSexPath, row.names = FALSE)
   
   if (!is.null(archiveName)) {
     zipPath <- file.path(outputPath, archiveName)
@@ -159,7 +177,7 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
     dplyr::filter(.data$freq >= minFreq)
   b <- nrow(treatmentPathways)
   
-  message(sprintf("Removed %s pathways with a frequency < %s.", a-b, minFreq))
+  message(sprintf("Removed %s pathways with a frequency < %s.", a - b, minFreq))
   return(treatmentPathways)
 }
 

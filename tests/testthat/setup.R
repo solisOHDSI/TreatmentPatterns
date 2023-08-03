@@ -1,5 +1,5 @@
 library(dplyr)
-
+library(CDMConnector)
 source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
 
 # Select Viral Sinusitis Cohort
@@ -22,7 +22,7 @@ cohorts <- dplyr::bind_rows(
   exitCohorts %>% mutate(type = "exit")
 )
 
-andromeda <- TreatmentPatterns::computePathways(
+andromedaSetup <- TreatmentPatterns::computePathways(
   cohorts = cohorts,
   cohortTableName = "CohortTable",
   connectionDetails = connectionDetails,
@@ -30,21 +30,46 @@ andromeda <- TreatmentPatterns::computePathways(
   resultSchema = "main"
 )
 
-print(names(andromeda))
+setupTempDir <- file.path(tempdir(), "setup")
 
-# tempDir <- tempdir()
-# 
-# TreatmentPatterns::export(andromeda, outputPath = tempDir)
-# treatmentPathways <- read.csv(file.path(tempDir, "treatmentPathways.csv"))[-1]
+if (!dir.exists(setupTempDir)) {
+  dir.create(setupTempDir)
+}
+
+Andromeda::saveAndromeda(
+  andromeda = andromedaSetup,
+  fileName = file.path(setupTempDir, "Andromeda"),
+  maintainConnection = FALSE,
+  overwrite = TRUE
+)
+
+# TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
+# treatmentPathways <- read.csv(file.path(setupTempDir, "treatmentPathways.csv"))
 # 
 # pathways <- treatmentPathways %>%
 #   dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
 # 
 # TreatmentPatterns::createSunburstPlot(
 #   treatmentPathways = pathways,
-#   outputFile = file.path(tempDir, "sunburst.html"))
+#   outputFile = file.path(setupTempDir, "sunburst.html"))
 # 
 # TreatmentPatterns::createSankeyDiagram(
 #   treatmentPathways = pathways,
-#   outputFile = file.path(tempDir, "sankey.html"), year = "all")
+#   outputFile = file.path(setupTempDir, "sankey.html"))
 
+withr::local_envvar(
+  EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+)
+
+CDMConnector::downloadEunomiaData(
+  overwrite = TRUE
+)
+
+con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+cdm <- cdmFromCon(con, cdmSchema = "main")
+
+cdm$condition_era %>%
+  filter(condition_concept_id == 40481087) %>%
+  summarise(n = n()) %>%
+  pull() %>%
+  message(" Persons with Viral sinusitis")

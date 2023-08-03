@@ -58,7 +58,7 @@ CDMInterface <- R6::R6Class(
     fetchCohortTable = function(cohortIds, cohortTableName) {
       switch(
         private$type,
-        CDMConnector = private$cdmconFetchChortTable(cohortIds, cohortTableName),
+        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName),
         DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName)
       )
     },
@@ -228,10 +228,11 @@ CDMInterface <- R6::R6Class(
 
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    cdmconFetchChortTable = function(cohortIds, cohortTableName) {
+    cdmconFetchCohortTable = function(cohortIds, cohortTableName) {
       return(
         private$cdm[[cohortTableName]] %>%
-          filter(.data$cohort_definition_id %in% cohortIds))
+          dplyr::filter(.data$cohort_definition_id %in% cohortIds)) %>%
+        dplyr::collect()
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -257,19 +258,20 @@ CDMInterface <- R6::R6Class(
       
       andromeda$sex <- private$cdm$person %>%
         dplyr::filter(.data$person_id %in% personIds) %>%
-        dplyr::inner_join(cdm$concept, by = join_by(gender_concept_id == concept_id)) %>%
+        dplyr::inner_join(private$cdm$concept, by = join_by(gender_concept_id == concept_id)) %>%
         dplyr::select(person_id, concept_name) %>%
         dplyr::collect()
       
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::inner_join(andromeda$sex, by = join_by(person_id == person_id))
+        dplyr::inner_join(andromeda$sex, by = join_by(person_id == person_id)) %>%
+        dplyr::rename(sex = "concept_name")
       
       return(invisible(NULL))
     },
 
     # andromeda (`Andromeda::andromeda()`)
     cdmconFetchMetadata = function(andromeda) {
-      private$cdm$cdm_source %>%
+      andromeda$metadata <- private$cdm$cdm_source %>%
         dplyr::select(
           "cdm_source_name",
           "cdm_source_abbreviation",

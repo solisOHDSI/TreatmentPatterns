@@ -91,6 +91,7 @@ PathwayConstructor <- R6::R6Class(
       )
       
       private$andromeda$fullCohorts <- private$andromeda$fullCohorts %>%
+        dplyr::rename_with(toupper) %>%
         dplyr::rename(
           cohort_id = "COHORT_DEFINITION_ID",
           person_id = "SUBJECT_ID",

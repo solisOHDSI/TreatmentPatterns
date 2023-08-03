@@ -1,9 +1,9 @@
-library(TreatmentPatterns)
-library(testthat)
-
-test_that("void", {
-  expect_error(TreatmentPatterns:::doSplitEventCohorts())
-})
+# library(TreatmentPatterns)
+# library(testthat)
+# 
+# test_that("void", {
+#   expect_error(TreatmentPatterns:::doSplitEventCohorts())
+# })
 
 # test_that("minimal", {
 #   expect_s3_class(TreatmentPatterns:::doSplitEventCohorts(

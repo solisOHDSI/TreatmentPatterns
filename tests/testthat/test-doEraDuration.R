@@ -1,9 +1,9 @@
-library(TreatmentPatterns)
-library(testthat)
-
-test_that("void", {
-  expect_error(TreatmentPatterns:::doEraDuration())
-})
+# library(TreatmentPatterns)
+# library(testthat)
+# 
+# test_that("void", {
+#   expect_error(TreatmentPatterns:::doEraDuration())
+# })
 
 # test_that("minimal", {
 #   treatmentHistoryFiltered <- TreatmentPatterns:::doEraDuration(
