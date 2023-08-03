@@ -7,13 +7,13 @@ andromedaSetup <- Andromeda::loadAndromeda(
 )
 
 test_that("Method: new", {
-  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = connectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
-  )
-  
-  expect_true(R6::is.R6(cdmInterface))
+  expect_true(R6::is.R6(
+    TreatmentPatterns:::CDMInterface$new(
+      connectionDetails = connectionDetails,
+      cdmSchema = "main",
+      resultSchema = "main"
+    )
+  ))
 })
 
 cdmInterface <- TreatmentPatterns:::CDMInterface$new(
@@ -67,7 +67,7 @@ test_that("Method: addSex", {
 })
 
 test_that("Method: addAge", {
-  skip_on_ci()
+  # skip_on_ci()
   cdmInterface$addAge(andromDBC)
 
   year_of_birth <- andromDBC$year_of_birth %>% collect()
