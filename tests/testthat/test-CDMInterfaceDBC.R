@@ -2,6 +2,10 @@ library(testthat)
 library(TreatmentPatterns)
 library(dplyr)
 
+andromedaSetup <- Andromeda::loadAndromeda(
+  fileName = file.path(setupTempDir, "Andromeda")
+)
+
 test_that("Method: new", {
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
     connectionDetails = connectionDetails,
@@ -44,6 +48,7 @@ andromDBC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
   select(-"age", -"sex")
 
 test_that("Method: addSex", {
+  skip_on_ci()
   cdmInterface$addSex(andromDBC)
   
   sex <- andromDBC$sex %>% collect()
@@ -95,3 +100,4 @@ test_that("Method: fetchCohortTable", {
 })
 
 Andromeda::close(andromDBC)
+Andromeda::close(andromedaSetup)

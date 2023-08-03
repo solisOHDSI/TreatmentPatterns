@@ -5,6 +5,10 @@ library(R6)
 library(DBI)
 library(duckdb)
 
+andromedaSetup <- Andromeda::loadAndromeda(
+  fileName = file.path(setupTempDir, "Andromeda")
+)
+
 test_that("Method: new", {
   expect_true(R6::is.R6(
     TreatmentPatterns:::CDMInterface$new(

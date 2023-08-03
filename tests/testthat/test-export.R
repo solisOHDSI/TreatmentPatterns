@@ -1,6 +1,10 @@
 library(TreatmentPatterns)
 library(testthat)
 
+andromedaSetup <- Andromeda::loadAndromeda(
+  fileName = file.path(setupTempDir, "Andromeda")
+)
+
 tempDir <- file.path(tempdir(), "testing")
 
 test_that("void", {

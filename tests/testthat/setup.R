@@ -32,6 +32,17 @@ andromedaSetup <- TreatmentPatterns::computePathways(
 
 setupTempDir <- file.path(tempdir(), "setup")
 
+if (!dir.exists(setupTempDir)) {
+  dir.create(setupTempDir)
+}
+
+Andromeda::saveAndromeda(
+  andromeda = andromedaSetup,
+  fileName = file.path(setupTempDir, "Andromeda"),
+  maintainConnection = FALSE,
+  overwrite = TRUE
+)
+
 # TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
 # treatmentPathways <- read.csv(file.path(setupTempDir, "treatmentPathways.csv"))
 # 
