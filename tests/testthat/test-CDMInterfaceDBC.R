@@ -22,12 +22,12 @@ test_that("Method: validate", {
   expect_true(R6::is.R6(cdmInterface$validate()))
 })
 
-a <- Andromeda::andromeda()
+andromDBC <- Andromeda::andromeda()
 
 test_that("Method: fetchMetadata", {
-  cdmInterface$fetchMetadata(a)
+  cdmInterface$fetchMetadata(andromDBC)
   
-  metadata <- a$metadata %>% collect()
+  metadata <- andromDBC$metadata %>% collect()
   
   expect_in(
     c("CDM_SOURCE_NAME", "CDM_SOURCE_ABBREVIATION", "CDM_RELEASE_DATE", "VOCABULARY_VERSION"),
@@ -40,14 +40,14 @@ test_that("Method: fetchMetadata", {
   expect_identical(ncol(metadata), 8L)
 })
 
-a$treatmentHistory <- andromeda$treatmentHistory %>%
+andromDBC$treatmentHistory <- andromeda$treatmentHistory %>%
   select(-"age", -"sex")
 
 test_that("Method: addSex", {
-  cdmInterface$addSex(a)
+  cdmInterface$addSex(andromDBC)
   
-  sex <- a$sex %>% collect()
-  TH <- a$treatmentHistory %>% collect()
+  sex <- andromDBC$sex %>% collect()
+  TH <- andromDBC$treatmentHistory %>% collect()
   
   expect_identical(ncol(sex), 2L)
   expect_identical(nrow(sex), 512L)
@@ -62,10 +62,10 @@ test_that("Method: addSex", {
 })
 
 test_that("Method: addAge", {
-  cdmInterface$addAge(a)
+  cdmInterface$addAge(andromDBC)
 
-  year_of_birth <- a$year_of_birth %>% collect()
-  TH <- a$treatmentHistory %>% collect()
+  year_of_birth <- andromDBC$year_of_birth %>% collect()
+  TH <- andromDBC$treatmentHistory %>% collect()
 
   expect_identical(ncol(year_of_birth), 2L)
   expect_identical(nrow(year_of_birth), 512L)
@@ -93,3 +93,4 @@ test_that("Method: fetchCohortTable", {
   expect_identical(nrow(res), 0L)
 })
 
+Andromeda::close(andromDBC)
