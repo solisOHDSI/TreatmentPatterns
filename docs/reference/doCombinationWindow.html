@@ -36,7 +36,10 @@ which might be a combination event cohort, at any point time."><!-- mathjax --><
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/DarwinTreatmentPatternsStudy.html">Perform a Darwin study using the TreatmentPatterns package</a>
+      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+    </li>
+    <li>
+      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -62,45 +65,28 @@ which might be a combination event cohort, at any point time.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doCombinationWindow</span><span class="op">(</span></span>
-<span>  <span class="va">treatmentHistory</span>,</span>
-<span>  <span class="va">combinationWindow</span>,</span>
-<span>  <span class="va">minPostCombinationDuration</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doCombinationWindow</span><span class="op">(</span><span class="va">andromeda</span>, <span class="va">combinationWindow</span>, <span class="va">minPostCombinationDuration</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>treatmentHistory</dt>
-<dd><p>A dataframe of 'event cohorts' with the following columns:
-event_cohort_id, person_id, event_start_date, event_end_date.</p></dd>
+    <dl><dt>andromeda</dt>
+<dd><p>(<code><a href="https://rdrr.io/pkg/Andromeda/man/andromeda_constructor.html" class="external-link">Andromeda::andromeda()</a></code>)</p></dd>
 
 
 <dt>combinationWindow</dt>
-<dd><p>Minimum number of days two event cohorts need to overlap to be
-considered a combination event.</p></dd>
+<dd><p>(<code>integer(1)</code>)</p></dd>
 
 
 <dt>minPostCombinationDuration</dt>
-<dd><p>Minimum number of days an event era starting after a combination event
-or ending before a combination event must last to be counted a separate
-event. Events occuring before or after a combination that are less than
-`minPostCombinationDuration` days long will be dropped from the analysis.</p></dd>
+<dd><p>(<code>integer(1)</code>)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A treatmentHistory dataframe with the columns event_cohort_id,
-    person_id, event_start_date, event_end_date. event_cohort_id will be
-    of character type and combination events will have a new event_cohort_id
-    made up of the concatenated event_cohort_ids of each combined
-    event_cohort_id. When two events overlap for more than
-    `combinationWindow` days they will be collapsed into a single combination
-    event. Events are collapsed iteratively starting with the first two
-    overlapping events per person and continuing until no more overlapping
-    events exist in the treatmentHistory.</p>
+<p>(<code>invisible(NULL)</code>)</p>
     </div>
 
   </div>

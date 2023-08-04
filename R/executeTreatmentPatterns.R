@@ -1,68 +1,75 @@
 #' executeTreatmentPatterns
 #'
-#' This is the main function which runs all parts of the treatment pathways
-#' analysis. The following tasks are performed sequentially: 1) Construct
-#' treatment pathways, 2) Generate output (sunburst plots, Sankey diagrams and
-#' more).
+#' @template param_cohorts
+#' @template param_cohortTableName
+#' @template param_outputPath
+#' @template param_cdm
+#' @template param_connectionDetails
+#' @template param_cdmSchema
+#' @template param_resultSchema
+#' @template param_includeTreatments
+#' @template param_periodPriorToIndex
+#' @template param_minEraDuration
+#' @template param_splitEventCohorts
+#' @template param_splitTime
+#' @template param_eraCollapseSize
+#' @template param_combinationWindow
+#' @template param_minPostCombinationDuration
+#' @template param_filterTreatments
+#' @template param_maxPathLength
+#' @template param_minFreq
+#' @template param_addNoPaths
 #'
-#' @param dataSettings
-#' dataSettings object created by \link[TreatmentPatterns]{createDataSettings}.
-#' @param pathwaySettings
-#' pathwaySettings object created by \link[TreatmentPatterns]{createPathwaySettings}.
-#' @param saveSettings
-#' saveSettings object created by \link[TreatmentPatterns]{createSaveSettings}.
-#' @param cohortSettings
-#' cohortSettings object created by \link[TreatmentPatterns]{createCohortSettings}.
-#'
-#' @return NULL
+#' @return (`invisible(NULL)`)
 #' @export
-#'
-#' @examples
-#' if (interactive()) {
-#'   # Select Viral Sinusitis Cohort
-#'   targetCohort <- cohortsGenerated %>%
-#'     filter(cohortName == "Viral Sinusitis") %>%
-#'     select(cohortId, cohortName)
-#'
-#'   # Select everything BUT Viral Sinusitis cohorts
-#'   eventCohorts <- cohortsGenerated %>%
-#'     filter(cohortName != "Viral Sinusitis") %>%
-#'     select(cohortId, cohortName)
-#'
-#'   saveSettings <- TreatmentPatterns::createSaveSettings(
-#'     databaseName = "Eunomia",
-#'     rootFolder = getwd(),
-#'     outputFolder = file.path(getwd(), "output", "Eunomia"))
-#'
-#'   cohortSettings <- TreatmentPatterns::createCohortSettings(
-#'     targetCohorts = targetCohort,
-#'      eventCohorts = eventCohorts)
-#'
-#'   pathwaySettings <- createPathwaySettings(
-#'     cohortSettings = cohortSettings,
-#'     studyName = "Viral_Sinusitis")
-#'
-#'   executeTreatmentPatterns(
-#'   dataSettings = dataSettings,
-#'   pathwaySettings = pathwaySettings,
-#'   saveSettings = saveSettings,
-#'   cohortSettings = cohortSettings
-#'   )
-#' }
 executeTreatmentPatterns <- function(
-    dataSettings,
-    pathwaySettings,
-    saveSettings,
-    cohortSettings) {
+    cohorts,
+    cohortTableName,
+    outputPath,
+    cdm = NULL,
+    connectionDetails = NULL,
+    cdmSchema = NULL,
+    resultSchema = NULL,
+    includeTreatments = "startDate",
+    periodPriorToIndex = 0,
+    minEraDuration = 0,
+    splitEventCohorts = "",
+    splitTime = 30,
+    eraCollapseSize = 30,
+    combinationWindow = 30,
+    minPostCombinationDuration = 30,
+    filterTreatments = "First",
+    maxPathLength = 5,
+    minFreq = 5,
+    addNoPaths = TRUE) {
+  
+  checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
+  checkmate::assert_integerish(minFreq, len = 1, null.ok = FALSE, lower = 0)
 
-  # 1) Construct treatment pathways
-  TreatmentPatterns::constructPathways(
-    dataSettings = dataSettings,
-    pathwaySettings = pathwaySettings,
-    saveSettings = saveSettings,
-    cohortSettings = cohortSettings
+  # Compute pathways on patient level
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = cohorts,
+    cohortTableName = cohortTableName,
+    cdm = cdm,
+    connectionDetails = connectionDetails,
+    cdmSchema = cdmSchema,
+    resultSchema = resultSchema,
+    includeTreatments = includeTreatments,
+    periodPriorToIndex = periodPriorToIndex,
+    minEraDuration = minEraDuration,
+    splitEventCohorts = splitEventCohorts,
+    splitTime = splitTime,
+    eraCollapseSize = eraCollapseSize,
+    combinationWindow = combinationWindow,
+    minPostCombinationDuration = minPostCombinationDuration,
+    filterTreatments = filterTreatments,
+    maxPathLength = maxPathLength,
+    addNoPaths = addNoPaths
   )
-
-  # 2) Generate output (sunburst plots, Sankey diagrams and more)
-  TreatmentPatterns::generateOutput(saveSettings)
+  
+  # Export csv-files
+  TreatmentPatterns::export(andromeda, outputPath = outputPath, minFreq = minFreq)
+  
+  Andromeda::close(andromeda)
+  return(invisible(NULL))
 }

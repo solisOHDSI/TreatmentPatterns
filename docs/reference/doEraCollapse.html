@@ -33,7 +33,10 @@ specified era collapse size (eraCollapseSize) are collapsed"><!-- mathjax --><sc
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/DarwinTreatmentPatternsStudy.html">Perform a Darwin study using the TreatmentPatterns package</a>
+      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+    </li>
+    <li>
+      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -56,41 +59,26 @@ specified era collapse size (eraCollapseSize) are collapsed</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doEraCollapse</span><span class="op">(</span><span class="va">treatmentHistory</span>, <span class="va">eraCollapseSize</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doEraCollapse</span><span class="op">(</span><span class="va">andromeda</span>, <span class="va">eraCollapseSize</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>treatmentHistory</dt>
-<dd><p>Dataframe with event cohorts of the target cohort in different rows.</p></dd>
+    <dl><dt>andromeda</dt>
+<dd><p>(<code><a href="https://rdrr.io/pkg/Andromeda/man/andromeda_constructor.html" class="external-link">Andromeda::andromeda()</a></code>)</p></dd>
 
 
 <dt>eraCollapseSize</dt>
-<dd><p>Window of time between which two eras of the same event cohort are
-collapsed into one era.</p></dd>
+<dd><p>(<code>integer(1)</code>)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>treatmentHistory
-    Updated dataframe, where event cohorts with
-    gap_same &lt; eraCollapseSize are collapsed.</p>
+<p>(<code>invisible(NULL)</code>)</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">th</span> <span class="op">&lt;-</span> <span class="fu"><a href="doCreateTreatmentHistory.html">doCreateTreatmentHistory</a></span><span class="op">(</span>current_cohorts <span class="op">=</span> <span class="va">currentCohorts</span>,</span></span>
-<span class="r-in"><span>                               targetCohortId <span class="op">=</span> <span class="va">targetCohortId</span>,</span></span>
-<span class="r-in"><span>                               eventCohortIds <span class="op">=</span> <span class="va">eventCohortIds</span>,</span></span>
-<span class="r-in"><span>                               periodPriorToIndex <span class="op">=</span> <span class="va">periodPriorToIndex</span>,</span></span>
-<span class="r-in"><span>                               includeTreatments <span class="op">=</span> <span class="va">includeTreatments</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">doEraCollapse</span><span class="op">(</span>treatmentHistory <span class="op">=</span> <span class="va">th</span>, eraCollapseSize <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

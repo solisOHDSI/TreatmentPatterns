@@ -4,26 +4,18 @@
 \alias{createSunburstPlot}
 \title{createSunburstPlot}
 \usage{
-createSunburstPlot(data, folder, fileName)
+createSunburstPlot(treatmentPathways, outputFile)
 }
 \arguments{
-\item{data}{A data frame containing two columns: 1) column "path" should specify the
-event cohorts separated by dashes - (combinations can be indicated using
-&) and 2) column "freq" should specify how often that (unique) path
-occurs.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+Data frame containing treatmentPathways columns: path, freq.}
 
-\item{folder}{Root folder to store the results.}
-
-\item{fileName}{File name for the results.}
+\item{outputFile}{(\code{character(1)})\cr
+Path to output file.}
+}
+\value{
+(\code{NULL})
 }
 \description{
 Export a sunburst plot from a data.frame object.
-}
-\examples{
-\dontrun{
-createSunburstPlot(
-  data = data.frame(
-    path = c("1", "2"),
-    freq = c("0.5", "0.5")))
-}
 }

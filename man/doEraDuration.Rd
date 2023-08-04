@@ -4,30 +4,16 @@
 \alias{doEraDuration}
 \title{doEraDuration}
 \usage{
-doEraDuration(treatmentHistory, minEraDuration)
+doEraDuration(andromeda, minEraDuration)
 }
 \arguments{
-\item{treatmentHistory}{(\link[base]{data.frame})\cr
-See \link[TreatmentPatterns]{doCreateTreatmentHistory}.}
+\item{andromeda}{(\code{Andromeda::andromeda()})}
 
-\item{minEraDuration}{(\link[base]{numeric})\cr
-minEraDuration from \link[TreatmentPatterns]{addPathwaySettings}.}
+\item{minEraDuration}{(\code{integer(1)})}
 }
 \value{
-(\link[base]{data.frame})
-Updated treatmentHistory dataframe, rows with duration < minEraDuration
-filtered out.
+(\code{invisible(NULL)})
 }
 \description{
-Filters the treatmentHistory based on the specified minimum era duration
-}
-\examples{
-\dontrun{
-th <- doCreateTreatmentHistory(current_cohorts = currentCohorts,
-                               targetCohortId = targetCohortId,
-                               eventCohortIds = eventCohortIds,
-                               periodPriorToIndex = periodPriorToIndex,
-                               includeTreatments = includeTreatments)
-doEraDuration(treatmentHistory = th, minEraDuration = 1)
-}
+doEraDuration
 }
