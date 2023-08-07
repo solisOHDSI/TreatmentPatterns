@@ -43,12 +43,12 @@ This R package contains the resources for performing a treatment pathway analysi
 
   ```r
   install.packages("remotes")
-  remotes::install_github("mi-erasmusmc/TreatmentPatterns")
+  remotes::install_github("darwin-eu-dev/TreatmentPatterns")
   ```
 
 ## User Documentation
 Available documentation includes:
-- Vignette: [Perform a study using the TreatmentPatterns package](https://darwin-eu-dev.github.io/TreatmentPatterns/articles/TreatmentPatternsStudy.html)
+- Vignette: [Perform a study using the TreatmentPatterns package](https://darwin-eu-dev.github.io/TreatmentPatterns/)
 - Package manual: [TreatmentPatterns](https://darwin-eu-dev.github.io/TreatmentPatterns/reference/index.html)
 
 ## Package Structure
