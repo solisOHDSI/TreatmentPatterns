@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -56,6 +56,9 @@
       <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
@@ -132,70 +135,13 @@
 <span>  filterTreatments <span class="op">=</span> <span class="st">"First"</span>,</span>
 <span>  maxPathLength <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Connecting using SQLite driver</span></span>
-<span><span class="co">## Connecting using SQLite driver</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Construct treatment pathways, this may take a while for larger datasets.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Original number of rows: 8352</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## After minEraDuration: 8352</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## After eraCollapseSize: 8352</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Selected 1544 out of 8352 rows</span></span>
-<span><span class="co">## Iteration: 1</span></span>
-<span><span class="co">## Switches: 8352</span></span>
-<span><span class="co">## FRFS Combinations: 1527</span></span>
-<span><span class="co">## LRFS Combinations: 3</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Selected 4 out of 558 rows</span></span>
-<span><span class="co">## Iteration: 2</span></span>
-<span><span class="co">## Switches: 558</span></span>
-<span><span class="co">## FRFS Combinations: 4</span></span>
-<span><span class="co">## LRFS Combinations: 0</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## After combinationWindow: 554</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Time needed to execute combination window 0.0702058990796407</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Order the combinations.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## After filterTreatments: 553</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Adding drug sequence number.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## After maxPathLength: 553</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Adding concept names.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Ordering the combinations.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## constructPathways done.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Connecting using SQLite driver</span></span>
-<span><span class="co">## Connecting using SQLite driver</span></span>
-<span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/metadata.csv</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/treatmentPathways.csv</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Removed 473 pathways with a frequency &lt; 5.</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Writing summaryStatsTherapyDuraion to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/summaryStatsTherapyDuraion.csv</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/countsYear.csv</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/countsAge.csv</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn/all_in_one/countsSex.csv</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="segmented">Segmented<a class="anchor" aria-label="anchor" href="#segmented"></a>
 </h3>
 <p>The segmented approach allows you to investigate the patient-level
 intermediate files by querying the andromeda environment.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span> <span class="op">&lt;-</span> <span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"CohortTable"</span>,</span>
@@ -203,16 +149,16 @@ intermediate files by querying the andromeda environment.</p>
 <span>  cdmSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  resultSchema <span class="op">=</span> <span class="st">"main"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">andromeda</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "addRowsFRFS_1"    "addRowsFRFS_2"    "addRowsLRFS_1"    "addRowsLRFS_2"   </span></span>
 <span><span class="co">##  [5] "cohorts"          "currentCohorts"   "eventCohorts"     "exitCohorts"     </span></span>
 <span><span class="co">##  [9] "exitHistory"      "fullCohorts"      "labels"           "metadata"        </span></span>
 <span><span class="co">## [13] "sex"              "targetCohorts"    "treatmentHistory" "year_of_birth"</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span><span class="op">$</span><span class="va">treatmentHistory</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;treatmentHistory&gt; [?? x 11]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\RtmpQh6Czn\file52547094566e.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\RtmpymTDQj\file534c694f12e4.sqlite]</span></span></span>
 <span><span class="co">##    event_cohort_id person_id index_year event_start_date event_end_date</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 1                    <span style="text-decoration: underline;">2</span>788       <span style="text-decoration: underline;">1</span>980             <span style="text-decoration: underline;">3</span>659           <span style="text-decoration: underline;">3</span>694</span></span>
@@ -230,7 +176,7 @@ intermediate files by querying the andromeda environment.</p>
 <span><span class="co">## <span style="color: #949494;">#   event_cohort_name &lt;chr&gt;, sex &lt;chr&gt;, age &lt;dbl&gt;</span></span></span></code></pre>
 <p>The files inside the andromeda environment can be exported using the
 export function.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">segDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"segmented"</span><span class="op">)</span></span>
 <span><span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span><span class="va">andromeda</span>, outputPath <span class="op">=</span> <span class="va">segDir</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -238,11 +184,11 @@ export function.</p>
 <div class="section level2">
 <h2 id="cdmconnector">CDMConnector<a class="anchor" aria-label="anchor" href="#cdmconnector"></a>
 </h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdmDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"CDMCon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu">eunomia_dir</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="va">con</span>,</span>
 <span>  cdm_schema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  write_schema <span class="op">=</span> <span class="st">"main"</span></span>
@@ -253,55 +199,6 @@ export function.</p>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"CohortTable"</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="va">cdmDir</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="reviewing-outputfiles">Reviewing outputFiles<a class="anchor" aria-label="anchor" href="#reviewing-outputfiles"></a>
-</h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"countsAge.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   age   n</span></span>
-<span><span class="co">## 1   1  85</span></span>
-<span><span class="co">## 2   2 163</span></span>
-<span><span class="co">## 3   3  95</span></span>
-<span><span class="co">## 4   4  59</span></span>
-<span><span class="co">## 5   5  43</span></span>
-<span><span class="co">## 6   6  18</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"countsSex.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##      sex   n</span></span>
-<span><span class="co">## 1 FEMALE 282</span></span>
-<span><span class="co">## 2   MALE 271</span></span></code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"countsYear.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   index_year  n</span></span>
-<span><span class="co">## 1       1950 13</span></span>
-<span><span class="co">## 2       1951 12</span></span>
-<span><span class="co">## 3       1952 10</span></span>
-<span><span class="co">## 4       1953 14</span></span>
-<span><span class="co">## 5       1954 13</span></span>
-<span><span class="co">## 6       1955 15</span></span></code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"summaryStatsTherapyDuraion.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   treatmentType avgDuration medianDuration       sd min max count</span></span>
-<span><span class="co">## 1   combination    90.23438             84 48.59575  35 329    64</span></span>
-<span><span class="co">## 2   monotherapy    53.97751             44 23.84533  30 119   489</span></span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"treatmentPathways.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                    path freq sex age index_year</span></span>
-<span><span class="co">## 1                         Acetaminophen  206 all all        all</span></span>
-<span><span class="co">## 2 Acetaminophen-Amoxicillin+Clavulanate    6 all all        all</span></span>
-<span><span class="co">## 3                 Acetaminophen-Aspirin   14 all all        all</span></span>
-<span><span class="co">## 4               Amoxicillin+Clavulanate   48 all all        all</span></span>
-<span><span class="co">## 5                               Aspirin  211 all all        all</span></span>
-<span><span class="co">## 6                 Aspirin-Acetaminophen   12 all all        all</span></span></code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"metadata.csv"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                     CDM_SOURCE_NAME CDM_SOURCE_ABBREVIATION CDM_RELEASE_DATE</span></span>
-<span><span class="co">## 1 Synthea synthetic health database                 Synthea       2019-05-25</span></span>
-<span><span class="co">##   VOCABULARY_VERSION execution_start_date package_version</span></span>
-<span><span class="co">## 1     v5.0 18-JAN-19           2023-07-19           2.0.0</span></span>
-<span><span class="co">##                           r_version           platform execution_end_date</span></span>
-<span><span class="co">## 1 R version 4.3.1 (2023-06-16 ucrt) x86_64-w64-mingw32         2023-07-19</span></span></code></pre>
 </div>
   </div>
 
