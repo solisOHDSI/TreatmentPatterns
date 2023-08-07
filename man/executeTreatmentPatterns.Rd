@@ -5,57 +5,77 @@
 \title{executeTreatmentPatterns}
 \usage{
 executeTreatmentPatterns(
-  dataSettings,
-  pathwaySettings,
-  saveSettings,
-  cohortSettings
+  cohorts,
+  cohortTableName,
+  outputPath,
+  cdm = NULL,
+  connectionDetails = NULL,
+  cdmSchema = NULL,
+  resultSchema = NULL,
+  includeTreatments = "startDate",
+  periodPriorToIndex = 0,
+  minEraDuration = 0,
+  splitEventCohorts = "",
+  splitTime = 30,
+  eraCollapseSize = 30,
+  combinationWindow = 30,
+  minPostCombinationDuration = 30,
+  filterTreatments = "First",
+  maxPathLength = 5,
+  minFreq = 5,
+  addNoPaths = TRUE
 )
 }
 \arguments{
-\item{dataSettings}{dataSettings object created by \link[TreatmentPatterns]{createDataSettings}.}
+\item{cohorts}{(\code{data.frame()})\cr
+Cohort table.}
 
-\item{pathwaySettings}{pathwaySettings object created by \link[TreatmentPatterns]{createPathwaySettings}.}
+\item{cohortTableName}{(\code{character(1)})\cr
+Cohort table name.}
 
-\item{saveSettings}{saveSettings object created by \link[TreatmentPatterns]{createSaveSettings}.}
+\item{outputPath}{(\code{character(1)})\cr}
 
-\item{cohortSettings}{cohortSettings object created by \link[TreatmentPatterns]{createCohortSettings}.}
+\item{cdm}{(\code{CDMConnector::cdm_from_con()}: \code{NULL})\cr
+Optional; Ignores \code{connectionDetails}, \code{cdmSchema}, and \code{resultSchema}.}
+
+\item{connectionDetails}{(\code{DatabaseConnector::createConnectionDetails()}: \code{NULL})\cr
+Optional; In congruence with \code{cdmSchema} and \code{resultSchema}. Ignores \code{cdm}.}
+
+\item{cdmSchema}{(\code{character(1)}: \code{NULL})\cr
+Optional; In congruence with \code{connectionDetails} and \code{resultSchema}. Ignores \code{cdm}.}
+
+\item{resultSchema}{(\code{character(1)}: \code{NULL})\cr
+Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Ignores \code{cdm}.}
+
+\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
+
+\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
+
+\item{minEraDuration}{(\code{integer(1)}: \code{0})\cr}
+
+\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr}
+
+\item{splitTime}{(\code{integer(1)}: \code{30})\cr}
+
+\item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr}
+
+\item{combinationWindow}{(\code{integer(1)}: \code{30})\cr}
+
+\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr}
+
+\item{filterTreatments}{(\code{character(1)}: \code{"First"})\cr}
+
+\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr}
+
+\item{minFreq}{(\code{integer(1)}: \code{5})\cr
+Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+minimum value will carry over to the sankey diagram and sunburst plot.}
+
+\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
+}
+\value{
+(\code{invisible(NULL)})
 }
 \description{
-This is the main function which runs all parts of the treatment pathways
-analysis. The following tasks are performed sequentially: 1) Construct
-treatment pathways, 2) Generate output (sunburst plots, Sankey diagrams and
-more).
-}
-\examples{
-if (interactive()) {
-  # Select Viral Sinusitis Cohort
-  targetCohort <- cohortsGenerated \%>\%
-    filter(cohortName == "Viral Sinusitis") \%>\%
-    select(cohortId, cohortName)
-
-  # Select everything BUT Viral Sinusitis cohorts
-  eventCohorts <- cohortsGenerated \%>\%
-    filter(cohortName != "Viral Sinusitis") \%>\%
-    select(cohortId, cohortName)
-
-  saveSettings <- TreatmentPatterns::createSaveSettings(
-    databaseName = "Eunomia",
-    rootFolder = getwd(),
-    outputFolder = file.path(getwd(), "output", "Eunomia"))
-
-  cohortSettings <- TreatmentPatterns::createCohortSettings(
-    targetCohorts = targetCohort,
-     eventCohorts = eventCohorts)
-
-  pathwaySettings <- createPathwaySettings(
-    cohortSettings = cohortSettings,
-    studyName = "Viral_Sinusitis")
-
-  executeTreatmentPatterns(
-  dataSettings = dataSettings,
-  pathwaySettings = pathwaySettings,
-  saveSettings = saveSettings,
-  cohortSettings = cohortSettings
-  )
-}
+executeTreatmentPatterns
 }

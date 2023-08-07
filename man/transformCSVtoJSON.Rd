@@ -4,16 +4,12 @@
 \alias{transformCSVtoJSON}
 \title{transformCSVtoJSON}
 \usage{
-transformCSVtoJSON(data, outcomes, folder, fileName)
+transformCSVtoJSON(data, outcomes)
 }
 \arguments{
-\item{data}{input data.frame}
+\item{data}{(\code{data.frame()})}
 
-\item{outcomes}{character vector containing all event cohorts}
-
-\item{folder}{output folder}
-
-\item{fileName}{output file name}
+\item{outcomes}{(\code{c()})}
 }
 \value{
 the transformed csv as a json string
