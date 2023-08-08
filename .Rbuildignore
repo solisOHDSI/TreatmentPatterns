@@ -12,3 +12,4 @@
 ^output$
 ^extras$
 ^man-roxygen$
+^cran-comments.md$
