@@ -41,7 +41,7 @@
 #'   
 #'   cohorts <- data.frame(
 #'     cohortId = c(1, 2, 3, 4, 5),
-#'     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate" "Death"),
+#'     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
 #'     type = c("target", "event", "event", "event", "exit")
 #'   )
 #'   
