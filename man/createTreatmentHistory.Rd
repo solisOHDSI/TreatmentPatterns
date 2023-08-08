@@ -23,7 +23,9 @@ Andromeda object.}
 
 \item{exitCohortIds}{(\code{numeric(n)})}
 
-\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
+\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr
+Number of days prior to the index date of the target cohort | that event
+cohorts are allowed to start}
 
 \item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
 }

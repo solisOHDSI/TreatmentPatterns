@@ -54,29 +54,46 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 
 \item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
 
-\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
+\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr
+Number of days prior to the index date of the target cohort | that event
+cohorts are allowed to start}
 
-\item{minEraDuration}{(\code{integer(1)}: \code{0})\cr}
+\item{minEraDuration}{(\code{integer(1)}: \code{0})\cr
+Minimum time an event era should last to be included in analysis}
 
-\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr}
+\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr
+Specify event cohort to split in acute (< X days) and therapy (>= X days)}
 
-\item{splitTime}{(\code{integer(1)}: \code{30})\cr}
+\item{splitTime}{(\code{integer(1)}: \code{30})\cr
+Specify number of days (X) at which each of the split event cohorts should
+be split in acute and therapy}
 
-\item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr}
+\item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr
+Window of time between which two eras of the same event cohort are collapsed
+into one era}
 
-\item{combinationWindow}{(\code{integer(1)}: \code{30})\cr}
+\item{combinationWindow}{(\code{integer(1)}: \code{30})\cr
+Window of time two event cohorts need to overlap to be considered a
+combination treatment}
 
-\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr}
+\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr
+Minimum time an event era before or after a generated combination treatment
+should last to be included in analysis}
 
-\item{filterTreatments}{(\code{character(1)}: \code{"First"})\cr}
+\item{filterTreatments}{(\code{character(1)}: \code{"First"} ["first", "Changes", "all"])\cr
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).}
 
-\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr}
+\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
+Maximum number of steps included in treatment pathway}
 
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
 
-\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
+\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr
+Select to include untreated persons without treatment pathway in the
+sunburst plot}
 }
 \value{
 (\code{invisible(NULL)})
@@ -100,7 +117,7 @@ if (FALSE) {
   
   cohorts <- data.frame(
     cohortId = c(1, 2, 3, 4, 5),
-    cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate" "Death"),
+    cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
     type = c("target", "event", "event", "event", "exit")
   )
   
