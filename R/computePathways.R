@@ -1,4 +1,7 @@
 #' computePathways
+#' 
+#' Compute treatment patterns according to the specified parameters within
+#' specified cohorts.
 #'
 #' @template param_cohorts
 #' @template param_cohortTableName

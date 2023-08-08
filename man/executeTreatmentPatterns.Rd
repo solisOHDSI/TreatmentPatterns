@@ -28,7 +28,12 @@ executeTreatmentPatterns(
 }
 \arguments{
 \item{cohorts}{(\code{data.frame()})\cr
-Cohort table.}
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{cohortTableName}{(\code{character(1)})\cr
 Cohort table name.}
@@ -77,5 +82,50 @@ minimum value will carry over to the sankey diagram and sunburst plot.}
 (\code{invisible(NULL)})
 }
 \description{
-executeTreatmentPatterns
+Compute treatment patterns according to the specified parameters within
+specified cohorts. For more customization, or investigation of patient level
+outcomes, you can run \link[TreatmentPatterns]{computePathways} and
+\link[TreatmentPatterns]{export} separately.
+}
+\examples{
+if (FALSE) {
+  # Using CDMConnector
+  
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  cdm <- cdm_from_con(con, cdm_schema = "main")
+  
+  # <Code to compute cohorts into Cohort Table>
+  
+  cohortTableName <- "CohortTable"
+  
+  cohorts <- data.frame(
+    cohortId = c(1, 2, 3, 4, 5),
+    cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate" "Death"),
+    type = c("target", "event", "event", "event", "exit")
+  )
+  
+  outputPath <- "./output/"
+  
+  executeTreatmentPatterns(
+    cohorts,
+    cohortTableName,
+    outputPath,
+    cdm
+   )
+  
+  # Using DatabaseConnector
+  
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  cdmSchema <- "main"
+  resultSchema <- "main"
+  
+  executeTreatmentPatterns(
+    cohorts,
+    cohortTableName,
+    outputPath,
+    connectionDetails,
+    cdmSchema,
+    resultSchema
+   )
+}
 }

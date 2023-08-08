@@ -8,14 +8,25 @@ createSunburstPlot(treatmentPathways, outputFile)
 }
 \arguments{
 \item{treatmentPathways}{(\code{data.frame()})\cr
-Data frame containing treatmentPathways columns: path, freq.}
+The contents of the treatmentPathways.csv-file as a data.frame().}
 
 \item{outputFile}{(\code{character(1)})\cr
-Path to output file.}
+Path where the Sankey diagram should be written to.}
 }
 \value{
 (\code{NULL})
 }
 \description{
-Export a sunburst plot from a data.frame object.
+Generate a sunburst plot from the treatment pathways.
+}
+\examples{
+if (FALSE) {
+  treatmentPathways <- read.csv("treatmentPathways.csv")
+  outputFile <- "mySunburstPlot.html"
+
+  createSunburstPlot(
+    treatmentPatwhays,
+    outputFile
+  )
+}
 }

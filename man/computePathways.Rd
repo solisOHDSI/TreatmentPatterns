@@ -26,7 +26,12 @@ computePathways(
 }
 \arguments{
 \item{cohorts}{(\code{data.frame()})\cr
-Cohort table.}
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{cohortTableName}{(\code{character(1)})\cr
 Cohort table name.}
@@ -71,5 +76,6 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 data outcomes.
 }
 \description{
-computePathways
+Compute treatment patterns according to the specified parameters within
+specified cohorts.
 }

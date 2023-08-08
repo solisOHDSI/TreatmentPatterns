@@ -2,16 +2,29 @@
 #'
 #' Writes the Sankey diagram to a HTML-file, to a specified file path. 
 #'
-#' @param treatmentPathways (`data.frame()`)\cr
-#' Data frame containing treatmentPathways columsn: path, freq.
-#' @param outputFile (`character(1)`)\cr
-#' Path where the Sankey diagram should be written to.
+#' @template param_treatmentPathways
+#' @template param_outputFile
 #' @template param_groupCombinations
 #' @template param_minFreq
 #' 
 #' @export
 #'
 #' @returns invisible(NULL)
+#' 
+#' @examples
+#' if (FALSE) {
+#'   treatmentPathways <- read.csv(treatmentPathways.csv)
+#'   outputFile <- "mySankeyDiagram.html"
+#'   groupCombinations <- FALSE
+#'   minFreq <- 5
+#' 
+#'   createSankeyDiagram(
+#'     treatmentPathways,
+#'     outputFile,
+#'     groupCombinations,
+#'     minFreq
+#'   )
+#' }
 createSankeyDiagram <- function(
     treatmentPathways,
     outputFile,

@@ -4,8 +4,8 @@
 \name{TreatmentPatterns-package}
 \alias{TreatmentPatterns}
 \alias{TreatmentPatterns-package}
-\title{TreatmentPatterns: A package to analyse real-world treatment patterns of a study population of interest}
+\title{TreatmentPatterns: Analyzes Real-World Treatment Patterns of a Study Population of Interest}
 \description{
-This package gives insight in treatment patterns, the following tasks should be performed sequentially: 1. Construct treatment pathways. 2. Generate output (sunburst plots, Sankey diagrams and more). 3. Launch shiny application to visualize the results.
+Computes treatment patterns within a given cohort using the Observational Medical Outcomes Partnership (OMOP) commen data model (CDM).
 }
 \keyword{internal}

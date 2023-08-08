@@ -256,24 +256,27 @@ prepData <- function(treatmentHistory, year) {
 
 #' createSunburstPlot
 #'
-#' Export a sunburst plot from a data.frame object.
+#' Generate a sunburst plot from the treatment pathways.
 #'
-#' @param treatmentPathways (`data.frame()`)\cr
-#' Data frame containing treatmentPathways columns: path, freq.
-#' @param outputFile (`character(1)`)\cr
-#' Path to output file.
+#' @template param_treatmentPathways
+#' @template param_outputFile
 #'
 #' @export
 #'
 #' @returns (`NULL`)
+#' 
+#' @examples
+#' if (FALSE) {
+#'   treatmentPathways <- read.csv("treatmentPathways.csv")
+#'   outputFile <- "mySunburstPlot.html"
+#' 
+#'   createSunburstPlot(
+#'     treatmentPatwhays,
+#'     outputFile
+#'   )
+#' }
 createSunburstPlot <- function(treatmentPathways, outputFile) {
   data <- treatmentPathways %>%
-    # mutate(
-    #   freq = case_when(
-    #     startsWith(.data$freq, prefix = "<") ~ stringr::str_split_i(.data$freq, pattern = "<", i = 2),
-    #     .default = .data$freq
-    #   )
-    # ) %>%
     mutate(freq = as.integer(.data$freq)) %>%
     select("path", "freq")
 

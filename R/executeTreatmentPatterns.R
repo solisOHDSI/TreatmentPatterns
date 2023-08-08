@@ -1,5 +1,10 @@
 #' executeTreatmentPatterns
 #'
+#' Compute treatment patterns according to the specified parameters within
+#' specified cohorts. For more customization, or investigation of patient level
+#' outcomes, you can run \link[TreatmentPatterns]{computePathways} and
+#' \link[TreatmentPatterns]{export} separately.
+#'
 #' @template param_cohorts
 #' @template param_cohortTableName
 #' @template param_outputPath
@@ -22,6 +27,48 @@
 #'
 #' @return (`invisible(NULL)`)
 #' @export
+#'
+#' @examples
+#' if (FALSE) {
+#'   # Using CDMConnector
+#'   
+#'   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+#'   cdm <- cdm_from_con(con, cdm_schema = "main")
+#'   
+#'   # <Code to compute cohorts into Cohort Table>
+#'   
+#'   cohortTableName <- "CohortTable"
+#'   
+#'   cohorts <- data.frame(
+#'     cohortId = c(1, 2, 3, 4, 5),
+#'     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate" "Death"),
+#'     type = c("target", "event", "event", "event", "exit")
+#'   )
+#'   
+#'   outputPath <- "./output/"
+#'   
+#'   executeTreatmentPatterns(
+#'     cohorts,
+#'     cohortTableName,
+#'     outputPath,
+#'     cdm
+#'    )
+#'   
+#'   # Using DatabaseConnector
+#'   
+#'   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+#'   cdmSchema <- "main"
+#'   resultSchema <- "main"
+#'   
+#'   executeTreatmentPatterns(
+#'     cohorts,
+#'     cohortTableName,
+#'     outputPath,
+#'     connectionDetails,
+#'     cdmSchema,
+#'     resultSchema
+#'    )
+#' }
 executeTreatmentPatterns <- function(
     cohorts,
     cohortTableName,

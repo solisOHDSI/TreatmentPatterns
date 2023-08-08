@@ -13,7 +13,7 @@ createSankeyDiagram(
 }
 \arguments{
 \item{treatmentPathways}{(\code{data.frame()})\cr
-Data frame containing treatmentPathways columsn: path, freq.}
+The contents of the treatmentPathways.csv-file as a data.frame().}
 
 \item{outputFile}{(\code{character(1)})\cr
 Path where the Sankey diagram should be written to.}
@@ -33,4 +33,19 @@ invisible(NULL)
 }
 \description{
 Writes the Sankey diagram to a HTML-file, to a specified file path.
+}
+\examples{
+if (FALSE) {
+  treatmentPathways <- read.csv(treatmentPathways.csv)
+  outputFile <- "mySankeyDiagram.html"
+  groupCombinations <- FALSE
+  minFreq <- 5
+
+  createSankeyDiagram(
+    treatmentPathways,
+    outputFile,
+    groupCombinations,
+    minFreq
+  )
+}
 }

@@ -33,7 +33,12 @@ Choose the way you interface with the CDM, either through \code{DatabaseConnecto
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{cohorts}}{(\code{data.frame()})\cr
-Cohort table.}
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{\code{cohortTableName}}{(\code{character(1)})\cr
 Cohort table name.}
