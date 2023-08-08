@@ -25,6 +25,24 @@ knitr::opts_chunk$set(echo = TRUE)
 source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
 ```
 
+## Pathway settings
+The settings belowallow the user to influence how the events of interest should be processed to form treatment pathways. For the example in this vignette we used the default settings
+
+| param | values | description |
+| ----- | ------ | ----------- |
+| periodPriorToIndex | 0 | Number of days prior to the index date of the target cohort | that event cohorts are allowed to start |
+| minEraDuration | 0 | Minimum time an event era should last to be included in analysis |
+| splitEventCohorts |  | Specify event cohort to split in acute (< X days) and therapy (>= X days) |
+| splitTime | 30 | Specify number of days (X) at which each of the split event cohorts should be split in acute and therapy |
+| eraCollapseSize | 30 | Window of time between which two eras of the same event cohort are collapsed into one era |
+| combinationWindow | 30 | Window of time two event cohorts need to overlap to be considered a combination treatment |
+| minPostCombinationDuration | 30 | Minimum time an event era before or after a generated combination treatment should last to be included in analysis |
+| filterTreatments | First | Select first occurrence of (‘First’); changes between (‘Changes’); or all event cohorts (‘All’). |
+| maxPathLength | 5 | Maximum number of steps included in treatment pathway |
+| minFreq | 5 | Minimum frequency required per pathway. Censors data below `x` as `<x`. This minimum value will carry over to the sankey diagram and sunburst plot. |
+| addNoPaths | FALSE | Select to include untreated persons without treatment pathway in the sunburst plot |
+
+![pathwaySettings](../man/figures/pathwaysettings.png)
 ```{r libs, message=FALSE, warning=FALSE}
 library(dplyr)
 ```
@@ -74,9 +92,12 @@ TreatmentPatterns::executeTreatmentPatterns(
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5
+  maxPathLength = 5,
+  minFreq = 5,
+  addNoPaths = TRUE
 )
 ```
+
 ### Segmented
 The segmented approach allows you to investigate the patient-level intermediate files by querying the andromeda environment.
 ```{r message=FALSE, warning=FALSE, results='hide'}
