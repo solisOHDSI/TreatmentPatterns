@@ -1,14 +1,12 @@
 Package: TreatmentPatterns
 Type: Package
-Title: A package to analyse real-world treatment patterns of a study population of interest
+Title: Analyzes Real-World Treatment Patterns of a Study Population of Interest
 Version: 2.5.0
 Author: Aniek F Markus
 Maintainer: Maarten van Kessel <m.l.vankessel@erasmusmc.nl>
-Description: This package gives insight in treatment patterns, the following
-  tasks should be performed sequentially:
-  1. Construct treatment pathways.
-  2. Generate output (sunburst plots, Sankey diagrams and more).
-  3. Launch shiny application to visualize the results.
+Description:
+  Computes treatment patterns within a given cohort using the Observational
+  Medical Outcomes Partnership (OMOP) commen data model (CDM).
 Depends:
   R (>= 4.0)
 Imports: 
