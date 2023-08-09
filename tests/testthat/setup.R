@@ -1,4 +1,4 @@
-if (!is_interactive() && !env_var_is_true("NOT_CRAN")) {
+if (!interactive() && !env_var_is_true("NOT_CRAN")) {
   library(dplyr)
   library(CDMConnector)
   source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
