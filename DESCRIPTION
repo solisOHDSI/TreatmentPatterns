@@ -6,7 +6,7 @@ Author: Aniek F Markus
 Maintainer: Maarten van Kessel <m.l.vankessel@erasmusmc.nl>
 Description:
   Computes treatment patterns within a given cohort using the Observational
-  Medical Outcomes Partnership (OMOP) commen data model (CDM).
+  Medical Outcomes Partnership (OMOP) common data model (CDM).
 Depends:
   R (>= 4.0)
 Imports: 
@@ -46,5 +46,5 @@ LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Additional_repositories: https://OHDSI.github.io/drat
+Additional_repositories: https://ohdsi.github.io/drat
 Roxygen: list(markdown = TRUE)

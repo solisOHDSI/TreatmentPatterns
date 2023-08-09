@@ -6,6 +6,6 @@
 \alias{TreatmentPatterns-package}
 \title{TreatmentPatterns: Analyzes Real-World Treatment Patterns of a Study Population of Interest}
 \description{
-Computes treatment patterns within a given cohort using the Observational Medical Outcomes Partnership (OMOP) commen data model (CDM).
+Computes treatment patterns within a given cohort using the Observational Medical Outcomes Partnership (OMOP) common data model (CDM).
 }
 \keyword{internal}
