@@ -1,4 +1,4 @@
-if (!interactive() && !env_var_is_true("NOT_CRAN")) {
+if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
   library(TreatmentPatterns)
   library(testthat)
   
