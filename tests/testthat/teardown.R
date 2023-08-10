@@ -1,4 +1,4 @@
-if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
+if (ableToRun()) {
   DBI::dbDisconnect(con, shutdown = TRUE)
   Andromeda::close(andromedaSetup)
 }

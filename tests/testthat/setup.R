@@ -1,4 +1,12 @@
-if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
+ableToRun <- function() {
+  invisible(all(
+    require("Eunomia", character.only = TRUE),
+    require("CirceR", character.only = TRUE),
+    require("CohortGenerator", character.only = TRUE)
+  ))
+}
+
+if (ableToRun) {
   library(dplyr)
   library(CDMConnector)
   source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
