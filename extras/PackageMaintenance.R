@@ -21,13 +21,13 @@ file.edit("cran-comments.md")
 
 # Format and check code -------------------------------------------------------
 styler::style_pkg()
-OhdsiRTools::checkUsagePackage("PaRe")
+OhdsiRTools::checkUsagePackage("TreatmentPatterns")
 OhdsiRTools::updateCopyrightYearFolder()
 devtools::spell_check()
 
 # Create manual and vignettes -------------------------------------------------
-unlink("extras/PaRe.pdf")
-shell("R CMD Rd2pdf ./ --output=extras/PaRe.pdf --no-clean")
+unlink("extras/TreatmentPatterns.pdf")
+shell("R CMD Rd2pdf ./ --output=extras/TreatmentPatterns.pdf")
 
 pkgdown::build_site()
 

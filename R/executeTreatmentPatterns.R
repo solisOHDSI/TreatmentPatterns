@@ -31,35 +31,35 @@
 #' @examples
 #' if (FALSE) {
 #'   # Using CDMConnector
-#'   
+#'
 #'   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
 #'   cdm <- cdm_from_con(con, cdm_schema = "main")
-#'   
+#'
 #'   # <Code to compute cohorts into Cohort Table>
-#'   
+#'
 #'   cohortTableName <- "CohortTable"
-#'   
+#'
 #'   cohorts <- data.frame(
 #'     cohortId = c(1, 2, 3, 4, 5),
 #'     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
 #'     type = c("target", "event", "event", "event", "exit")
 #'   )
-#'   
+#'
 #'   outputPath <- "./output/"
-#'   
+#'
 #'   executeTreatmentPatterns(
 #'     cohorts,
 #'     cohortTableName,
 #'     outputPath,
 #'     cdm
-#'    )
-#'   
+#'   )
+#'
 #'   # Using DatabaseConnector
-#'   
+#'
 #'   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 #'   cdmSchema <- "main"
 #'   resultSchema <- "main"
-#'   
+#'
 #'   executeTreatmentPatterns(
 #'     cohorts,
 #'     cohortTableName,
@@ -67,7 +67,7 @@
 #'     connectionDetails,
 #'     cdmSchema,
 #'     resultSchema
-#'    )
+#'   )
 #' }
 executeTreatmentPatterns <- function(
     cohorts,
@@ -89,7 +89,6 @@ executeTreatmentPatterns <- function(
     maxPathLength = 5,
     minFreq = 5,
     addNoPaths = TRUE) {
-  
   checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
   checkmate::assert_integerish(minFreq, len = 1, null.ok = FALSE, lower = 0)
 
@@ -113,10 +112,10 @@ executeTreatmentPatterns <- function(
     maxPathLength = maxPathLength,
     addNoPaths = addNoPaths
   )
-  
+
   # Export csv-files
   TreatmentPatterns::export(andromeda, outputPath = outputPath, minFreq = minFreq)
-  
+
   Andromeda::close(andromeda)
   return(invisible(NULL))
 }

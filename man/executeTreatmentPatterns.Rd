@@ -107,35 +107,35 @@ outcomes, you can run \link[TreatmentPatterns]{computePathways} and
 \examples{
 if (FALSE) {
   # Using CDMConnector
-  
+
   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
   cdm <- cdm_from_con(con, cdm_schema = "main")
-  
+
   # <Code to compute cohorts into Cohort Table>
-  
+
   cohortTableName <- "CohortTable"
-  
+
   cohorts <- data.frame(
     cohortId = c(1, 2, 3, 4, 5),
     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
     type = c("target", "event", "event", "event", "exit")
   )
-  
+
   outputPath <- "./output/"
-  
+
   executeTreatmentPatterns(
     cohorts,
     cohortTableName,
     outputPath,
     cdm
-   )
-  
+  )
+
   # Using DatabaseConnector
-  
+
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   cdmSchema <- "main"
   resultSchema <- "main"
-  
+
   executeTreatmentPatterns(
     cohorts,
     cohortTableName,
@@ -143,6 +143,6 @@ if (FALSE) {
     connectionDetails,
     cdmSchema,
     resultSchema
-   )
+  )
 }
 }

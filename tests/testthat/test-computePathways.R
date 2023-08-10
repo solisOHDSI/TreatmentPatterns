@@ -1,7 +1,7 @@
 if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
   library(testthat)
   library(TreatmentPatterns)
-  
+
   test_that("computePathways DatabaseConnector", {
     expect_message(
       expect_message(
@@ -20,8 +20,8 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Original number of rows: 8352"
     )
   })
-  
-  
+
+
   test_that("computePathways CDMConnector", {
     # CDMConnector's `generateCohortSet` function is not compatible with the
     # default TreatmentPattern cohorts.
@@ -32,8 +32,8 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       cohortTableName = "CohortTable"
     )
   })
-  
-  
+
+
   test_that("includeTreatments", {
     expect_error(
       expect_error(
@@ -50,7 +50,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be a subset of.+'startDate','endDate'.+"
     )
   })
-  
+
   test_that("periodPriorToIndex", {
     expect_error(
       computePathways(
@@ -64,7 +64,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of type.+'numeric'"
     )
   })
-  
+
   test_that("minEraDuration", {
     expect_error(
       computePathways(
@@ -78,7 +78,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of type.+'numeric'"
     )
   })
-  
+
   test_that("splitEventCohorts", {
     expect_error(
       computePathways(
@@ -92,7 +92,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of type.+'character'"
     )
   })
-  
+
   test_that("splitTime", {
     expect_error(
       computePathways(
@@ -106,7 +106,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of type.+'numeric'"
     )
   })
-  
+
   test_that("eraCollapseSize", {
     expect_error(
       computePathways(
@@ -120,7 +120,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       " Must be of type.+'numeric'"
     )
   })
-  
+
   test_that("combinationWindow", {
     expect_error(
       computePathways(
@@ -134,7 +134,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of type.+'numeric'"
     )
   })
-  
+
   test_that("minPostCombinationDuration", {
     expect_error(
       computePathways(
@@ -148,7 +148,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be of.+type.+"
     )
   })
-  
+
   test_that("filterTreatments", {
     expect_error(
       computePathways(
@@ -162,7 +162,7 @@ if (!interactive() && as.logical(Sys.getenv("NOT_CRAN", "true"))) {
       "Must be a subset of"
     )
   })
-  
+
   test_that("includeTreatments", {
     expect_error(
       computePathways(

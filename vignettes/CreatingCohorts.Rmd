@@ -57,10 +57,13 @@ To generate cohorts using CohortGenerator we can follow the instructions specifi
 cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
 
 # Get json-files included with TreatmentPatterns
-cohortJsonFiles <- list.files(system.file(
-  package = "TreatmentPatterns",
-  "exampleCohorts"),
-  full.names = TRUE)
+cohortJsonFiles <- list.files(
+  system.file(
+    package = "TreatmentPatterns",
+    "exampleCohorts"
+  ),
+  full.names = TRUE
+)
 
 # add cohort definition per file
 for (i in seq_len(length(cohortJsonFiles))) {
@@ -71,20 +74,24 @@ for (i in seq_len(length(cohortJsonFiles))) {
   # If you have your JSON and SQL stored differenly, you can
   # modify this to read your JSON/SQL files however you require
   cohortJson <- readChar(cohortJsonFileName, file.info(
-    cohortJsonFileName)$size)
+    cohortJsonFileName
+  )$size)
 
   cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
 
   cohortSql <- CirceR::buildCohortQuery(
     cohortExpression,
-    options = CirceR::createGenerateOptions(generateStats = FALSE))
+    options = CirceR::createGenerateOptions(generateStats = FALSE)
+  )
   cohortsToCreate <- rbind(
     cohortsToCreate,
     data.frame(
       cohortId = i,
       cohortName = cohortName,
       sql = cohortSql,
-      stringsAsFactors = FALSE))
+      stringsAsFactors = FALSE
+    )
+  )
 }
 ```
 
@@ -92,7 +99,8 @@ Now that we have specified our cohorts we can generate them.
 ```{r cohortTableNames}
 # Create the cohort tables to hold the cohort generation results
 cohortTableNames <- CohortGenerator::getCohortTableNames(
-  cohortTable = cohortTable)
+  cohortTable = cohortTable
+)
 ```
 
 Generate our cohortTableNames

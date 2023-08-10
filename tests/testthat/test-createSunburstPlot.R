@@ -34,11 +34,11 @@ test_that("no data", {
 
 test_that("minimal", {
   createSunburstPlot(dummyData, tempFile)
-  
+
   lines <- readLines(tempFile)
   json <- lines[grep("<textarea  id=\"chartData\" style=\"visibility:hidden; width:\\d+px; height:\\d+px\">", lines) + 1]
   res <- rjson::fromJSON(json)
-  
+
   expect_identical(length(res$data$children), 8L)
   expect_identical(length(res$data), 2L)
   expect_identical(length(res$lookup), 9L)

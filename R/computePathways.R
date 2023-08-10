@@ -1,5 +1,5 @@
 #' computePathways
-#' 
+#'
 #' Compute treatment patterns according to the specified parameters within
 #' specified cohorts.
 #'
@@ -24,7 +24,7 @@
 #' @return (`Andromeda::andromeda()`)
 #' \link[Andromeda]{andromeda} object containing non-sharable patient level
 #' data outcomes.
-#' 
+#'
 #' @export
 computePathways <- function(
     cohorts,
@@ -50,13 +50,13 @@ computePathways <- function(
     resultSchema = resultSchema,
     cdm = cdm
   )
-  
+
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,
     cohortTableName = cohortTableName,
     cdmInterface = cdmInterface
   )
-  
+
   pathwayConstructor$editSettings(
     includeTreatments = includeTreatments,
     periodPriorToIndex = periodPriorToIndex,
@@ -70,12 +70,12 @@ computePathways <- function(
     maxPathLength = maxPathLength,
     addNoPaths = addNoPaths
   )
-  
+
   pathwayConstructor$construct()
   andromeda <- pathwayConstructor$getAndromeda()
   cdmInterface$addSex(andromeda)
   cdmInterface$addAge(andromeda)
-  
+
   andromeda$metadata <- andromeda$metadata %>%
     dplyr::collect() %>%
     dplyr::mutate(execution_end_date = as.character(Sys.Date()))
