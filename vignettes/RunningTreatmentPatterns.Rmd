@@ -21,10 +21,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r sourceCG, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
-source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
-```
-
 ## Pathway settings
 The settings belowallow the user to influence how the events of interest should be processed to form treatment pathways. For the example in this vignette we used the default settings
 
@@ -43,11 +39,11 @@ The settings belowallow the user to influence how the events of interest should 
 | addNoPaths | FALSE | Select to include untreated persons without treatment pathway in the sunburst plot |
 
 ![pathwaySettings](../man/figures/pathwaysettings.png)
-```{r libs, message=FALSE, warning=FALSE}
+```{r libs, eval=FALSE}
 library(dplyr)
 ```
 
-```{r setupCohorts}
+```{r setupCohorts, eval=FALSE}
 # Select Viral Sinusitis Cohort
 targetCohorts <- cohortsGenerated %>%
   filter(cohortName == "ViralSinusitis") %>%
@@ -71,7 +67,7 @@ cohorts <- dplyr::bind_rows(
 
 ## DatabaseConnector
 ### All-in-one
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 tempDir <- tempdir()
 allDir <- file.path(tempDir, "all_in_one")
 
@@ -100,7 +96,7 @@ TreatmentPatterns::executeTreatmentPatterns(
 
 ### Segmented
 The segmented approach allows you to investigate the patient-level intermediate files by querying the andromeda environment.
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r eval=FALSE}
 andromeda <- TreatmentPatterns::computePathways(
   cohorts = cohorts,
   cohortTableName = "CohortTable",
@@ -110,16 +106,16 @@ andromeda <- TreatmentPatterns::computePathways(
 )
 ```
 
-```{r intermediateResults}
+```{r intermediateResults, eval=FALSE}
 names(andromeda)
 ```
 
-```{r treatmentHistory}
+```{r treatmentHistory, eval=FALSE}
 andromeda$treatmentHistory
 ```
 
 The files inside the andromeda environment can be exported using the export function.
-```{r message=FALSE, warning=FALSE, results='hide', eval=FALSE}
+```{r eval=FALSE}
 segDir <- file.path(tempDir, "segmented")
 TreatmentPatterns::export(andromeda, outputPath = segDir)
 ```

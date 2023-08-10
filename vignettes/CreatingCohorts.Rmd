@@ -45,7 +45,7 @@ The person exits the cohort at the end of **continuous observation**.
 Entry events will be combined into cohort eras if they are within **0** days of each other.
 
 ## CohortGenerator
-```{r dataSettingsVars}
+```{r dataSettingsVars, eval=FALSE}
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cdmDatabaseSchema <- "main"
 resultSchema <- "main"
@@ -53,7 +53,7 @@ cohortTable <- "cohortTable"
 ```
 
 To generate cohorts using CohortGenerator we can follow the instructions specified in the vignette:
-```{r generatingCohorts, message=FALSE}
+```{r generatingCohorts, eval=FALSE}
 cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
 
 # Get json-files included with TreatmentPatterns
@@ -96,7 +96,7 @@ for (i in seq_len(length(cohortJsonFiles))) {
 ```
 
 Now that we have specified our cohorts we can generate them.
-```{r cohortTableNames}
+```{r cohortTableNames, eval=FALSE}
 # Create the cohort tables to hold the cohort generation results
 cohortTableNames <- CohortGenerator::getCohortTableNames(
   cohortTable = cohortTable
@@ -104,7 +104,7 @@ cohortTableNames <- CohortGenerator::getCohortTableNames(
 ```
 
 Generate our cohortTableNames
-```{r, generateCohorts, message=FALSE, results='hide'}
+```{r, generateCohorts, eval=FALSE}
 CohortGenerator::createCohortTables(
   connectionDetails = connectionDetails,
   cohortDatabaseSchema = resultSchema,
@@ -112,7 +112,7 @@ CohortGenerator::createCohortTables(
 )
 ```
 Finally, we can generate our specified cohorts in Eunomia.
-```{r getCohortsGenerated, message=FALSE, results='hide'}
+```{r getCohortsGenerated, eval=FALSE}
 # Generate the cohorts
 cohortsGenerated <- CohortGenerator::generateCohortSet(
   connectionDetails = connectionDetails,
