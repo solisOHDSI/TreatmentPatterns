@@ -6,7 +6,7 @@ ableToRun <- function() {
   ))
 }
 
-if (ableToRun) {
+if (ableToRun()) {
   library(dplyr)
   library(CDMConnector)
   source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
