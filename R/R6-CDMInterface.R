@@ -208,8 +208,8 @@ CDMInterface <- R6::R6Class(
           cdm_source_abbreviation,
           cdm_release_date,
           vocabulary_version
-        FROM @resultSchema.cdm_source;",
-        resultSchema = private$resultSchema
+        FROM @cdmSchema.cdm_source;",
+        cdmSchema = private$cdmSchema
       )
 
       connection <- DatabaseConnector::connect(private$connectionDetails)
