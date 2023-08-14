@@ -115,6 +115,10 @@ outcomes, you can run \link[TreatmentPatterns]{computePathways} and
   ))
   
   if (ableToRun) {
+    withr::local_envvar(
+      EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+    )
+  
     con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
     cdm <- cdm_from_con(con, cdm_schema = "main")
 
