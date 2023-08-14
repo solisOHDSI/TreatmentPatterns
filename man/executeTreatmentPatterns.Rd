@@ -198,11 +198,13 @@ outcomes, you can run \link[TreatmentPatterns]{computePathways} and
       type = c("target", "event", "event", "event", "exit")
     )
 
-    executeTreatmentPatterns(
-      cohorts,
-      cohortTableName,
-      tempdir(),
-      cdm
+    try(
+      executeTreatmentPatterns(
+        cohorts,
+        cohortTableName,
+        tempdir(),
+        cdm
+      )
     )
     
     DBI::dbDisconnect(con, shutdown = TRUE)
@@ -287,14 +289,16 @@ outcomes, you can run \link[TreatmentPatterns]{computePathways} and
       eventCohorts \%>\% mutate(type = "event"),
       exitCohorts \%>\% mutate(type = "exit")
     )
-
-    executeTreatmentPatterns(
-      cohorts = cohorts,
-      cohortTableName = cohortTable,
-      outputPath = tempdir(),
-      connectionDetails = connectionDetails,
-      cdmSchema = cdmDatabaseSchema,
-      resultSchema = resultSchema
+    
+    try(
+      executeTreatmentPatterns(
+        cohorts = cohorts,
+        cohortTableName = cohortTable,
+        outputPath = tempdir(),
+        connectionDetails = connectionDetails,
+        cdmSchema = cdmDatabaseSchema,
+        resultSchema = resultSchema
+      )
     )
   }
 }

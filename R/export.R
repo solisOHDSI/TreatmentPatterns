@@ -102,12 +102,14 @@
 #'       resultSchema = resultSchema
 #'     )
 #'     
-#'     TreatmentPatterns::export(
-#'     andromeda = andromeda,
-#'     outputPath = tempdir(),
-#'     ageWindow = 2,
-#'     minFreq = 5,
-#'     archiveName = "output.zip"
+#'     try(
+#'       TreatmentPatterns::export(
+#'         andromeda = andromeda,
+#'         outputPath = tempdir(),
+#'         ageWindow = 2,
+#'         minFreq = 5,
+#'         archiveName = "output.zip"
+#'       )
 #'     )
 #'   }
 #' }
