@@ -20,13 +20,22 @@ Path where the Sankey diagram should be written to.}
 Generate a sunburst plot from the treatment pathways.
 }
 \examples{
-if (FALSE) {
-  treatmentPathways <- read.csv("treatmentPathways.csv")
-  outputFile <- "mySunburstPlot.html"
+# treatmentPathways <- read.csv("treatmentPathways.csv")
 
-  createSunburstPlot(
-    treatmentPatwhays,
-    outputFile
-  )
-}
+# Dummy data, typically read from treatmentPathways.csv
+treatmentPatwhays <- data.frame(
+  path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+           "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+  freq = c(206, 6, 14, 48, 221),
+  sex = rep("all", 5),
+  age = rep("all", 5),
+  index_year = rep("all", 5)
+)
+
+outputFile <- tempfile(pattern = "mySunburstPlot", fileext = "html")
+
+createSunburstPlot(
+  treatmentPatwhays,
+  outputFile
+)
 }

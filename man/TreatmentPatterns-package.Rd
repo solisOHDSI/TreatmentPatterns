@@ -21,7 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Aniek F Markus (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
+  \item Aniek Markus (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
 }
 
 }

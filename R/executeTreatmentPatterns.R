@@ -29,45 +29,192 @@
 #' @export
 #'
 #' @examples
-#' if (FALSE) {
+#' \donttest{
 #'   # Using CDMConnector
+#'   ableToRun <- all(c(
+#'     require("CDMConnector", character.only = TRUE),
+#'     require("DBI", character.only = TRUE),
+#'     require("duckdb", character.only = TRUE),
+#'     require("dplyr", character.only = TRUE)
+#'   ))
+#'   
+#'   if (ableToRun) {
+#'     con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+#'     cdm <- cdm_from_con(con, cdm_schema = "main")
 #'
-#'   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-#'   cdm <- cdm_from_con(con, cdm_schema = "main")
+#'     cdm$CohortTable <- dplyr::union_all(
+#'     # Viral Sinusitis
+#'     cdm$condition_occurrence %>%
+#'       filter(.data$condition_concept_id == 40481087) %>%
+#'       inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+#'       select("person_id", "condition_start_date", "condition_end_date") %>%
+#'       mutate(cohort_definition_id = 1) %>%
+#'       rename(
+#'         cohort_start_date = "condition_start_date",
+#'         cohort_end_date = "condition_end_date"
+#'       ),
 #'
-#'   # <Code to compute cohorts into Cohort Table>
+#'     # Aspirin
+#'     cdm$drug_era %>%
+#'       filter(.data$drug_concept_id == 1112807) %>%
+#'       inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+#'       select("person_id", "drug_era_start_date", "drug_era_end_date") %>%
+#'       mutate(cohort_definition_id = 2) %>%
+#'       rename(
+#'         cohort_start_date = "drug_era_start_date",
+#'         cohort_end_date = "drug_era_end_date"
+#'       ),
 #'
-#'   cohortTableName <- "CohortTable"
+#'     # Acetaminophen
+#'     cdm$drug_era %>%
+#'       filter(.data$drug_concept_id == 1125315) %>%
+#'       inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+#'       select("person_id", "drug_era_start_date", "drug_era_end_date") %>%
+#'       mutate(cohort_definition_id = 3) %>%
+#'       rename(
+#'         cohort_start_date = "drug_era_start_date",
+#'         cohort_end_date = "drug_era_end_date"
+#'       ),
 #'
-#'   cohorts <- data.frame(
-#'     cohortId = c(1, 2, 3, 4, 5),
-#'     cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
-#'     type = c("target", "event", "event", "event", "exit")
-#'   )
+#'     # Clavunate
+#'     cdm$drug_era %>%
+#'       filter(.data$drug_concept_id == 1759842) %>%
+#'       inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+#'       select("person_id", "drug_era_start_date", "drug_era_end_date") %>%
+#'       mutate(cohort_definition_id = 4) %>%
+#'       rename(
+#'         cohort_start_date = "drug_era_start_date",
+#'         cohort_end_date = "drug_era_end_date"
+#'       ),
 #'
-#'   outputPath <- "./output/"
+#'     # Death
+#'     cdm$observation %>%
+#'       filter(.data$observation_concept_id == 4306655) %>%
+#'       inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+#'       select("person_id", "observation_date") %>%
+#'       mutate(
+#'         cohort_definition_id = 5,
+#'         cohort_end_date = observation_date) %>%
+#'       rename(
+#'         cohort_start_date = "observation_date"
+#'       )
+#'     )
 #'
-#'   executeTreatmentPatterns(
-#'     cohorts,
-#'     cohortTableName,
-#'     outputPath,
-#'     cdm
-#'   )
+#'     cdm$CohortTable <- cdm$CohortTable %>%
+#'       rename(
+#'         SUBJECT_ID = "person_id",
+#'         COHORT_START_DATE = "cohort_start_date",
+#'         COHORT_END_DATE = "cohort_end_date",
+#'         COHORT_DEFINITION_ID = "cohort_definition_id"
+#'       )
+#'
+#'     cohortTableName <- "CohortTable"
+#'
+#'     cohorts <- data.frame(
+#'       cohortId = c(1, 2, 3, 4, 5),
+#'       cohortName = c("ViralSinusitis", "Acetaminophen", "Aspirin", "Clavulanate", "Death"),
+#'       type = c("target", "event", "event", "event", "exit")
+#'     )
+#'
+#'     executeTreatmentPatterns(
+#'       cohorts,
+#'       cohortTableName,
+#'       tempdir(),
+#'       cdm
+#'     )
+#'     
+#'     DBI::dbDisconnect(con, shutdown = TRUE)
+#'   }
 #'
 #'   # Using DatabaseConnector
+#'   ableToRun <- invisible(all(
+#'     require("Eunomia", character.only = TRUE),
+#'     require("CirceR", character.only = TRUE),
+#'     require("CohortGenerator", character.only = TRUE),
+#'     require("dplyr", character.only = TRUE)
+#'   ))
+#'   
+#'   if (ableToRun) {
+#'     # CohortGenerator example
+#'     connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+#'     cdmDatabaseSchema <- "main"
+#'     resultSchema <- "main"
+#'     cohortTable <- "CohortTable"
+#' 
+#'     cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
+#'   
+#'     cohortJsonFiles <- list.files(
+#'       system.file(
+#'         package = "TreatmentPatterns",
+#'         "examples", "CDM", "cohorts", "ViralSinusitis", "JSON"),
+#'         full.names = TRUE)
+#' 
+#'     for (i in seq_len(length(cohortJsonFiles))) {
+#'       cohortJsonFileName <- cohortJsonFiles[i]
+#'       cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+#'       cohortJson <- readChar(cohortJsonFileName, file.info(
+#'         cohortJsonFileName)$size)
 #'
-#'   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-#'   cdmSchema <- "main"
-#'   resultSchema <- "main"
+#'       cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
+#' 
+#'       cohortSql <- CirceR::buildCohortQuery(
+#'         cohortExpression,
+#'         options = CirceR::createGenerateOptions(generateStats = FALSE))
+#'     
+#'       cohortsToCreate <- rbind(
+#'         cohortsToCreate,
+#'         data.frame(
+#'           cohortId = i,
+#'           cohortName = cohortName,
+#'           sql = cohortSql,
+#'           stringsAsFactors = FALSE))
+#'     }
 #'
-#'   executeTreatmentPatterns(
-#'     cohorts,
-#'     cohortTableName,
-#'     outputPath,
-#'     connectionDetails,
-#'     cdmSchema,
-#'     resultSchema
-#'   )
+#'     cohortTableNames <- CohortGenerator::getCohortTableNames(
+#'       cohortTable = cohortTable)
+#'
+#'     CohortGenerator::createCohortTables(
+#'       connectionDetails = connectionDetails,
+#'       cohortDatabaseSchema = resultSchema,
+#'       cohortTableNames = cohortTableNames)
+#'
+#'     # Generate the cohorts
+#'     cohortsGenerated <- CohortGenerator::generateCohortSet(
+#'       connectionDetails = connectionDetails,
+#'       cdmDatabaseSchema = cdmDatabaseSchema,
+#'       cohortDatabaseSchema = resultSchema,
+#'       cohortTableNames = cohortTableNames,
+#'       cohortDefinitionSet = cohortsToCreate)
+#'     
+#'     # Select Viral Sinusitis
+#'     targetCohorts <- cohortsGenerated %>%
+#'       filter(cohortName == "ViralSinusitis") %>%
+#'       select(cohortId, cohortName)
+#' 
+#'     # Select everything BUT Viral Sinusitis cohorts
+#'     eventCohorts <- cohortsGenerated %>%
+#'       filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
+#'       select(cohortId, cohortName)
+#' 
+#'     exitCohorts <- cohortsGenerated %>%
+#'       filter(cohortName == "Death") %>%
+#'       select(cohortId, cohortName)
+#' 
+#'     cohorts <- dplyr::bind_rows(
+#'       targetCohorts %>% mutate(type = "target"),
+#'       eventCohorts %>% mutate(type = "event"),
+#'       exitCohorts %>% mutate(type = "exit")
+#'     )
+#'
+#'     executeTreatmentPatterns(
+#'       cohorts = cohorts,
+#'       cohortTableName = cohortTable,
+#'       outputPath = tempdir(),
+#'       connectionDetails = connectionDetails,
+#'       cdmSchema = cdmDatabaseSchema,
+#'       resultSchema = resultSchema
+#'     )
+#'   }
 #' }
 executeTreatmentPatterns <- function(
     cohorts,

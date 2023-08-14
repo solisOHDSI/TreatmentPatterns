@@ -35,17 +35,24 @@ invisible(NULL)
 Writes the Sankey diagram to a HTML-file, to a specified file path.
 }
 \examples{
-if (FALSE) {
-  treatmentPathways <- read.csv(treatmentPathways.csv)
-  outputFile <- "mySankeyDiagram.html"
-  groupCombinations <- FALSE
-  minFreq <- 5
+# treatmentPathways <- read.csv(treatmentPathways.csv)
 
-  createSankeyDiagram(
-    treatmentPathways,
-    outputFile,
-    groupCombinations,
-    minFreq
-  )
-}
+# Dummy data, typically read from treatmentPathways.csv
+treatmentPathways <- data.frame(
+  path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+           "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+  freq = c(206, 6, 14, 48, 221),
+  sex = rep("all", 5),
+  age = rep("all", 5),
+  index_year = rep("all", 5)
+)
+
+outputFile <- tempfile(pattern = "mySankeyDiagram", fileext = "html")
+
+createSankeyDiagram(
+  treatmentPathways,
+  outputFile,
+  groupCombinations = FALSE,
+  minFreq = 5
+)
 }
