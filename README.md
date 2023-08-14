@@ -51,9 +51,5 @@ Available documentation includes:
 - Vignette: [Perform a study using the TreatmentPatterns package](https://darwin-eu-dev.github.io/TreatmentPatterns/articles/)
 - Package manual: [TreatmentPatterns](https://darwin-eu-dev.github.io/TreatmentPatterns/reference/index.html)
 
-## Package Structure
-<img src="man/figures/package.png"/>
-
-
 ## Support
 We use the <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/issues">GitHub issue tracker</a> for all bugs/issues/enhancements.
