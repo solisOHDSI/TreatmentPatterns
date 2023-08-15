@@ -4,13 +4,7 @@
 \alias{export}
 \title{export}
 \usage{
-export(
-  andromeda,
-  outputPath = ".",
-  ageWindow = 10,
-  minFreq = 5,
-  archiveName = NULL
-)
+export(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveName = NULL)
 }
 \arguments{
 \item{andromeda}{(\code{Andromeda::andromeda()})
@@ -56,7 +50,7 @@ object to sharable csv-files and/or a zip archive.
     cohortJsonFiles <- list.files(
       system.file(
         package = "TreatmentPatterns",
-        "examples", "CDM", "cohorts", "ViralSinusitis", "JSON"),
+        "exampleCohorts"),
         full.names = TRUE)
 
     for (i in seq_len(length(cohortJsonFiles))) {

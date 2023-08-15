@@ -34,7 +34,7 @@
 #'     cohortJsonFiles <- list.files(
 #'       system.file(
 #'         package = "TreatmentPatterns",
-#'         "examples", "CDM", "cohorts", "ViralSinusitis", "JSON"),
+#'         "exampleCohorts"),
 #'         full.names = TRUE)
 #' 
 #'     for (i in seq_len(length(cohortJsonFiles))) {
@@ -113,12 +113,13 @@
 #'     )
 #'   }
 #' }
-export <- function(andromeda, outputPath = ".", ageWindow = 10, minFreq = 5, archiveName = NULL) {
+export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveName = NULL) {
   if (!file.exists(outputPath)) {
     dir.create(outputPath)
   }
 
-  treatmentHistory <- andromeda$treatmentHistory %>% dplyr::collect()
+  treatmentHistory <- andromeda$treatmentHistory %>%
+    dplyr::collect()
 
   # metadata
   metadataPath <- file.path(outputPath, "metadata.csv")

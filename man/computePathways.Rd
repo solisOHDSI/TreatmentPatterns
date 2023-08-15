@@ -117,7 +117,7 @@ specified cohorts.
     cohortJsonFiles <- list.files(
       system.file(
         package = "TreatmentPatterns",
-        "examples", "CDM", "cohorts", "ViralSinusitis", "JSON"),
+        "exampleCohorts"),
         full.names = TRUE)
 
     for (i in seq_len(length(cohortJsonFiles))) {
