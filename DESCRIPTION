@@ -1,16 +1,19 @@
 Package: TreatmentPatterns
 Type: Package
-Title: A package to analyse real-world treatment patterns of a study population of interest
+Title: Analyzes Real-World Treatment Patterns of a Study Population of Interest
 Version: 2.5.0
-Author: Aniek F Markus
+Authors@R: 
+    c(person("Aniek", "Markus", , role = c("aut"), comment = c(ORCID = "0000-0001-5779-4794")),
+      person("Maarten", "van Kessel", email = "m.l.vankessel@erasmusmc.nl", role = c("cre"), comment = c(ORCID = "0009-0006-8832-6030")))
 Maintainer: Maarten van Kessel <m.l.vankessel@erasmusmc.nl>
-Description: This package gives insight in treatment patterns, the following
-  tasks should be performed sequentially:
-  1. Construct treatment pathways.
-  2. Generate output (sunburst plots, Sankey diagrams and more).
-  3. Launch shiny application to visualize the results.
+Description:
+    Computes treatment patterns within a given cohort using the Observational
+    Medical Outcomes Partnership (OMOP) common data model (CDM). As described
+    in Markus, Verhamme, Kors, and Rijnbeek (2022) <doi:10.1016/j.cmpb.2022.107081>.
+URL: https://github.com/darwin-eu-dev/TreatmentPatterns
+BugReports: https://github.com/darwin-eu-dev/TreatmentPatterns/issues
 Depends:
-  R (>= 4.0)
+    R (>= 4.0)
 Imports: 
     DatabaseConnector (>= 6.0.0),
     checkmate,
@@ -48,5 +51,5 @@ LazyData: true
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Additional_repositories: https://OHDSI.github.io/drat
+Additional_repositories: https://ohdsi.github.io/drat
 Roxygen: list(markdown = TRUE)

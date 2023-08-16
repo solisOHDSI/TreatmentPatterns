@@ -33,7 +33,12 @@ Choose the way you interface with the CDM, either through \code{DatabaseConnecto
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{cohorts}}{(\code{data.frame()})\cr
-Cohort table.}
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{\code{cohortTableName}}{(\code{character(1)})\cr
 Cohort table name.}
@@ -110,25 +115,42 @@ Edit settings
 \describe{
 \item{\code{includeTreatments}}{(\code{character(1)}: \code{"startDate"})\cr}
 
-\item{\code{periodPriorToIndex}}{(\code{integer(1)}: \code{0})\cr}
+\item{\code{periodPriorToIndex}}{(\code{integer(1)}: \code{0})\cr
+Number of days prior to the index date of the target cohort | that event
+cohorts are allowed to start}
 
-\item{\code{minEraDuration}}{(\code{integer(1)}: \code{0})\cr}
+\item{\code{minEraDuration}}{(\code{integer(1)}: \code{0})\cr
+Minimum time an event era should last to be included in analysis}
 
-\item{\code{splitEventCohorts}}{(\code{character(n)}: \code{""})\cr}
+\item{\code{splitEventCohorts}}{(\code{character(n)}: \code{""})\cr
+Specify event cohort to split in acute (< X days) and therapy (>= X days)}
 
-\item{\code{splitTime}}{(\code{integer(1)}: \code{30})\cr}
+\item{\code{splitTime}}{(\code{integer(1)}: \code{30})\cr
+Specify number of days (X) at which each of the split event cohorts should
+be split in acute and therapy}
 
-\item{\code{eraCollapseSize}}{(\code{integer(1)}: \code{30})\cr}
+\item{\code{eraCollapseSize}}{(\code{integer(1)}: \code{30})\cr
+Window of time between which two eras of the same event cohort are collapsed
+into one era}
 
-\item{\code{combinationWindow}}{(\code{integer(1)}: \code{30})\cr}
+\item{\code{combinationWindow}}{(\code{integer(1)}: \code{30})\cr
+Window of time two event cohorts need to overlap to be considered a
+combination treatment}
 
-\item{\code{minPostCombinationDuration}}{(\code{integer(1)}: \code{30})\cr}
+\item{\code{minPostCombinationDuration}}{(\code{integer(1)}: \code{30})\cr
+Minimum time an event era before or after a generated combination treatment
+should last to be included in analysis}
 
-\item{\code{filterTreatments}}{(\code{character(1)}: \code{"First"})\cr}
+\item{\code{filterTreatments}}{(\code{character(1)}: \code{"First"} ["first", "Changes", "all"])\cr
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).}
 
-\item{\code{maxPathLength}}{(\code{integer(1)}: \code{5})\cr}
+\item{\code{maxPathLength}}{(\code{integer(1)}: \code{5})\cr
+Maximum number of steps included in treatment pathway}
 
-\item{\code{addNoPaths}}{(\code{logical(1)}: \code{TRUE})\cr}
+\item{\code{addNoPaths}}{(\code{logical(1)}: \code{TRUE})\cr
+Select to include untreated persons without treatment pathway in the
+sunburst plot}
 }
 \if{html}{\out{</div>}}
 }

@@ -21,15 +21,29 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r sourceCG, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
-source(system.file(package = "TreatmentPatterns", "R-scripts", "runCG.R"))
-```
+## Pathway settings
+The settings belowallow the user to influence how the events of interest should be processed to form treatment pathways. For the example in this vignette we used the default settings
 
-```{r libs, message=FALSE, warning=FALSE}
+| param | values | description |
+| ----- | ------ | ----------- |
+| periodPriorToIndex | 0 | Number of days prior to the index date of the target cohort | that event cohorts are allowed to start |
+| minEraDuration | 0 | Minimum time an event era should last to be included in analysis |
+| splitEventCohorts |  | Specify event cohort to split in acute (< X days) and therapy (>= X days) |
+| splitTime | 30 | Specify number of days (X) at which each of the split event cohorts should be split in acute and therapy |
+| eraCollapseSize | 30 | Window of time between which two eras of the same event cohort are collapsed into one era |
+| combinationWindow | 30 | Window of time two event cohorts need to overlap to be considered a combination treatment |
+| minPostCombinationDuration | 30 | Minimum time an event era before or after a generated combination treatment should last to be included in analysis |
+| filterTreatments | First | Select first occurrence of (‘First’); changes between (‘Changes’); or all event cohorts (‘All’). |
+| maxPathLength | 5 | Maximum number of steps included in treatment pathway |
+| minFreq | 5 | Minimum frequency required per pathway. Censors data below `x` as `<x`. This minimum value will carry over to the sankey diagram and sunburst plot. |
+| addNoPaths | FALSE | Select to include untreated persons without treatment pathway in the sunburst plot |
+
+![pathwaySettings](../man/figures/pathwaysettings.png)
+```{r libs, eval=FALSE}
 library(dplyr)
 ```
 
-```{r setupCohorts}
+```{r setupCohorts, eval=FALSE}
 # Select Viral Sinusitis Cohort
 targetCohorts <- cohortsGenerated %>%
   filter(cohortName == "ViralSinusitis") %>%
@@ -53,7 +67,7 @@ cohorts <- dplyr::bind_rows(
 
 ## DatabaseConnector
 ### All-in-one
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 tempDir <- tempdir()
 allDir <- file.path(tempDir, "all_in_one")
 
@@ -63,7 +77,7 @@ TreatmentPatterns::executeTreatmentPatterns(
   outputPath = allDir,
   connectionDetails = connectionDetails,
   cdmSchema = "main",
-  resultSchema = "main", 
+  resultSchema = "main",
   # Optional settings
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
@@ -74,12 +88,15 @@ TreatmentPatterns::executeTreatmentPatterns(
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5
+  maxPathLength = 5,
+  minFreq = 5,
+  addNoPaths = TRUE
 )
 ```
+
 ### Segmented
 The segmented approach allows you to investigate the patient-level intermediate files by querying the andromeda environment.
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r eval=FALSE}
 andromeda <- TreatmentPatterns::computePathways(
   cohorts = cohorts,
   cohortTableName = "CohortTable",
@@ -89,16 +106,16 @@ andromeda <- TreatmentPatterns::computePathways(
 )
 ```
 
-```{r intermediateResults}
+```{r intermediateResults, eval=FALSE}
 names(andromeda)
 ```
 
-```{r treatmentHistory}
+```{r treatmentHistory, eval=FALSE}
 andromeda$treatmentHistory
 ```
 
 The files inside the andromeda environment can be exported using the export function.
-```{r message=FALSE, warning=FALSE, results='hide', eval=FALSE}
+```{r eval=FALSE}
 segDir <- file.path(tempDir, "segmented")
 TreatmentPatterns::export(andromeda, outputPath = segDir)
 ```
@@ -118,5 +135,6 @@ TreatmentPatterns::executeTreatmentPatterns(
   cohorts = cohorts,
   cohortTableName = "CohortTable",
   outputPath = cdmDir,
-  cdm = cdm)
+  cdm = cdm
+)
 ```

@@ -15,7 +15,7 @@ tempFile <- file.path(tempdir(), "sankey.html")
 
 fetchJson <- function(tempFile) {
   lines <- readLines(tempFile)
-  
+
   json <- lines[seq(grep("var datajson =", lines) + 1, grep("];", lines)[1])] %>%
     paste0(collapse = "") %>%
     stringr::str_remove_all(pattern = ";") %>%
@@ -31,14 +31,14 @@ test_that("void", {
 test_that("default depth: 2", {
   data <- dummyData %>%
     filter(.data$index_year == "all")
-  
+
   expect_message(
     createSankeyDiagram(treatmentPathways = data, outputFile = tempFile),
     "Writing Sankey diagram to .+sankey\\.html"
   )
-  
+
   json <- fetchJson(tempFile)
-  
+
   expect_true(
     all(
       # 4  A-B   12
@@ -58,14 +58,14 @@ test_that("default depth: 2", {
 test_that("default depth: 3", {
   data <- dummyData %>%
     filter(.data$index_year == "2020")
-  
+
   expect_message(
     createSankeyDiagram(treatmentPathways = data, outputFile = tempFile),
     "Writing Sankey diagram to .+sankey\\.html"
   )
-  
+
   json <- fetchJson(tempFile)
-  
+
   expect_true(
     all(
       # Layer 1 -> 2
@@ -87,7 +87,7 @@ test_that("default depth: 3", {
 test_that("minFreq", {
   data <- dummyData %>%
     filter(.data$index_year == "all")
-  
+
   suppressMessages(
     createSankeyDiagram(
       treatmentPathways = data,
@@ -95,9 +95,9 @@ test_that("minFreq", {
       minFreq = 20
     )
   )
-  
+
   json <- fetchJson(tempFile)
-  
+
   expect_false(
     all(grepl("2. C", unlist(json))),
     all(grepl("2. B", unlist(json)))
@@ -107,7 +107,7 @@ test_that("minFreq", {
 test_that("groupCombinations: TRUE", {
   data <- dummyData %>%
     filter(.data$index_year == "all")
-  
+
   suppressMessages(
     createSankeyDiagram(
       treatmentPathways = data,
@@ -115,8 +115,8 @@ test_that("groupCombinations: TRUE", {
       groupCombinations = TRUE
     )
   )
-  
+
   json <- fetchJson(tempFile)
-  
+
   expect_true(all(unlist(json[2]) == c("1. Combination", "2. Stopped", "25")))
 })

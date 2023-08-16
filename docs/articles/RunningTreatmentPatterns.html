@@ -84,6 +84,99 @@
 
     
     
+<div class="section level2">
+<h2 id="pathway-settings">Pathway settings<a class="anchor" aria-label="anchor" href="#pathway-settings"></a>
+</h2>
+<p>The settings belowallow the user to influence how the events of
+interest should be processed to form treatment pathways. For the example
+in this vignette we used the default settings</p>
+<table class="table">
+<colgroup>
+<col width="22%">
+<col width="27%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>param</th>
+<th>values</th>
+<th>description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>periodPriorToIndex</td>
+<td>0</td>
+<td>Number of days prior to the index date of the target cohort</td>
+</tr>
+<tr class="even">
+<td>minEraDuration</td>
+<td>0</td>
+<td>Minimum time an event era should last to be included in
+analysis</td>
+</tr>
+<tr class="odd">
+<td>splitEventCohorts</td>
+<td></td>
+<td>Specify event cohort to split in acute (&lt; X days) and therapy
+(&gt;= X days)</td>
+</tr>
+<tr class="even">
+<td>splitTime</td>
+<td>30</td>
+<td>Specify number of days (X) at which each of the split event cohorts
+should be split in acute and therapy</td>
+</tr>
+<tr class="odd">
+<td>eraCollapseSize</td>
+<td>30</td>
+<td>Window of time between which two eras of the same event cohort are
+collapsed into one era</td>
+</tr>
+<tr class="even">
+<td>combinationWindow</td>
+<td>30</td>
+<td>Window of time two event cohorts need to overlap to be considered a
+combination treatment</td>
+</tr>
+<tr class="odd">
+<td>minPostCombinationDuration</td>
+<td>30</td>
+<td>Minimum time an event era before or after a generated combination
+treatment should last to be included in analysis</td>
+</tr>
+<tr class="even">
+<td>filterTreatments</td>
+<td>First</td>
+<td>Select first occurrence of (‘First’) / changes between (‘Changes’) /
+all event cohorts (‘All’)</td>
+</tr>
+<tr class="odd">
+<td>maxPathLength</td>
+<td>5</td>
+<td>Maximum number of steps included in treatment pathway</td>
+</tr>
+<tr class="even">
+<td>minCellCount</td>
+<td>5</td>
+<td>Minimum number of persons with a specific treatment pathway for the
+pathway to be included in analysis</td>
+</tr>
+<tr class="odd">
+<td>minFreq</td>
+<td>Remove</td>
+<td>Select to completely remove / sequentially adjust (by removing last
+step as often as necessary) treatment pathways below minFreq</td>
+</tr>
+<tr class="even">
+<td>addNoPaths</td>
+<td>FALSE</td>
+<td>Select to include untreated persons without treatment pathway in the
+sunburst plot</td>
+</tr>
+</tbody>
+</table>
+<div class="float">
+<img src="../reference/figures/pathwaysettings.png" alt="pathwaySettings"><div class="figcaption">pathwaySettings</div>
+</div>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -106,6 +199,7 @@
 <span>  <span class="va">eventCohorts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"event"</span><span class="op">)</span>,</span>
 <span>  <span class="va">exitCohorts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"exit"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level2">
 <h2 id="databaseconnector">DatabaseConnector<a class="anchor" aria-label="anchor" href="#databaseconnector"></a>
 </h2>
@@ -133,7 +227,9 @@
 <span>  combinationWindow <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  minPostCombinationDuration <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  filterTreatments <span class="op">=</span> <span class="st">"First"</span>,</span>
-<span>  maxPathLength <span class="op">=</span> <span class="fl">5</span></span>
+<span>  maxPathLength <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  minFreq <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  addNoPaths <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -158,7 +254,7 @@ intermediate files by querying the andromeda environment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span><span class="op">$</span><span class="va">treatmentHistory</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;treatmentHistory&gt; [?? x 11]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\RtmpymTDQj\file534c694f12e4.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp8q4HNf\file2e847d732a23.sqlite]</span></span></span>
 <span><span class="co">##    event_cohort_id person_id index_year event_start_date event_end_date</span></span>
 <span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 1                    <span style="text-decoration: underline;">2</span>788       <span style="text-decoration: underline;">1</span>980             <span style="text-decoration: underline;">3</span>659           <span style="text-decoration: underline;">3</span>694</span></span>

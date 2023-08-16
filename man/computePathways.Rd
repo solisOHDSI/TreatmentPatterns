@@ -26,7 +26,12 @@ computePathways(
 }
 \arguments{
 \item{cohorts}{(\code{data.frame()})\cr
-Cohort table.}
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{cohortTableName}{(\code{character(1)})\cr
 Cohort table name.}
@@ -45,25 +50,42 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 
 \item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
 
-\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr}
+\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr
+Number of days prior to the index date of the target cohort | that event
+cohorts are allowed to start}
 
-\item{minEraDuration}{(\code{integer(1)}: \code{0})\cr}
+\item{minEraDuration}{(\code{integer(1)}: \code{0})\cr
+Minimum time an event era should last to be included in analysis}
 
-\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr}
+\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr
+Specify event cohort to split in acute (< X days) and therapy (>= X days)}
 
-\item{splitTime}{(\code{integer(1)}: \code{30})\cr}
+\item{splitTime}{(\code{integer(1)}: \code{30})\cr
+Specify number of days (X) at which each of the split event cohorts should
+be split in acute and therapy}
 
-\item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr}
+\item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr
+Window of time between which two eras of the same event cohort are collapsed
+into one era}
 
-\item{combinationWindow}{(\code{integer(1)}: \code{30})\cr}
+\item{combinationWindow}{(\code{integer(1)}: \code{30})\cr
+Window of time two event cohorts need to overlap to be considered a
+combination treatment}
 
-\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr}
+\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr
+Minimum time an event era before or after a generated combination treatment
+should last to be included in analysis}
 
-\item{filterTreatments}{(\code{character(1)}: \code{"First"})\cr}
+\item{filterTreatments}{(\code{character(1)}: \code{"First"} ["first", "Changes", "all"])\cr
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).}
 
-\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr}
+\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
+Maximum number of steps included in treatment pathway}
 
-\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr}
+\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr
+Select to include untreated persons without treatment pathway in the
+sunburst plot}
 }
 \value{
 (\code{Andromeda::andromeda()})
@@ -71,5 +93,97 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 data outcomes.
 }
 \description{
-computePathways
+Compute treatment patterns according to the specified parameters within
+specified cohorts.
+}
+\examples{
+\donttest{
+  ableToRun <- invisible(all(
+    require("Eunomia", character.only = TRUE),
+    require("CirceR", character.only = TRUE),
+    require("CohortGenerator", character.only = TRUE),
+    require("dplyr", character.only = TRUE)
+  ))
+  
+  if (ableToRun) {
+    # CohortGenerator example
+    connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+    cdmDatabaseSchema <- "main"
+    resultSchema <- "main"
+    cohortTable <- "CohortTable"
+
+    cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
+  
+    cohortJsonFiles <- list.files(
+      system.file(
+        package = "TreatmentPatterns",
+        "exampleCohorts"),
+        full.names = TRUE)
+
+    for (i in seq_len(length(cohortJsonFiles))) {
+      cohortJsonFileName <- cohortJsonFiles[i]
+      cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+      cohortJson <- readChar(cohortJsonFileName, file.info(
+        cohortJsonFileName)$size)
+
+      cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
+
+      cohortSql <- CirceR::buildCohortQuery(
+        cohortExpression,
+        options = CirceR::createGenerateOptions(generateStats = FALSE))
+    
+      cohortsToCreate <- rbind(
+        cohortsToCreate,
+        data.frame(
+          cohortId = i,
+          cohortName = cohortName,
+          sql = cohortSql,
+          stringsAsFactors = FALSE))
+    }
+
+    cohortTableNames <- CohortGenerator::getCohortTableNames(
+      cohortTable = cohortTable)
+
+    CohortGenerator::createCohortTables(
+      connectionDetails = connectionDetails,
+      cohortDatabaseSchema = resultSchema,
+      cohortTableNames = cohortTableNames)
+
+    # Generate the cohorts
+    cohortsGenerated <- CohortGenerator::generateCohortSet(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = cdmDatabaseSchema,
+      cohortDatabaseSchema = resultSchema,
+      cohortTableNames = cohortTableNames,
+      cohortDefinitionSet = cohortsToCreate)
+    
+    # Select Viral Sinusitis
+    targetCohorts <- cohortsGenerated \%>\%
+      filter(cohortName == "ViralSinusitis") \%>\%
+      select(cohortId, cohortName)
+
+    # Select everything BUT Viral Sinusitis cohorts
+    eventCohorts <- cohortsGenerated \%>\%
+      filter(cohortName != "ViralSinusitis" & cohortName != "Death") \%>\%
+      select(cohortId, cohortName)
+
+    exitCohorts <- cohortsGenerated \%>\%
+      filter(cohortName == "Death") \%>\%
+      select(cohortId, cohortName)
+
+    cohorts <- dplyr::bind_rows(
+      targetCohorts \%>\% mutate(type = "target"),
+      eventCohorts \%>\% mutate(type = "event"),
+      exitCohorts \%>\% mutate(type = "exit")
+    )
+
+    computePathways(
+      cohorts = cohorts,
+      cohortTableName = cohortTable,
+      connectionDetails = connectionDetails,
+      cdmSchema = cdmDatabaseSchema,
+      resultSchema = resultSchema
+    )
+  }
+}
 }

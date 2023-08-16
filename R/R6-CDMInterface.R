@@ -19,7 +19,7 @@ CDMInterface <- R6::R6Class(
       private$cdmSchema <- cdmSchema
       private$resultSchema <- resultSchema
       private$cdm <- cdm
-      
+
       if (!is.null(cdm)) {
         private$type <- "CDMConnector"
       } else if (!is.null(connectionDetails)) {
@@ -30,24 +30,24 @@ CDMInterface <- R6::R6Class(
       self$validate()
       return(invisible(self))
     },
-    
+
     #' @description
     #' Validation method
-    #' 
+    #'
     #' @return (`invisible(self)`)
     validate = function() {
       errorMessages <- checkmate::makeAssertCollection()
-      
+
       checkmate::assertClass(private$connectionDetails, "ConnectionDetails", null.ok = TRUE, add = errorMessages)
       checkmate::assertCharacter(x = private$connectionDetails$dbms, len = 1, null.ok = TRUE, add = errorMessages)
       checkmate::assertCharacter(private$cdmDatabaseSchema, null.ok = TRUE, len = 1, add = errorMessages)
       checkmate::assertCharacter(private$resultSchema, null.ok = TRUE, len = 1, add = errorMessages)
       checkmate::assertClass(private$cdm, classes = "cdm_reference", null.ok = TRUE, add = errorMessages)
-      
+
       checkmate::reportAssertions(collection = errorMessages)
       return(invisible(self))
     },
-    
+
     #' @description
     #' Fetch specified cohort IDs from a specified cohort table
     #'
@@ -56,13 +56,12 @@ CDMInterface <- R6::R6Class(
     #'
     #' @return (`data.frame`)
     fetchCohortTable = function(cohortIds, cohortTableName) {
-      switch(
-        private$type,
+      switch(private$type,
         CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName),
         DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName)
       )
     },
-    
+
     #' @description
     #' Stratisfy the treatmentHistory data frame by age.
     #'
@@ -70,13 +69,12 @@ CDMInterface <- R6::R6Class(
     #'
     #' @return (`data.frame()`)
     addAge = function(andromeda) {
-      switch(
-        private$type,
+      switch(private$type,
         CDMConnector = private$cdmconAddAge(andromeda),
         DatabaseConnector = private$dbconAddAge(andromeda)
       )
     },
-    
+
     #' @description
     #' Stratisfy the treatmentHistory data frame by sex.
     #'
@@ -84,22 +82,20 @@ CDMInterface <- R6::R6Class(
     #'
     #' @return (`data.frame()`)
     addSex = function(andromeda) {
-      switch(
-        private$type,
+      switch(private$type,
         CDMConnector = private$cdmconAddSex(andromeda),
         DatabaseConnector = private$dbconAddSex(andromeda)
       )
     },
-    
+
     #' @description
     #' Fetch metadata from CDM
-    #' 
+    #'
     #' @template param_andromeda
-    #' 
+    #'
     #' @return (`invisible(NULL)`)
     fetchMetadata = function(andromeda) {
-      switch(
-        private$type,
+      switch(private$type,
         CDMConnector = private$cdmconFetchMetadata(andromeda),
         DatabaseConnector = private$dbconFetchMetadata(andromeda)
       )
@@ -138,8 +134,10 @@ CDMInterface <- R6::R6Class(
 
     # andromeda (`Andromeda::andromeda()`)
     dbconAddAge = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
-      
+      personIds <- andromeda$treatmentHistory %>%
+        select("person_id") %>%
+        pull()
+
       renderedSql <- SqlRender::render(
         sql = "SELECT
                  person_id,
@@ -155,7 +153,8 @@ CDMInterface <- R6::R6Class(
 
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms)
+        targetDialect = connection@dbms
+      )
 
       andromeda$year_of_birth <- DatabaseConnector::querySql(connection, translatedSql)
 
@@ -169,7 +168,9 @@ CDMInterface <- R6::R6Class(
 
     # andromeda (`Andromeda::andromeda()`)
     dbconAddSex = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
+      personIds <- andromeda$treatmentHistory %>%
+        select("person_id") %>%
+        pull()
 
       renderedSql <- SqlRender::render(
         sql = "SELECT
@@ -188,7 +189,8 @@ CDMInterface <- R6::R6Class(
 
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms)
+        targetDialect = connection@dbms
+      )
 
       andromeda$sex <- DatabaseConnector::querySql(connection, translatedSql)
 
@@ -198,7 +200,6 @@ CDMInterface <- R6::R6Class(
 
       return(invisible(NULL))
     },
-    
     dbconFetchMetadata = function(andromeda) {
       renderedSql <- SqlRender::render(
         sql = "
@@ -207,23 +208,25 @@ CDMInterface <- R6::R6Class(
           cdm_source_abbreviation,
           cdm_release_date,
           vocabulary_version
-        FROM @resultSchema.cdm_source;",
-        resultSchema = private$resultSchema
+        FROM @cdmSchema.cdm_source;",
+        cdmSchema = private$cdmSchema
       )
-      
+
       connection <- DatabaseConnector::connect(private$connectionDetails)
       on.exit(DatabaseConnector::disconnect(connection))
-      
+
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms)
-      
+        targetDialect = connection@dbms
+      )
+
       andromeda$metadata <- DatabaseConnector::querySql(connection, translatedSql) %>%
         dplyr::mutate(
-            execution_start_date = as.character(Sys.Date()),
-            package_version = as.character(utils::packageVersion("TreatmentPatterns")),
-            r_version = base::version$version.string,
-            platform = base::version$platform)
+          execution_start_date = as.character(Sys.Date()),
+          package_version = as.character(utils::packageVersion("TreatmentPatterns")),
+          r_version = base::version$version.string,
+          platform = base::version$platform
+        )
     },
 
     # cohortIds (`integer(n)`)
@@ -231,41 +234,46 @@ CDMInterface <- R6::R6Class(
     cdmconFetchCohortTable = function(cohortIds, cohortTableName) {
       return(
         private$cdm[[cohortTableName]] %>%
-          dplyr::filter(.data$cohort_definition_id %in% cohortIds)) %>%
+          dplyr::filter(.data$cohort_definition_id %in% cohortIds)
+      ) %>%
         dplyr::collect()
     },
 
     # andromeda (`Andromeda::andromeda()`)
     cdmconAddAge = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>% dplyr::select("person_id") %>% dplyr::pull()
-      
+      personIds <- andromeda$treatmentHistory %>%
+        dplyr::select("person_id") %>%
+        dplyr::pull()
+
       andromeda$year_of_birth <- private$cdm$person %>%
         dplyr::select("person_id", "year_of_birth")
-      
+
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$year_of_birth, by = dplyr::join_by(person_id == person_id)) %>%
         dplyr::mutate(age = .data$index_year - .data$year_of_birth) %>%
         dplyr::select(-"year_of_birth")
-      
+
       return(invisible(NULL))
     },
 
     # andromeda (`Andromeda::andromeda()`)
     cdmconAddSex = function(andromeda) {
       # message("Not yet implemented")
-      personIds <- andromeda$treatmentHistory %>% select("person_id") %>% pull()
+      personIds <- andromeda$treatmentHistory %>%
+        select("person_id") %>%
+        pull()
       # personIds <- c(1,2,3,4)
-      
+
       andromeda$sex <- private$cdm$person %>%
         dplyr::filter(.data$person_id %in% personIds) %>%
         dplyr::inner_join(private$cdm$concept, by = join_by(gender_concept_id == concept_id)) %>%
         dplyr::select(person_id, concept_name) %>%
         dplyr::collect()
-      
+
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$sex, by = join_by(person_id == person_id)) %>%
         dplyr::rename(sex = "concept_name")
-      
+
       return(invisible(NULL))
     },
 
@@ -276,13 +284,15 @@ CDMInterface <- R6::R6Class(
           "cdm_source_name",
           "cdm_source_abbreviation",
           "cdm_release_date",
-          "vocabulary_version") %>%
+          "vocabulary_version"
+        ) %>%
         dplyr::collect() %>%
         dplyr::mutate(
           execution_start_date = as.character(Sys.Date()),
           package_version = as.character(utils::packageVersion("TreatmentPatterns")),
           r_version = base::version$version.string,
-          platform = base::version$platform)
+          platform = base::version$platform
+        )
       return(invisible(NULL))
     }
   )
