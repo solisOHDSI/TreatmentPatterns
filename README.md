@@ -48,7 +48,7 @@ This R package contains the resources for performing a treatment pathway analysi
 
   ```r
   install.packages("remotes")
-  remotes::install_github("mi-erasmusmc/TreatmentPatterns")
+  remotes::install_github("darwin-eu-dev/TreatmentPatterns")
   ```
 
 ## User Documentation

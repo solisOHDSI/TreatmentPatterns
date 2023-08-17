@@ -7,22 +7,10 @@
     <loc>/articles/CreatingCohorts.html</loc>
   </url>
   <url>
-    <loc>/articles/DarwinTreatmentPatternsStudy.html</loc>
-  </url>
-  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/output/sankeyDiagram.html</loc>
-  </url>
-  <url>
-    <loc>/articles/output/sunburstPlot.html</loc>
-  </url>
-  <url>
     <loc>/articles/RunningTreatmentPatterns.html</loc>
-  </url>
-  <url>
-    <loc>/articles/TreatmentPatternsStudy.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
@@ -31,49 +19,19 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/news/index.html</loc>
+  </url>
+  <url>
     <loc>/reference/addChild.html</loc>
   </url>
   <url>
     <loc>/reference/addLabels.html</loc>
   </url>
   <url>
-    <loc>/reference/addPathwayAnalysis.html</loc>
-  </url>
-  <url>
-    <loc>/reference/addPathwaySettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/addPathwaySettingsCheck.html</loc>
-  </url>
-  <url>
     <loc>/reference/buildHierarchy.html</loc>
   </url>
   <url>
     <loc>/reference/CDMInterface.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkAddPathwaySettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkConstructPathways.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkDataSettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkPathwaySettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/checkSaveSettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cohortsCheck.html</loc>
-  </url>
-  <url>
-    <loc>/reference/combineData.html</loc>
   </url>
   <url>
     <loc>/reference/computeCounts.html</loc>
@@ -91,22 +49,7 @@
     <loc>/reference/constructPathways.html</loc>
   </url>
   <url>
-    <loc>/reference/createCohortSettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/createDataSettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/createLegend.html</loc>
-  </url>
-  <url>
-    <loc>/reference/createPathwaySettings.html</loc>
-  </url>
-  <url>
     <loc>/reference/createSankeyDiagram.html</loc>
-  </url>
-  <url>
-    <loc>/reference/createSaveSettings.html</loc>
   </url>
   <url>
     <loc>/reference/createSunburstPlot.html</loc>
@@ -124,9 +67,6 @@
     <loc>/reference/doCombinationWindow.html</loc>
   </url>
   <url>
-    <loc>/reference/doCreateTreatmentHistory.html</loc>
-  </url>
-  <url>
     <loc>/reference/doEraCollapse.html</loc>
   </url>
   <url>
@@ -136,19 +76,7 @@
     <loc>/reference/doFilterTreatments.html</loc>
   </url>
   <url>
-    <loc>/reference/doMaxPathLength.html</loc>
-  </url>
-  <url>
-    <loc>/reference/doMinCellCount.html</loc>
-  </url>
-  <url>
     <loc>/reference/doSplitEventCohorts.html</loc>
-  </url>
-  <url>
-    <loc>/reference/doStepDuration.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ensure_installed.html</loc>
   </url>
   <url>
     <loc>/reference/executeTreatmentPatterns.html</loc>
@@ -157,64 +85,13 @@
     <loc>/reference/export.html</loc>
   </url>
   <url>
-    <loc>/reference/exportFigure.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extractFile.html</loc>
-  </url>
-  <url>
-    <loc>/reference/generateOutput.html</loc>
-  </url>
-  <url>
-    <loc>/reference/getPathways.html</loc>
-  </url>
-  <url>
-    <loc>/reference/groupInfrequentCombinations.html</loc>
-  </url>
-  <url>
     <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/inputSunburstPlot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/is_installed.html</loc>
-  </url>
-  <url>
-    <loc>/reference/launchResultsExplorer.html</loc>
-  </url>
-  <url>
-    <loc>/reference/loadPathwaySettings.html</loc>
-  </url>
-  <url>
-    <loc>/reference/outputDurationEras.html</loc>
-  </url>
-  <url>
-    <loc>/reference/outputSankeyDiagram.html</loc>
-  </url>
-  <url>
-    <loc>/reference/outputTreatedPatients.html</loc>
   </url>
   <url>
     <loc>/reference/PathwayConstructor.html</loc>
   </url>
   <url>
-    <loc>/reference/percentageGroupTreated.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/preConfigure.html</loc>
-  </url>
-  <url>
     <loc>/reference/prepData.html</loc>
-  </url>
-  <url>
-    <loc>/reference/preprocessSunburstData.html</loc>
-  </url>
-  <url>
-    <loc>/reference/saveAsFile.html</loc>
   </url>
   <url>
     <loc>/reference/selectRowsCombinationWindow.html</loc>
@@ -230,11 +107,5 @@
   </url>
   <url>
     <loc>/reference/TreatmentPatterns-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/unzipFiles.html</loc>
-  </url>
-  <url>
-    <loc>/reference/writeCohortTable.html</loc>
   </url>
 </urlset>
