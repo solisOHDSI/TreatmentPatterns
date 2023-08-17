@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+    </li>
+    <li>
       <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
     </li>
     <li>
@@ -41,7 +44,13 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -51,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>createSankeyDiagram</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/blob/HEAD/R/createSankeyDiagram.R" class="external-link"><code>R/createSankeyDiagram.R</code></a></small>
     <div class="hidden name"><code>createSankeyDiagram.Rd</code></div>
     </div>
 
@@ -72,7 +81,7 @@
     <h2>Arguments</h2>
     <dl><dt>treatmentPathways</dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>)<br>
-Data frame containing treatmentPathways columsn: path, freq.</p></dd>
+The contents of the treatmentPathways.csv-file as a data.frame().</p></dd>
 
 
 <dt>outputFile</dt>
@@ -104,6 +113,31 @@ minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
 <p>invisible(NULL)</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># treatmentPathways &lt;- read.csv(treatmentPathways.csv)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Dummy data, typically read from treatmentPathways.csv</span></span></span>
+<span class="r-in"><span><span class="va">treatmentPathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Acetaminophen"</span>, <span class="st">"Acetaminophen-Amoxicillin+Clavulanate"</span>,</span></span>
+<span class="r-in"><span>           <span class="st">"Acetaminophen-Aspirin"</span>, <span class="st">"Amoxicillin+Clavulanate"</span>, <span class="st">"Aspirin"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  freq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">206</span>, <span class="fl">6</span>, <span class="fl">14</span>, <span class="fl">48</span>, <span class="fl">221</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  index_year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"all"</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">outputFile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"mySankeyDiagram"</span>, fileext <span class="op">=</span> <span class="st">"html"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">createSankeyDiagram</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">treatmentPathways</span>,</span></span>
+<span class="r-in"><span>  <span class="va">outputFile</span>,</span></span>
+<span class="r-in"><span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  minFreq <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing Sankey diagram to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp2rzb84\mySankeyDiagram1ef026cc3e0dhtml</span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -112,7 +146,7 @@ minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Maarten van Kessel.</p>
+  <p></p><p>Developed by Aniek Markus, Maarten van Kessel.</p>
 </div>
 
 <div class="pkgdown">

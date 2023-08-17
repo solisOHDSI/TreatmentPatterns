@@ -50,6 +50,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+    </li>
+    <li>
       <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
     </li>
     <li>
@@ -61,7 +64,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -77,7 +87,7 @@
       <h1 data-toc-skip>Running TreatmentPatterns</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/blob/HEAD/vignettes/RunningTreatmentPatterns.Rmd" class="external-link"><code>vignettes/RunningTreatmentPatterns.Rmd</code></a></small>
       <div class="hidden name"><code>RunningTreatmentPatterns.Rmd</code></div>
 
     </div>
@@ -146,8 +156,8 @@ treatment should last to be included in analysis</td>
 <tr class="even">
 <td>filterTreatments</td>
 <td>First</td>
-<td>Select first occurrence of (‘First’) / changes between (‘Changes’) /
-all event cohorts (‘All’)</td>
+<td>Select first occurrence of (‘First’); changes between (‘Changes’);
+or all event cohorts (‘All’).</td>
 </tr>
 <tr class="odd">
 <td>maxPathLength</td>
@@ -155,18 +165,13 @@ all event cohorts (‘All’)</td>
 <td>Maximum number of steps included in treatment pathway</td>
 </tr>
 <tr class="even">
-<td>minCellCount</td>
+<td>minFreq</td>
 <td>5</td>
-<td>Minimum number of persons with a specific treatment pathway for the
-pathway to be included in analysis</td>
+<td>Minimum frequency required per pathway. Censors data below
+<code>x</code> as <code>&lt;x</code>. This minimum value will carry over
+to the sankey diagram and sunburst plot.</td>
 </tr>
 <tr class="odd">
-<td>minFreq</td>
-<td>Remove</td>
-<td>Select to completely remove / sequentially adjust (by removing last
-step as often as necessary) treatment pathways below minFreq</td>
-</tr>
-<tr class="even">
 <td>addNoPaths</td>
 <td>FALSE</td>
 <td>Select to include untreated persons without treatment pathway in the
@@ -216,7 +221,7 @@ sunburst plot</td>
 <span>  outputPath <span class="op">=</span> <span class="va">allDir</span>,</span>
 <span>  connectionDetails <span class="op">=</span> <span class="va">connectionDetails</span>,</span>
 <span>  cdmSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
-<span>  resultSchema <span class="op">=</span> <span class="st">"main"</span>, </span>
+<span>  resultSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  <span class="co"># Optional settings</span></span>
 <span>  includeTreatments <span class="op">=</span> <span class="st">"startDate"</span>,</span>
 <span>  periodPriorToIndex <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -247,32 +252,11 @@ intermediate files by querying the andromeda environment.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">andromeda</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] "addRowsFRFS_1"    "addRowsFRFS_2"    "addRowsLRFS_1"    "addRowsLRFS_2"   </span></span>
-<span><span class="co">##  [5] "cohorts"          "currentCohorts"   "eventCohorts"     "exitCohorts"     </span></span>
-<span><span class="co">##  [9] "exitHistory"      "fullCohorts"      "labels"           "metadata"        </span></span>
-<span><span class="co">## [13] "sex"              "targetCohorts"    "treatmentHistory" "year_of_birth"</span></span></code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span><span class="op">$</span><span class="va">treatmentHistory</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;treatmentHistory&gt; [?? x 11]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp8q4HNf\file2e847d732a23.sqlite]</span></span></span>
-<span><span class="co">##    event_cohort_id person_id index_year event_start_date event_end_date</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 1                    <span style="text-decoration: underline;">2</span>788       <span style="text-decoration: underline;">1</span>980             <span style="text-decoration: underline;">3</span>659           <span style="text-decoration: underline;">3</span>694</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> 1                    <span style="text-decoration: underline;">1</span>376       <span style="text-decoration: underline;">1</span>979             <span style="text-decoration: underline;">4</span>911           <span style="text-decoration: underline;">5</span>001</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> 1                    <span style="text-decoration: underline;">1</span>566       <span style="text-decoration: underline;">1</span>970              231            261</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> 1                    <span style="text-decoration: underline;">1</span>357       <span style="text-decoration: underline;">1</span>976             <span style="text-decoration: underline;">2</span>211           <span style="text-decoration: underline;">2</span>246</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> 1                     266       <span style="text-decoration: underline;">1</span>967             -<span style="color: #BB0000;">950</span>           -<span style="color: #BB0000;">906</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> 1                     616       <span style="text-decoration: underline;">1</span>961             -<span style="color: #BB0000;">176</span>           -<span style="color: #BB0000;">141</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> 1                     755       <span style="text-decoration: underline;">1</span>950            -<span style="color: #BB0000; text-decoration: underline;">7</span><span style="color: #BB0000;">106</span>          -<span style="color: #BB0000; text-decoration: underline;">7</span><span style="color: #BB0000;">071</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> 1                      82       <span style="text-decoration: underline;">1</span>973             <span style="text-decoration: underline;">1</span>352           <span style="text-decoration: underline;">1</span>412</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> 1                    <span style="text-decoration: underline;">3</span>615       <span style="text-decoration: underline;">1</span>960            -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">408</span>          -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">373</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> 1                    <span style="text-decoration: underline;">2</span>583       <span style="text-decoration: underline;">1</span>971              555            645</span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ more rows</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># ℹ 6 more variables: duration_era &lt;int&gt;, gap_same &lt;int&gt;, event_seq &lt;int&gt;,</span></span></span>
-<span><span class="co">## <span style="color: #949494;">#   event_cohort_name &lt;chr&gt;, sex &lt;chr&gt;, age &lt;dbl&gt;</span></span></span></code></pre>
 <p>The files inside the andromeda environment can be exported using the
 export function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">segDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"segmented"</span><span class="op">)</span></span>
 <span><span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span><span class="va">andromeda</span>, outputPath <span class="op">=</span> <span class="va">segDir</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -280,7 +264,7 @@ export function.</p>
 <div class="section level2">
 <h2 id="cdmconnector">CDMConnector<a class="anchor" aria-label="anchor" href="#cdmconnector"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdmDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"CDMCon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu">eunomia_dir</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -294,7 +278,8 @@ export function.</p>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"CohortTable"</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="va">cdmDir</span>,</span>
-<span>  cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span></code></pre></div>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -310,7 +295,7 @@ export function.</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Maarten van Kessel.</p>
+<p>Developed by Aniek Markus, Maarten van Kessel.</p>
 </div>
 
 <div class="pkgdown">
