@@ -38,11 +38,40 @@ CDMInterface <- R6::R6Class(
     validate = function() {
       errorMessages <- checkmate::makeAssertCollection()
 
-      checkmate::assertClass(private$connectionDetails, "ConnectionDetails", null.ok = TRUE, add = errorMessages)
-      checkmate::assertCharacter(x = private$connectionDetails$dbms, len = 1, null.ok = TRUE, add = errorMessages)
-      checkmate::assertCharacter(private$cdmDatabaseSchema, null.ok = TRUE, len = 1, add = errorMessages)
-      checkmate::assertCharacter(private$resultSchema, null.ok = TRUE, len = 1, add = errorMessages)
-      checkmate::assertClass(private$cdm, classes = "cdm_reference", null.ok = TRUE, add = errorMessages)
+      checkmate::assertClass(
+        x = private$connectionDetails,
+        "ConnectionDetails",
+        null.ok = TRUE,
+        add = errorMessages
+      )
+      
+      checkmate::assertCharacter(
+        x = private$connectionDetails$dbms,
+        len = 1,
+        null.ok = TRUE,
+        add = errorMessages
+      )
+      
+      checkmate::assertCharacter(
+        private$cdmDatabaseSchema,
+        null.ok = TRUE,
+        len = 1,
+        add = errorMessages
+      )
+      
+      checkmate::assertCharacter(
+        private$resultSchema,
+        null.ok = TRUE,
+        len = 1,
+        add = errorMessages
+      )
+      
+      checkmate::assertClass(
+        private$cdm,
+        classes = "cdm_reference",
+        null.ok = TRUE,
+        add = errorMessages
+      )
 
       checkmate::reportAssertions(collection = errorMessages)
       return(invisible(self))
