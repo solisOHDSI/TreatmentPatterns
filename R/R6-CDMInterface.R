@@ -5,6 +5,8 @@
 CDMInterface <- R6::R6Class(
   classname = "CDMInterface",
   public = list(
+    ## Public ----
+    ### Methods ----
     #' @description
     #' Initializer method
     #'
@@ -16,6 +18,9 @@ CDMInterface <- R6::R6Class(
     #' @return (`invisible(self)`)
     initialize = function(connectionDetails = NULL, cdmSchema = NULL, resultSchema = NULL, cdm = NULL) {
       private$connectionDetails <- connectionDetails
+      if (!is.null(private$connectionDetails)) {
+        private$connection <- DatabaseConnector::connect(private$connectionDetails)
+      }
       private$cdmSchema <- cdmSchema
       private$resultSchema <- resultSchema
       private$cdm <- cdm
@@ -129,15 +134,32 @@ CDMInterface <- R6::R6Class(
         DatabaseConnector = private$dbconFetchMetadata(andromeda)
       )
       return(invisible(NULL))
+    },
+    
+    #' @description
+    #' Destroys instance
+    #' 
+    #' @return (NULL)
+    destroy = function() {
+      private$finalize()
     }
   ),
   private = list(
+    ## Private ----
+    ### Fields ----
     connectionDetails = NULL,
+    connection = NULL,
     cdmSchema = NULL,
     resultSchema = NULL,
     cdm = NULL,
     type = "",
 
+    ### Methods ----
+    finalize = function() {
+      DatabaseConnector::disconnect(private$connection)
+    },
+    
+    #### DatabaseConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
     dbconFetchCohortTable = function(cohortIds, cohortTableName) {
@@ -151,14 +173,11 @@ CDMInterface <- R6::R6Class(
         cohortIds = cohortIds
       )
 
-      connection <- DatabaseConnector::connect(private$connectionDetails)
-      on.exit(DatabaseConnector::disconnect(connection))
-
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms
+        targetDialect = private$connection@dbms
       )
-      return(DatabaseConnector::querySql(connection, translatedSql))
+      return(DatabaseConnector::querySql(private$connection, translatedSql))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -177,15 +196,13 @@ CDMInterface <- R6::R6Class(
         personIds = personIds
       )
 
-      connection <- DatabaseConnector::connect(private$connectionDetails)
-      on.exit(DatabaseConnector::disconnect(connection))
-
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms
+        targetDialect = private$connection@dbms
       )
 
-      andromeda$year_of_birth <- DatabaseConnector::querySql(connection, translatedSql)
+      andromeda$year_of_birth <- DatabaseConnector::querySql(
+        private$connection, translatedSql)
 
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$year_of_birth, by = dplyr::join_by(person_id == PERSON_ID)) %>%
@@ -213,15 +230,13 @@ CDMInterface <- R6::R6Class(
         personIds = personIds
       )
 
-      connection <- DatabaseConnector::connect(private$connectionDetails)
-      on.exit(DatabaseConnector::disconnect(connection))
-
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms
+        targetDialect = private$connection@dbms
       )
 
-      andromeda$sex <- DatabaseConnector::querySql(connection, translatedSql)
+      andromeda$sex <- DatabaseConnector::querySql(
+        private$connection, translatedSql)
 
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$sex, by = dplyr::join_by(person_id == PERSON_ID)) %>%
@@ -241,15 +256,13 @@ CDMInterface <- R6::R6Class(
         cdmSchema = private$cdmSchema
       )
 
-      connection <- DatabaseConnector::connect(private$connectionDetails)
-      on.exit(DatabaseConnector::disconnect(connection))
-
       translatedSql <- SqlRender::translate(
         sql = renderedSql,
-        targetDialect = connection@dbms
+        targetDialect = private$connection@dbms
       )
 
-      andromeda$metadata <- DatabaseConnector::querySql(connection, translatedSql) %>%
+      andromeda$metadata <- DatabaseConnector::querySql(
+        private$connection, translatedSql) %>%
         dplyr::mutate(
           execution_start_date = as.character(Sys.Date()),
           package_version = as.character(utils::packageVersion("TreatmentPatterns")),
@@ -257,7 +270,7 @@ CDMInterface <- R6::R6Class(
           platform = base::version$platform
         )
     },
-
+    #### CDMConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
     cdmconFetchCohortTable = function(cohortIds, cohortTableName) {
