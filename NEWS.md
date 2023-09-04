@@ -3,6 +3,8 @@
 * Added checks for user input: `cohorts` and `cohortTableName`.
 * Added option to directly return HTML when using createSankeyDiagram.
 * Added option to directly return HTML when using createSunburstPlot.
+* Added option for ageWindow to be a vector.
+* Added input checking for `export()`.
 
 # TreatmentPatterns 2.5.0
 ==========
