@@ -1,6 +1,7 @@
 # TreatmentPatterns 2.5.1
 ==========
-* Added checks for user input: `cohorts` and `cohortTableName`
+* Added checks for user input: `cohorts` and `cohortTableName`.
+* Added option to directly return HTML when usingcreateSankeyDiagram.
 
 # TreatmentPatterns 2.5.0
 ==========
