@@ -7,6 +7,7 @@
 createSankeyDiagram(
   treatmentPathways,
   outputFile,
+  returnHTML = FALSE,
   groupCombinations = FALSE,
   minFreq = 5
 )
@@ -27,6 +28,13 @@ Path where the Sankey diagram should be written to.}
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
+
+\item{param_returnHTML}{(\code{logical(1)}: \code{FALSE})\cr
+Logical to return HTML or not.
+\describe{
+\item{\code{TRUE}}{Returns HTML as \code{character(n)}, does not requie \code{outputPath} to be specified.}
+\item{\code{FALSE}}{Returns \code{NULL}, but writes the HTML to the specified file instead. Requires \code{outputPath} to be specified.}
+}}
 }
 \value{
 invisible(NULL)
