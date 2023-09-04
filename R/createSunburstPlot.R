@@ -269,6 +269,7 @@ prepData <- function(treatmentHistory, year) {
 #'
 #' @template param_treatmentPathways
 #' @template param_outputFile
+#' @template param_returnHTML
 #'
 #' @export
 #'
@@ -293,7 +294,7 @@ prepData <- function(treatmentHistory, year) {
 #'   treatmentPatwhays,
 #'   outputFile
 #' )
-createSunburstPlot <- function(treatmentPathways, outputFile) {
+createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE) {
   data <- treatmentPathways %>%
     mutate(freq = as.integer(.data$freq)) %>%
     select("path", "freq")
@@ -331,11 +332,15 @@ createSunburstPlot <- function(treatmentPathways, outputFile) {
     ),
     html
   )
-
-  # Save HTML file
-  writeLines(
-    text = html,
-    con = file.path(outputFile)
-  )
-  message(glue::glue("Wrote sunburst plot to {file.path(outputFile)}"))
+  
+  if (returnHTML) {
+    return(html)
+  } else {
+    message(glue::glue("Writing sunburst plot to {file.path(outputFile)}"))
+    # Save HTML file
+    writeLines(
+      text = html,
+      con = file.path(outputFile)
+    )
+  }
 }

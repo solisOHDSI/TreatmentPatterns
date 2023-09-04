@@ -1,7 +1,8 @@
 # TreatmentPatterns 2.5.1
 ==========
 * Added checks for user input: `cohorts` and `cohortTableName`.
-* Added option to directly return HTML when usingcreateSankeyDiagram.
+* Added option to directly return HTML when using createSankeyDiagram.
+* Added option to directly return HTML when using createSunburstPlot.
 
 # TreatmentPatterns 2.5.0
 ==========
