@@ -119,7 +119,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveNa
   checkmate::assertPathForOutput(outputPath, overwrite = TRUE, add = collection)
   checkmate::assertIntegerish(ageWindow, min.len = 1, any.missing = FALSE, unique = TRUE, add = collection)
   checkmate::assertIntegerish(minFreq, len = 1, lower = 1, add = collection)
-  checkmate::assertCharacter(archiveName, len = 1, add = collection)
+  checkmate::assertCharacter(archiveName, len = 1, add = collection, null.ok = TRUE)
   checkmate::reportAssertions(collection)
   
   if (!file.exists(outputPath)) {
