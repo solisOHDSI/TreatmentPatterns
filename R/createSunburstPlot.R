@@ -315,10 +315,31 @@ createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE
     readLines(
       system.file(
         package = "TreatmentPatterns",
-        "htmlTemplates", "sunburst_standalone.html"
+        "htmlTemplates", "sunburst_shiny.html"
       )
     ),
     collapse = "\n"
+  )
+  
+  legend <- paste(
+    readLines(
+      system.file(
+        package = "TreatmentPatterns",
+        "htmlTemplates", "legend.html"
+      )
+    ),
+    collapse = "\n"
+  )
+  
+  legend <- sub("@insert_data", json, legend)
+  legend <- sub(
+    "@name",
+    sprintf(
+      "Strata:\n\nAges: %s\nYears: %s\n",
+      paste(unique(treatmentPathways$age), collapse = ", "),
+      paste(unique(treatmentPathways$index_year), collapse = ", ")
+    ),
+    legend
   )
 
   # Replace @insert_data
@@ -334,7 +355,7 @@ createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE
   )
   
   if (returnHTML) {
-    return(html)
+    return(list(sunburst = html, legend = legend))
   } else {
     message(glue::glue("Writing sunburst plot to {file.path(outputFile)}"))
     # Save HTML file
