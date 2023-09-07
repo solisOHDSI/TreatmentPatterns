@@ -191,7 +191,6 @@ transformCSVtoJSON <- function(data, outcomes) {
       return(p)
     }
   )
-  browser()
   transformed_csv <- data.frame(
     path = updated_path,
     freq = data$freq,
