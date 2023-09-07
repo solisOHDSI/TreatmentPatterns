@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+    </li>
+    <li>
       <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
     </li>
     <li>
@@ -41,7 +44,13 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -51,7 +60,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>PathwayConstructor</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/blob/HEAD/R/R6-PathwayConstructor.R" class="external-link"><code>R/R6-PathwayConstructor.R</code></a></small>
     <div class="hidden name"><code>PathwayConstructor.Rd</code></div>
     </div>
 
@@ -86,7 +95,17 @@ Choose the way you interface with the CDM, either through <code>DatabaseConnecto
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>cohorts</code></dt>
 <dd><p>(<code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>)<br>
-Cohort table.</p></dd>
+Data frame containing the following columns and data types:</p><dl><dt>cohortId <code>numeric(1)</code></dt>
+<dd><p>Cohort ID's of the cohorts to be used in the cohort table.</p></dd>
+
+<dt>cohortName <code>character(1)</code></dt>
+<dd><p>Cohort names of the cohorts to be used in the cohort table.</p></dd>
+
+<dt>type <code>character(1)</code> ["target", "event', "exit"]</dt>
+<dd><p>Cohort type, describing if the cohort is a target, event, or exit cohort</p></dd>
+
+
+</dl></dd>
 
 
 <dt><code>cohortTableName</code></dt>
@@ -165,43 +184,60 @@ which can be fetched using <code>self$getAndromeda()</code>.</p><div class="sect
 
 
 <dt><code>periodPriorToIndex</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>0</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
+Number of days prior to the index date of the target cohort | that event
+cohorts are allowed to start</p></dd>
 
 
 <dt><code>minEraDuration</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>0</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
+Minimum time an event era should last to be included in analysis</p></dd>
 
 
 <dt><code>splitEventCohorts</code></dt>
-<dd><p>(<code>character(n)</code>: <code>""</code>)<br></p></dd>
+<dd><p>(<code>character(n)</code>: <code>""</code>)<br>
+Specify event cohort to split in acute (&lt; X days) and therapy (&gt;= X days)</p></dd>
 
 
 <dt><code>splitTime</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>30</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>30</code>)<br>
+Specify number of days (X) at which each of the split event cohorts should
+be split in acute and therapy</p></dd>
 
 
 <dt><code>eraCollapseSize</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>30</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>30</code>)<br>
+Window of time between which two eras of the same event cohort are collapsed
+into one era</p></dd>
 
 
 <dt><code>combinationWindow</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>30</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>30</code>)<br>
+Window of time two event cohorts need to overlap to be considered a
+combination treatment</p></dd>
 
 
 <dt><code>minPostCombinationDuration</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>30</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>30</code>)<br>
+Minimum time an event era before or after a generated combination treatment
+should last to be included in analysis</p></dd>
 
 
 <dt><code>filterTreatments</code></dt>
-<dd><p>(<code>character(1)</code>: <code>"First"</code>)<br></p></dd>
+<dd><p>(<code>character(1)</code>: <code>"First"</code> ["first", "Changes", "all"])<br>
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).</p></dd>
 
 
 <dt><code>maxPathLength</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>5</code>)<br></p></dd>
+<dd><p>(<code>integer(1)</code>: <code>5</code>)<br>
+Maximum number of steps included in treatment pathway</p></dd>
 
 
 <dt><code>addNoPaths</code></dt>
-<dd><p>(<code>logical(1)</code>: <code>TRUE</code>)<br></p></dd>
+<dd><p>(<code>logical(1)</code>: <code>TRUE</code>)<br>
+Select to include untreated persons without treatment pathway in the
+sunburst plot</p></dd>
 
 
 </dl><p></p></div>
@@ -251,7 +287,7 @@ which can be fetched using <code>self$getAndromeda()</code>.</p><div class="sect
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Maarten van Kessel.</p>
+  <p></p><p>Developed by Aniek Markus, Maarten van Kessel.</p>
 </div>
 
 <div class="pkgdown">
