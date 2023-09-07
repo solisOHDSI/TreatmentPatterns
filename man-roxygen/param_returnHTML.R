@@ -1,4 +1,4 @@
-#' @param param_returnHTML (`logical(1)`: `FALSE`)\cr
+#' @param returnHTML (`logical(1)`: `FALSE`)\cr
 #' Logical to return HTML or not.
 #' \describe{
 #'   \item{`TRUE`}{Returns HTML as `character(n)`, does not requie `outputPath` to be specified.}

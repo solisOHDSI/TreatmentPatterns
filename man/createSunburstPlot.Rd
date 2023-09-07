@@ -13,7 +13,7 @@ The contents of the treatmentPathways.csv-file as a data.frame().}
 \item{outputFile}{(\code{character(1)})\cr
 Path where the Sankey diagram should be written to.}
 
-\item{param_returnHTML}{(\code{logical(1)}: \code{FALSE})\cr
+\item{returnHTML}{(\code{logical(1)}: \code{FALSE})\cr
 Logical to return HTML or not.
 \describe{
 \item{\code{TRUE}}{Returns HTML as \code{character(n)}, does not requie \code{outputPath} to be specified.}
