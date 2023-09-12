@@ -224,7 +224,7 @@ CDMInterface <- R6::R6Class(
         sql = "SELECT
                  person_id,
                  concept_name AS sex
-               FROM @resultSchema.person
+               FROM @cdmSchema.person
                INNER JOIN @cdmSchema.concept
                ON person.gender_concept_id = concept.concept_id
                WHERE person_id IN (@personIds);",
