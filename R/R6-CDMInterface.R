@@ -156,7 +156,9 @@ CDMInterface <- R6::R6Class(
 
     ### Methods ----
     finalize = function() {
-      DatabaseConnector::disconnect(private$connection)
+      if (!is.null(private$connection)) {
+        DatabaseConnector::disconnect(private$connection)
+      }
     },
     
     #### DatabaseConnector ----
@@ -190,9 +192,9 @@ CDMInterface <- R6::R6Class(
         sql = "SELECT
                  person_id,
                  year_of_birth
-               FROM @resultSchema.person
+               FROM @cdmSchema.person
                WHERE person_id IN (@personIds);",
-        resultSchema = private$resultSchema,
+        cdmSchema = private$cdmSchema,
         personIds = personIds
       )
 
@@ -223,10 +225,10 @@ CDMInterface <- R6::R6Class(
                  person_id,
                  concept_name AS sex
                FROM @resultSchema.person
-               INNER JOIN @resultSchema.concept
+               INNER JOIN @cdmSchema.concept
                ON person.gender_concept_id = concept.concept_id
                WHERE person_id IN (@personIds);",
-        resultSchema = private$resultSchema,
+        cdmSchema = private$cdmSchema,
         personIds = personIds
       )
 
