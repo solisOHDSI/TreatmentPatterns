@@ -215,9 +215,9 @@ transformCSVtoJSON <- function(data, outcomes) {
 #' @return (`data.frame()`)
 createTreatmentPathways <- function(treatmentHistory) {
   treatmentPathways <- treatmentHistory %>%
-    dplyr::group_by(.data$person_id, .data$index_year) %>%
+    dplyr::group_by(.data$personId, .data$indexYear) %>%
     dplyr::summarise(
-      pathway = list(.data$event_cohort_name[.data$event_seq]),
+      pathway = list(.data$eventCohortName[.data$eventSeq]),
       .groups = "drop"
     )
   
@@ -228,8 +228,8 @@ createTreatmentPathways <- function(treatmentHistory) {
     max()
   
   treatmentPathways <- treatmentPathways %>%
-    dplyr::group_by(.data$index_year, .data$pathway) %>%
-    dplyr::summarise(freq = length(.data$person_id), .groups = "drop")
+    dplyr::group_by(.data$indexYear, .data$pathway) %>%
+    dplyr::summarise(freq = length(.data$personId), .groups = "drop")
   
   return(treatmentPathways)
 }
@@ -246,7 +246,7 @@ prepData <- function(treatmentHistory, year) {
   dat <- treatmentPathways %>%
     rowwise() %>%
     mutate(path = paste(.data$pathway, collapse = "-")) %>%
-    select("index_year", "path", "freq")
+    select("indexYear", "path", "freq")
   
   if (year == "all") {
     dat <- dat %>%
@@ -254,7 +254,7 @@ prepData <- function(treatmentHistory, year) {
       summarise(freq = sum(.data$freq))
   } else {
     dat <- dat %>%
-      filter(.data$index_year == year)
+      filter(.data$indexYear == year)
     if (nrow(dat) == 0) {
       NULL
       # message(sprintf("Not enough data for year: %s", year))
