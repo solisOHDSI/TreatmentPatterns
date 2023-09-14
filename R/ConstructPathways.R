@@ -478,7 +478,7 @@ doCombinationWindow <- function(
     )
 
     sumSelectedRows <- andromeda$treatmentHistory %>%
-      dplyr::summarise(sum = sum(.data$selectedRows)) %>%
+      dplyr::summarise(sum = sum(.data$selectedRows, na.rm = TRUE)) %>%
       dplyr::pull()
 
     if (sumSwitchComb != sumSelectedRows) {
@@ -712,7 +712,7 @@ doFilterTreatments <- function(andromeda, filterTreatments) {
       dplyr::summarise(
         eventStartDate = min(.data$eventStartDate),
         eventEndDate = max(.data$eventEndDate),
-        durationEra = sum(.data$durationEra),
+        durationEra = sum(.data$durationEra, na.rm = TRUE),
         .groups = "drop"
       ) %>%
       dplyr::arrange(.data$personId, .data$indexYear, .data$group) %>%
