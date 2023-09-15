@@ -1,7 +1,9 @@
 # TreatmentPatterns 2.5.2
 ==========
 * Resolved issue with finalize method of CDMInterface class.
-* Resolved issue with schema references
+* Resolved issue with schema references.
+* Unified case style.
+* Refactored code for `createSunburstPlot()`.
 
 # TreatmentPatterns 2.5.1
 ==========
