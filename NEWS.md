@@ -1,3 +1,8 @@
+# TreatmentPatterns 2.5.2
+==========
+* Resolved issue with finalize method of CDMInterface class.
+* Resolved issue with schema references
+
 # TreatmentPatterns 2.5.1
 ==========
 * Added checks for user input: `cohorts` and `cohortTableName`.
