@@ -248,16 +248,18 @@ prepData <- function(treatmentHistory, year) {
     mutate(path = paste(.data$pathway, collapse = "-")) %>%
     select("indexYear", "path", "freq")
   
-  if (year == "all") {
-    dat <- dat %>%
-      group_by(.data$path) %>%
-      summarise(freq = sum(.data$freq))
-  } else {
-    dat <- dat %>%
-      filter(.data$indexYear == year)
-    if (nrow(dat) == 0) {
-      NULL
-      # message(sprintf("Not enough data for year: %s", year))
+  if (!is.na(year) || !is.null(year)) {
+    if (year == "all") {
+      dat <- dat %>%
+        group_by(.data$path) %>%
+        summarise(freq = sum(.data$freq))
+    } else {
+      dat <- dat %>%
+        filter(.data$indexYear == year)
+      if (nrow(dat) == 0) {
+        NULL
+        # message(sprintf("Not enough data for year: %s", year))
+      }
     }
   }
   return(dat)
@@ -330,7 +332,11 @@ toFile <- function(json, treatmentPathways, outputFile) {
     html
   )
   
-  message(glue::glue("Writing sunburst plot to {file.path(outputFile)}"))
+  message(sprintf(
+    "Writing sunburst plot to %s",
+    file.path(outputFile)
+  ))
+  
   # Save HTML file
   writeLines(
     text = html,

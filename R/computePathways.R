@@ -162,7 +162,6 @@ computePathways <- function(
     maxPathLength = maxPathLength,
     addNoPaths = addNoPaths
   )
-
   pathwayConstructor$construct()
   andromeda <- pathwayConstructor$getAndromeda()
   cdmInterface$addSex(andromeda)

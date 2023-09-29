@@ -87,12 +87,15 @@ CDMInterface <- R6::R6Class(
     #'
     #' @template param_cohortIds
     #' @template param_cohortTableName
+    #' @template param_andromeda
+    #' @param andromedaTableName (`character(1)`)\cr
+    #' Name of the table in the Andromeda object where the data will be loaded.
     #'
     #' @return (`data.frame`)
-    fetchCohortTable = function(cohortIds, cohortTableName) {
+    fetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
       switch(private$type,
-        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName),
-        DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName)
+        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName),
+        DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName)
       )
     },
 
@@ -133,7 +136,7 @@ CDMInterface <- R6::R6Class(
         CDMConnector = private$cdmconFetchMetadata(andromeda),
         DatabaseConnector = private$dbconFetchMetadata(andromeda)
       )
-      return(invisible(NULL))
+      return(invisible(self))
     },
     
     #' @description
@@ -164,7 +167,7 @@ CDMInterface <- R6::R6Class(
     #### DatabaseConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    dbconFetchCohortTable = function(cohortIds, cohortTableName) {
+    dbconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
       renderedSql <- SqlRender::render(
         sql = "
         SELECT
@@ -185,13 +188,15 @@ CDMInterface <- R6::R6Class(
         sql = renderedSql,
         targetDialect = private$connection@dbms
       )
-      return(
-        DatabaseConnector::querySql(
-          connection = private$connection,
-          sql = translatedSql,
-          snakeCaseToCamelCase = TRUE
-        )
+      
+      DatabaseConnector::querySqlToAndromeda(
+        connection = private$connection,
+        sql = translatedSql,
+        andromeda = andromeda,
+        andromedaTableName = andromedaTableName
       )
+      
+      return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -232,7 +237,7 @@ CDMInterface <- R6::R6Class(
         dplyr::mutate(age = .data$indexYear - .data$yearOfBirth) %>%
         dplyr::select(-"yearOfBirth")
 
-      return(invisible(NULL))
+      return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -275,7 +280,7 @@ CDMInterface <- R6::R6Class(
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
         dplyr::inner_join(andromeda$sex, by = dplyr::join_by(personId == personId))
 
-      return(invisible(NULL))
+      return(invisible(self))
     },
     dbconFetchMetadata = function(andromeda) {
       renderedSql <- SqlRender::render(
@@ -306,17 +311,18 @@ CDMInterface <- R6::R6Class(
           rVersion = base::version$version.string,
           platform = base::version$platform
         )
+      
+      return(invisible(self))
     },
     #### CDMConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    cdmconFetchCohortTable = function(cohortIds, cohortTableName) {
-      return(
-        private$cdm[[cohortTableName]] %>%
-          dplyr::filter(.data$cohort_definition_id %in% cohortIds) %>%
-          dplyr::collect() %>%
-          SqlRender::snakeCaseToCamelCaseNames()
-      )
+    # andromeda (`Andromeda::andromeda()`)
+    # andromedaTableName (`character(1)`)
+    cdmconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
+      andromeda[[andromedaTableName]] <- private$cdm[[cohortTableName]] %>%
+        dplyr::filter(.data$cohort_definition_id %in% cohortIds)
+      return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -336,7 +342,7 @@ CDMInterface <- R6::R6Class(
         dplyr::mutate(age = .data$indexYear - .data$yearOfBirth) %>%
         dplyr::select(-"yearOfBirth")
 
-      return(invisible(NULL))
+      return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -358,7 +364,7 @@ CDMInterface <- R6::R6Class(
         dplyr::inner_join(andromeda$sex, by = join_by(personId == personId)) %>%
         dplyr::rename(sex = "conceptName")
 
-      return(invisible(NULL))
+      return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
@@ -378,7 +384,7 @@ CDMInterface <- R6::R6Class(
           rVersion = base::version$version.string,
           platform = base::version$platform
         )
-      return(invisible(NULL))
+      return(invisible(self))
     }
   )
 )
