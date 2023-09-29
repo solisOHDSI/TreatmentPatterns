@@ -73,7 +73,12 @@ Validation method
 \subsection{Method \code{fetchCohortTable()}}{
 Fetch specified cohort IDs from a specified cohort table
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchCohortTable(cohortIds, cohortTableName)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchCohortTable(
+  cohortIds,
+  cohortTableName,
+  andromeda,
+  andromedaTableName
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -84,6 +89,21 @@ Cohort ID's of cohorts to investigate.}
 
 \item{\code{cohortTableName}}{(\code{character(1)})\cr
 Cohort table name.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
+\item{\code{andromedaTableName}}{(\code{character(1)})\cr
+Name of the table in the Andromeda object where the data will be loaded.}
 }
 \if{html}{\out{</div>}}
 }
@@ -103,6 +123,9 @@ Stratisfy the treatmentHistory data frame by age.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
 \item{\code{andromeda}}{(\code{Andromeda::andromeda()})
 Andromeda object.}
 
@@ -138,6 +161,9 @@ Andromeda object.}
 
 \item{\code{andromeda}}{(\code{Andromeda::andromeda()})
 Andromeda object.}
+
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
 }
 \if{html}{\out{</div>}}
 }
@@ -157,6 +183,9 @@ Fetch metadata from CDM
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{andromeda}}{(\code{Andromeda::andromeda()})
+Andromeda object.}
+
 \item{\code{andromeda}}{(\code{Andromeda::andromeda()})
 Andromeda object.}
 
