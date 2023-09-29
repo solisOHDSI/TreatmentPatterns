@@ -21,15 +21,12 @@ Imports:
     SqlRender,
     stringr,
     stringi,
-    fs,
-    glue,
     utils,
     rjson,
     googleVis,
     stats,
     Andromeda,
     tidyr,
-    data.table,
     R6
 Suggests:
     knitr,
