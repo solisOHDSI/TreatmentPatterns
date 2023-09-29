@@ -106,13 +106,28 @@ if (ableToRun()) {
     )
 
     # Viral Sinusitis
-    res <- cdmInterface$fetchCohortTable(1, cohortTableName = "CohortTable")
+    cdmInterface$fetchCohortTable(
+      cohortIds = 1,
+      cohortTableName = "CohortTable",
+      andromeda = andromCDMC,
+      andromedaTableName = "cohortTable"
+    )
+    
+    res <- andromCDMC$cohortTable
 
     expect_identical(ncol(res), 4L)
     expect_identical(res %>% collect() %>% nrow(), 17268L)
 
     # Empty
-    res <- cdmInterface$fetchCohortTable(23, cohortTableName = "CohortTable")
+    cdmInterface$fetchCohortTable(
+      cohortIds = 23,
+      cohortTableName = "CohortTable",
+      andromeda = andromCDMC,
+      andromedaTableName = "cohortTable"
+    )
+    
+    res <- andromCDMC$cohortTable
+    
     expect_identical(ncol(res), 4L)
     expect_identical(res %>% collect() %>% nrow(), 0L)
   })
