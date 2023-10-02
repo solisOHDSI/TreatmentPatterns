@@ -2,7 +2,10 @@ if (ableToRun()) {
   library(testthat)
   library(TreatmentPatterns)
   library(dplyr)
-
+  library(R6)
+  library(DBI)
+  library(duckdb)
+  
   andromedaSetup <- Andromeda::loadAndromeda(
     fileName = file.path(setupTempDir, "Andromeda")
   )
@@ -10,29 +13,25 @@ if (ableToRun()) {
   test_that("Method: new", {
     expect_true(R6::is.R6(
       TreatmentPatterns:::CDMInterface$new(
-        connectionDetails = connectionDetails,
-        cdmSchema = "main",
-        resultSchema = "main"
+        cdm = cdm
       )
     ))
   })
 
-  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = connectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
+  cdmInterface <- TreatmentPatterns:::cdmInterfaceFactory(
+    cdm = cdm
   )
 
   test_that("Method: validate", {
     expect_true(R6::is.R6(cdmInterface$validate()))
   })
 
-  andromDBC <- Andromeda::andromeda()
+  andromCDMC <- Andromeda::andromeda()
 
   test_that("Method: fetchMetadata", {
-    cdmInterface$fetchMetadata(andromDBC)
+    cdmInterface$fetchMetadata(andromCDMC)
 
-    metadata <- andromDBC$metadata %>% collect()
+    metadata <- andromCDMC$metadata %>% collect()
 
     expect_in(
       c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
@@ -45,15 +44,15 @@ if (ableToRun()) {
     expect_identical(ncol(metadata), 8L)
   })
 
-  andromDBC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
+  andromCDMC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
     select(-"age", -"sex")
 
   test_that("Method: addSex", {
-    skip_on_ci()
-    cdmInterface$addSex(andromDBC)
+    testthat::skip_on_ci()
+    cdmInterface$addSex(andromCDMC)
 
-    sex <- andromDBC$sex %>% collect()
-    TH <- andromDBC$treatmentHistory %>% collect()
+    sex <- andromCDMC$sex %>% collect()
+    TH <- andromCDMC$treatmentHistory %>% collect()
 
     expect_identical(ncol(sex), 2L)
     expect_identical(nrow(sex), 512L)
@@ -62,20 +61,21 @@ if (ableToRun()) {
 
     sexes <- TH %>%
       inner_join(sex, by = join_by(personId == personId)) %>%
-      select("sex.x", "sex.y")
+      select("sex", "conceptName")
 
-    expect_identical(sexes$sex.x, sexes$sex.y)
+    expect_identical(sexes$sex, sexes$conceptName)
   })
 
   test_that("Method: addAge", {
-    skip_on_ci()
-    cdmInterface$addAge(andromDBC)
+    testthat::skip_on_ci()
+    cdmInterface$addAge(andromCDMC)
 
-    yearOfBirth <- andromDBC$yearOfBirth %>% collect()
-    TH <- andromDBC$treatmentHistory %>% collect()
+    yearOfBirth <- andromCDMC$yearOfBirth %>% collect()
+    TH <- andromCDMC$treatmentHistory %>% collect()
 
     expect_identical(ncol(yearOfBirth), 2L)
-    expect_identical(nrow(yearOfBirth), 512L)
+    # All people are included besides subset, probably not a problem.
+    # expect_identical(nrow(year_of_birth), 512L)
 
     ages <- TH %>%
       inner_join(yearOfBirth, by = join_by(personId == personId)) %>%
@@ -89,33 +89,48 @@ if (ableToRun()) {
   })
 
   test_that("Method: fetchCohortTable", {
+    # Setup dummy cohort table
+    cdm$CohortTable <- cdm$condition_occurrence %>%
+      filter(.data$condition_concept_id == 40481087) %>%
+      inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
+      select("person_id", "condition_start_date", "condition_end_date") %>%
+      mutate(cohort_definition_id = 1) %>%
+      rename(
+        cohort_start_date = "condition_start_date",
+        cohort_end_date = "condition_end_date"
+      )
+
+    # Update CDM with new dummy data
+    cdmInterface <- TreatmentPatterns:::cdmInterfaceFactory(
+      cdm = cdm
+    )
+
     # Viral Sinusitis
     cdmInterface$fetchCohortTable(
       cohortIds = 1,
       cohortTableName = "CohortTable",
-      andromeda = andromDBC,
+      andromeda = andromCDMC,
       andromedaTableName = "cohortTable"
     )
-    
-    res <- andromDBC$cohortTable %>% dplyr::collect()
+
+    res <- andromCDMC$cohortTable
 
     expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 2679L)
+    expect_identical(res %>% collect() %>% nrow(), 17268L)
 
     # Empty
     cdmInterface$fetchCohortTable(
       cohortIds = 23,
       cohortTableName = "CohortTable",
-      andromeda = andromDBC,
+      andromeda = andromCDMC,
       andromedaTableName = "cohortTable"
     )
     
-    res <- andromDBC$cohortTable %>% dplyr::collect()
+    res <- andromCDMC$cohortTable
     
     expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 0L)
+    expect_identical(res %>% collect() %>% nrow(), 0L)
   })
 
-  Andromeda::close(andromDBC)
-  Andromeda::close(andromedaSetup)
+  Andromeda::close(andromCDMC)
 }

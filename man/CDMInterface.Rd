@@ -25,12 +25,7 @@ Abstract interface to the CDM, using CDMConnector or DatabaseConnector.
 \subsection{Method \code{new()}}{
 Initializer method
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$new(
-  connectionDetails = NULL,
-  cdmSchema = NULL,
-  resultSchema = NULL,
-  cdm = NULL
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CDMInterface$new(connectionDetails, cdmSchema, resultSchema, cdm)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -135,7 +135,7 @@ computePathways <- function(
     filterTreatments = "First",
     maxPathLength = 5,
     addNoPaths = TRUE) {
-  cdmInterface <- CDMInterface$new(
+  cdmInterface <- cdmInterfaceFactory(
     connectionDetails = connectionDetails,
     cdmSchema = cdmSchema,
     resultSchema = resultSchema,

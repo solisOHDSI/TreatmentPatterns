@@ -1,0 +1,9 @@
+SELECT
+  person_id,
+  year_of_birth
+FROM
+  @cdmSchema.person
+WHERE
+  person_id
+IN
+  (@personIds);
