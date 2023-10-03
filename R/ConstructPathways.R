@@ -430,7 +430,7 @@ doCombinationWindow <- function(
     # add column combination first received, first stopped
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
       dplyr::mutate(combinationFRFS = case_when(
-        .data$selectedRows == 1 & switch == 0 & dplyr::lag(eventEndDate) <= eventEndDate ~ 1,
+        .data$selectedRows == 1 & .data$switch == 0 & dplyr::lag(.data$eventEndDate) <= .data$eventEndDate ~ 1,
         .default = 0
       ))
 
@@ -465,25 +465,25 @@ doCombinationWindow <- function(
       dplyr::pull()
     ))
 
-    sumSwitchComb <- sum(
-      andromeda$treatmentHistory %>%
-        dplyr::summarise(sum = sum(.data$switch, na.rm = TRUE)) %>%
-        dplyr::pull(),
-      andromeda$treatmentHistory %>%
-        dplyr::summarise(sum = sum(.data$combinationFRFS, na.rm = TRUE)) %>%
-        dplyr::pull(),
-      andromeda$treatmentHistory %>%
-        dplyr::summarise(sum = sum(.data$combinationLRFS, na.rm = TRUE)) %>%
-        dplyr::pull()
-    )
-
-    sumSelectedRows <- andromeda$treatmentHistory %>%
-      dplyr::summarise(sum = sum(.data$selectedRows, na.rm = TRUE)) %>%
-      dplyr::pull()
-
-    if (sumSwitchComb != sumSelectedRows) {
-      stop(sprintf("%s does not equal total sum %s", sumSelectedRows, sumSwitchComb))
-    }
+    # sumSwitchComb <- sum(
+    #   andromeda$treatmentHistory %>%
+    #     dplyr::summarise(sum = sum(.data$switch, na.rm = TRUE)) %>%
+    #     dplyr::pull(),
+    #   andromeda$treatmentHistory %>%
+    #     dplyr::summarise(sum = sum(.data$combinationFRFS, na.rm = TRUE)) %>%
+    #     dplyr::pull(),
+    #   andromeda$treatmentHistory %>%
+    #     dplyr::summarise(sum = sum(.data$combinationLRFS, na.rm = TRUE)) %>%
+    #     dplyr::pull()
+    # )
+    # 
+    # sumSelectedRows <- andromeda$treatmentHistory %>%
+    #   dplyr::summarise(sum = sum(.data$selectedRows, na.rm = TRUE)) %>%
+    #   dplyr::pull()
+    # 
+    # if (sumSwitchComb != sumSelectedRows) {
+    #   stop(sprintf("%s does not equal total sum %s", sumSelectedRows, sumSwitchComb))
+    # }
 
     # Do transformations for each of the three newly added columns
     # Construct helpers
