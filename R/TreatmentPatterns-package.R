@@ -9,6 +9,7 @@
 #' @import dplyr
 #' @import Andromeda
 #' @import R6
+#' @import sunburstR
 #' @importFrom stats sd median
 #' @importFrom tidyr pivot_wider
 #' @importFrom googleVis gvisSankey

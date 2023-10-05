@@ -398,3 +398,29 @@ createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE
     toFile(json, treatmentPathways, outputFile)
   }
 }
+
+#' createSunburstPlot2
+#' 
+#' New sunburstPlot function
+#'
+#' @template param_treatmentPathways 
+#' @param ... Other optional parameters for \link[sunburstR]{sunburst}.
+#'
+#' @return (`htmlwidget`)
+#' @export
+#'
+#' @examples
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPatwhays <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' createSunburstPlot2(treatmentPatwhays)
+createSunburstPlot2 <- function(treatmentPathways, ...) {
+  sunburstR::sunburst(data = treatmentPathways, ...)
+}

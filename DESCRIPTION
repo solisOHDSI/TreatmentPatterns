@@ -27,7 +27,8 @@ Imports:
     stats,
     Andromeda,
     tidyr,
-    R6
+    R6,
+    sunburstR
 Suggests:
     knitr,
     rmarkdown,
