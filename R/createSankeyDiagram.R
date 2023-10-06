@@ -60,7 +60,6 @@ createSankeyDiagram <- function(
     ) %>%
     select("source", "target", "freq")
 
-
   if (suppressWarnings(!is.null(data$path3))) {
     result2 <- data %>%
       mutate(
@@ -116,29 +115,7 @@ createSankeyDiagram <- function(
 utils::globalVariables(c(".", "freq", "combination"))
 
 
-#' createSankeyDiagram2
-#' 
-#' Create sankey diagram, will replace `createSankeyDiagram`.
-#'
-#' @template param_treatmentPathways
-#' @template param_groupCombinations
-#'
-#' @return (`htmlwidget`)
-#' @export
-#'
-#' @examples
-#' # Dummy data, typically read from treatmentPathways.csv
-#' treatmentPathways <- data.frame(
-#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
-#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
-#'   freq = c(206, 6, 14, 48, 221),
-#'   sex = rep("all", 5),
-#'   age = rep("all", 5),
-#'   index_year = rep("all", 5)
-#' )
-#' 
-#' createSankeyDiagram2(treatmentPathways)
-createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+splitPathItems <- function(treatmentPathways) {
   data <- treatmentPathways %>%
     rowwise() %>%
     dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
@@ -152,7 +129,10 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
     dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
   
   data[is.na(data)] <- "Stopped"
-  
+  return(data)
+}
+
+createLinks <- function(data) {
   result1 <- data %>%
     mutate(
       source = paste("1.", .data$path1),
@@ -179,7 +159,9 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
   links <- links %>%
     dplyr::mutate(value = round(freq / sum(freq) * 100, 2)) %>%
     dplyr::select(-"freq")
-  
+}
+
+doGroupCombinations <- function(links, groupCombinations) {
   if (groupCombinations) {
     links$source <- stringr::str_replace_all(
       string = links$source, "\\w+\\+\\w+", replacement = "Combination"
@@ -188,41 +170,72 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
       string = links$target, "\\w+\\+\\w+", replacement = "Combination"
     )
   }
-  
+  return(links)
+}
+
+createLinkedData <- function(data, groupCombinations) {
+  links <- createLinks(data)
+
+  doGroupCombinations(links, groupCombinations)
+
   nodes <- data.frame(
     names = c(links$source, links$target) %>% unique()
   )
 
-  sourceLinks <- lapply(links$source, function(item) {
-    item <- item %>%
-      stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
-      stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
-      stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
-      stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
-      stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
-    grep(sprintf("^%s$",item), nodes$names)
-  }) %>%
+  links$source <- lapply(links$source, nameToId, names = nodes$names) %>%
     unlist()
-  
-  targetLinks <- lapply(links$target, function(item) {
-    item <- item %>%
-      stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
-      stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
-      stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
-      stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
-      stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
-    grep(sprintf("^%s$",item), nodes$names)
-  }) %>%
+
+  links$target <- lapply(links$target, nameToId, names = nodes$names) %>%
     unlist()
+
+  links <- links %>%
+    dplyr::group_by(.data$source, .data$target) %>%
+    dplyr::summarise(value = sum(.data$value), .groups = "drop") %>%
+    as.data.frame()
+
+  return(list(links = links, nodes = nodes))
+}
+
+nameToId <- function(item, names) {
+  item <- item %>%
+    stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
+    stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
+    stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
+    stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
+    stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
+  return(grep(sprintf("^%s$",item), names) - 1)
+}
+
+#' createSankeyDiagram2
+#' 
+#' Create sankey diagram, will replace `createSankeyDiagram`.
+#'
+#' @template param_treatmentPathways
+#' @template param_groupCombinations
+#'
+#' @return (`htmlwidget`)
+#' @export
+#'
+#' @examples
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPathways <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' createSankeyDiagram2(treatmentPathways)
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+  data <- splitPathItems(treatmentPathways)
   
-  links$source <- sourceLinks - 1
-  links$target <- targetLinks - 1
-  
-  links <- as.data.frame(links)
+  linkedData <- createLinkedData(data, groupCombinations)
   
   networkD3::sankeyNetwork(
-    Links = links,
-    Nodes = nodes,
+    Links = linkedData$links,
+    Nodes = linkedData$nodes,
     Source = "source",
     Target = "target",
     Value = "value",
