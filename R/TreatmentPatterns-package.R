@@ -15,7 +15,6 @@
 #' @importFrom googleVis gvisSankey
 #' @importFrom rjson toJSON
 #' @importFrom stringi stri_replace_all_fixed
-#' @importFrom DatabaseConnector connect disconnect querySql querySqlToAndromeda
 ## usethis namespace: end
 NULL
 

@@ -15,7 +15,6 @@ BugReports: https://github.com/darwin-eu-dev/TreatmentPatterns/issues
 Depends:
     R (>= 4.0)
 Imports: 
-    DatabaseConnector (>= 6.0.0),
     checkmate,
     dplyr,
     SqlRender,
@@ -37,6 +36,7 @@ Suggests:
     usethis,
     Eunomia,
     CDMConnector,
+    DatabaseConnector (>= 6.0.0),
     CohortGenerator,
     webshot2,
     CirceR,
