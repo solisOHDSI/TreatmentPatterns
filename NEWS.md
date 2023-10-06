@@ -1,7 +1,7 @@
 # TreatmentPatterns 2.6.0
 ----------
 * Added `createSunburstPlot2()` as a replacement of `createSunburstPlot()`. `createSunburstPlot2()` will fully replace `createSunburstPlot()` in a future version.
-* Moved `DatabaseConnector` to Suggests
+* Moved `DatabaseConnector` and `SqlRender` to Suggests
 * Removed obsolete dependencies: `data.table`, `fs`, and `glue`.
 * Internal performance updates.
 * Internal code style updates.

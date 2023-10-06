@@ -5,7 +5,6 @@
 #' @import checkmate
 #' @import stringr
 #' @import utils
-#' @import SqlRender
 #' @import dplyr
 #' @import Andromeda
 #' @import R6
