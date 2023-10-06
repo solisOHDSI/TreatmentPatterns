@@ -90,12 +90,13 @@ CDMInterface <- R6::R6Class(
     #' @template param_andromeda
     #' @param andromedaTableName (`character(1)`)\cr
     #' Name of the table in the Andromeda object where the data will be loaded.
+    #' @template param_minEraDuration
     #'
     #' @return (`data.frame`)
-    fetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
+    fetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
       switch(private$type,
-        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName),
-        DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName)
+        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration),
+        DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration)
       )
     },
 
@@ -167,7 +168,7 @@ CDMInterface <- R6::R6Class(
     #### DatabaseConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    dbconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
+    dbconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
       renderedSql <- SqlRender::render(
         sql = "
         SELECT
@@ -178,10 +179,13 @@ CDMInterface <- R6::R6Class(
           cohort_definition_id
         IN
           (@cohortIds)
+        AND
+          cohort_end_date - cohort_start_date > @minEraDuration
         ;",
         resultSchema = private$resultSchema,
         cohortTableName = cohortTableName,
-        cohortIds = cohortIds
+        cohortIds = cohortIds,
+        minEraDuration = minEraDuration
       )
 
       translatedSql <- SqlRender::translate(
@@ -319,9 +323,10 @@ CDMInterface <- R6::R6Class(
     # cohortTableName (`character(1)`)
     # andromeda (`Andromeda::andromeda()`)
     # andromedaTableName (`character(1)`)
-    cdmconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName) {
+    cdmconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
       andromeda[[andromedaTableName]] <- private$cdm[[cohortTableName]] %>%
-        dplyr::filter(.data$cohort_definition_id %in% cohortIds)
+        dplyr::filter(.data$cohort_definition_id %in% cohortIds) %>%
+        dplyr::filter(.data$cohort_end_date - .data$cohort_start_date >= minEraDuration)
       return(invisible(self))
     },
 

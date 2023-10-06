@@ -77,7 +77,8 @@ Fetch specified cohort IDs from a specified cohort table
   cohortIds,
   cohortTableName,
   andromeda,
-  andromedaTableName
+  andromedaTableName,
+  minEraDuration
 )}\if{html}{\out{</div>}}
 }
 
@@ -104,6 +105,9 @@ Andromeda object.}
 
 \item{\code{andromedaTableName}}{(\code{character(1)})\cr
 Name of the table in the Andromeda object where the data will be loaded.}
+
+\item{\code{minEraDuration}}{(\code{integer(1)}: \code{0})\cr
+Minimum time an event era should last to be included in analysis}
 }
 \if{html}{\out{</div>}}
 }

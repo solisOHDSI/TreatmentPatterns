@@ -17,7 +17,7 @@ if (ableToRun()) {
         ),
         "After combinationWindow: 554"
       ),
-      "Original number of rows: 8352"
+      "Original number of rows: 8334"
     )
   })
 

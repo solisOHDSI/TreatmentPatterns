@@ -5,6 +5,7 @@
 * Removed obsolete dependencies: `data.table`, `fs`, and `glue`.
 * Internal performance updates.
 * Internal code style updates.
+* Moved basic filtering when fetching cohort table.
 
 # TreatmentPatterns 2.5.2
 ----------

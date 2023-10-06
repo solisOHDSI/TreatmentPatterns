@@ -67,11 +67,6 @@ constructPathways <- function(
         dplyr::pull()
       ))
 
-    doEraDuration(
-      andromeda = andromeda,
-      minEraDuration = settings$minEraDuration
-    )
-
     doSplitEventCohorts(
       andromeda = andromeda,
       splitEventCohorts = settings$splitEventCohorts,
@@ -242,24 +237,6 @@ createTreatmentHistory <- function(
     dplyr::mutate(
       durationEra = .data$eventEndDate - .data$eventStartDate) %>%
     dplyr::filter(!is.na(.data$indexYear))
-  return(invisible(NULL))
-}
-
-#' doEraDuration
-#'
-#' @param minEraDuration (`integer(1)`)
-#' @param andromeda (`Andromeda::andromeda()`)
-#'
-#' @return (`invisible(NULL)`)
-doEraDuration <- function(andromeda, minEraDuration) {
-  andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-    dplyr::filter(.data$durationEra >= minEraDuration)
-  
-  nRows <- andromeda$treatmentHistory %>%
-    dplyr::count() %>%
-    dplyr::pull()
-  
-  message(sprintf("After minEraDuration: %s", nRows))
   return(invisible(NULL))
 }
 

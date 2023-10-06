@@ -94,20 +94,22 @@ if (ableToRun()) {
       cohortIds = 1,
       cohortTableName = "CohortTable",
       andromeda = andromDBC,
-      andromedaTableName = "cohortTable"
+      andromedaTableName = "cohortTable",
+      minEraDuration = 5
     )
     
     res <- andromDBC$cohortTable %>% dplyr::collect()
 
     expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 2679L)
+    expect_identical(nrow(res), 2644L)
 
     # Empty
     cdmInterface$fetchCohortTable(
       cohortIds = 23,
       cohortTableName = "CohortTable",
       andromeda = andromDBC,
-      andromedaTableName = "cohortTable"
+      andromedaTableName = "cohortTable",
+      minEraDuration = 5
     )
     
     res <- andromDBC$cohortTable %>% dplyr::collect()
