@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -81,7 +81,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="RunningTreatmentPatterns_files/htmlwidgets-1.6.2/htmlwidgets.js"></script><link href="RunningTreatmentPatterns_files/sequences-0.1/sequences.css" rel="stylesheet">
+<script src="RunningTreatmentPatterns_files/sunburst-binding-2.1.8/sunburst.js"></script><script src="RunningTreatmentPatterns_files/d3-4.5.0/d3.min.js"></script><script src="RunningTreatmentPatterns_files/sankey-1/sankey.js"></script><script src="RunningTreatmentPatterns_files/sankeyNetwork-binding-0.4/sankeyNetwork.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Running TreatmentPatterns</h1>
@@ -184,7 +185,15 @@ sunburst plot</td>
 </div>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'dplyr'</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     filter, lag</span></span></code></pre>
+<pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     intersect, setdiff, setequal, union</span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Select Viral Sinusitis Cohort</span></span>
 <span><span class="va">targetCohorts</span> <span class="op">&lt;-</span> <span class="va">cohortsGenerated</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cohortName</span> <span class="op">==</span> <span class="st">"ViralSinusitis"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -211,7 +220,7 @@ sunburst plot</td>
 <div class="section level3">
 <h3 id="all-in-one">All-in-one<a class="anchor" aria-label="anchor" href="#all-in-one"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tempDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">allDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"all_in_one"</span><span class="op">)</span></span>
 <span></span>
@@ -236,13 +245,67 @@ sunburst plot</td>
 <span>  minFreq <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  addNoPaths <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Connecting using SQLite driver</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Construct treatment pathways, this may take a while for larger datasets.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Original number of rows: 8334</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## After eraCollapseSize: 0</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Selected 1544 </span></span>
+<span><span class="co">## out of 8334 rows</span></span>
+<span><span class="co">## Iteration: 1</span></span>
+<span><span class="co">## Switches: 8334</span></span>
+<span><span class="co">## FRFS Combinations: 1527</span></span>
+<span><span class="co">## LRFS Combinations: 3</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Selected 4 </span></span>
+<span><span class="co">## out of 558 rows</span></span>
+<span><span class="co">## Iteration: 2</span></span>
+<span><span class="co">## Switches: 558</span></span>
+<span><span class="co">## FRFS Combinations: 4</span></span>
+<span><span class="co">## LRFS Combinations: 0</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## After combinationWindow: 554</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Time needed to execute combination window 0.0627268155415853</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Order the combinations.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## After filterTreatments: 553</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Adding drug sequence number.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## After maxPathLength: 553</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Adding concept names.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Ordering the combinations.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## constructPathways done.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/metadata.csv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/treatmentPathways.csv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Removed 464 pathways with a frequency &lt; 5.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing summaryStatsTherapyDuraion to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/summaryStatsTherapyDuraion.csv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/countsYear.csv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/countsAge.csv</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpIpOGWn/all_in_one/countsSex.csv</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="segmented">Segmented<a class="anchor" aria-label="anchor" href="#segmented"></a>
 </h3>
 <p>The segmented approach allows you to investigate the patient-level
 intermediate files by querying the andromeda environment.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span> <span class="op">&lt;-</span> <span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"CohortTable"</span>,</span>
@@ -250,13 +313,13 @@ intermediate files by querying the andromeda environment.</p>
 <span>  cdmSchema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  resultSchema <span class="op">=</span> <span class="st">"main"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">andromeda</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">andromeda</span><span class="op">$</span><span class="va">treatmentHistory</span></span></code></pre></div>
 <p>The files inside the andromeda environment can be exported using the
 export function.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">segDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"segmented"</span><span class="op">)</span></span>
 <span><span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span><span class="va">andromeda</span>, outputPath <span class="op">=</span> <span class="va">segDir</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -264,7 +327,7 @@ export function.</p>
 <div class="section level2">
 <h2 id="cdmconnector">CDMConnector<a class="anchor" aria-label="anchor" href="#cdmconnector"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdmDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"CDMCon"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu">eunomia_dir</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -280,6 +343,38 @@ export function.</p>
 <span>  outputPath <span class="op">=</span> <span class="va">cdmDir</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="evaluating-results">Evaluating results<a class="anchor" aria-label="anchor" href="#evaluating-results"></a>
+</h2>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">treatmentPathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">allDir</span>, <span class="st">"treatmentPathways.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">treatmentPathways</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"all"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">==</span> <span class="st">"all"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">indexYear</span> <span class="op">==</span> <span class="st">"all"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">path</span> <span class="op">!=</span> <span class="st">"None"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/createSunburstPlot2.html">createSunburstPlot2</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
+<div class="sunburst html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f854ad535f3808dd8bc3" style="width:700px;height:432.632880098888px; position:relative;">
+<div>
+<div class="sunburst-main">
+<div class="sunburst-sequence"></div>
+<div class="sunburst-chart">
+<div class="sunburst-explanation" style="visibility:hidden;"></div>
+</div>
+</div>
+<div class="sunburst-sidebar">
+<input type="checkbox" class="sunburst-togglelegend" style="visibility:hidden;">Legend
+<div class="sunburst-legend" style="visibility:hidden;"></div>
+</div>
+</div>
+</div>
+<script type="application/json" data-for="htmlwidget-f854ad535f3808dd8bc3">{"x":{"data":{"children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","size":14,"colname":"X2"},{"name":"Clavulanate","size":6,"colname":"X2"}],"size":206,"colname":"X1"},{"name":"Aspirin","children":[{"name":"Acetaminophen","size":12,"colname":"X2"},{"name":"Clavulanate","size":6,"colname":"X2"}],"size":211,"colname":"X1"},{"name":"Clavulanate","children":[],"size":51,"colname":"X1"}],"name":"root"},"options":{"legendOrder":null,"colors":null,"valueField":"size","percent":true,"count":false,"explanation":null,"breadcrumb":[],"legend":[],"sortFunction":null,"sumNodes":true}},"evals":[],"jsHooks":[]}</script><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">TreatmentPatterns</span><span class="fu">::</span><span class="fu"><a href="../reference/createSankeyDiagram2.html">createSankeyDiagram2</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
+<div class="sankeyNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4b65f85b80938679cb3a" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-4b65f85b80938679cb3a">{"x":{"links":{"source":[0,0,0,1,1,1,2],"target":[3,4,5,4,5,6,5],"value":[2.77,1.19,40.71,1.19,41.7,2.37,10.08]},"nodes":{"name":["1. Acetaminophen","1. Aspirin","1. Clavulanate","2. Aspirin","2. Clavulanate","2. Stopped","2. Acetaminophen"],"group":["1. Acetaminophen","1. Aspirin","1. Clavulanate","2. Aspirin","2. Clavulanate","2. Stopped","2. Acetaminophen"]},"options":{"NodeID":"names","NodeGroup":"names","LinkGroup":null,"colourScale":"d3.scaleOrdinal(d3.schemeCategory20);","fontSize":12,"fontFamily":null,"nodeWidth":30,"nodePadding":10,"units":"%","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32,"sinksRight":true}},"evals":[],"jsHooks":[]}</script>
 </div>
   </div>
 
