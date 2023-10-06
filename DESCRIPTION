@@ -26,7 +26,8 @@ Imports:
     Andromeda,
     tidyr,
     R6,
-    sunburstR
+    sunburstR,
+    networkD3
 Suggests:
     knitr,
     rmarkdown,

@@ -89,7 +89,7 @@ createSankeyDiagram <- function(
       string = links$target, "\\w+\\+\\w+", replacement = "Combination"
     )
   }
-
+  
   # Draw sankey network
   plot <- googleVis::gvisSankey(
     links,
@@ -114,3 +114,121 @@ createSankeyDiagram <- function(
   }
 }
 utils::globalVariables(c(".", "freq", "combination"))
+
+
+#' createSankeyDiagram2
+#' 
+#' Create sankey diagram, will replace `createSankeyDiagram`.
+#'
+#' @template param_treatmentPathways
+#' @template param_groupCombinations
+#'
+#' @return (`htmlwidget`)
+#' @export
+#'
+#' @examples
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPathways <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' createSankeyDiagram2(treatmentPathways)
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+  data <- treatmentPathways %>%
+    rowwise() %>%
+    dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
+    dplyr::mutate(freq = as.integer(.data$freq))
+  
+  data <- data %>%
+    tidyr::unnest_wider(path, names_sep = "")
+  
+  data <- data %>%
+    dplyr::group_by_at(grep("path", names(data))) %>%
+    dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
+  
+  data[is.na(data)] <- "Stopped"
+  
+  result1 <- data %>%
+    mutate(
+      source = paste("1.", .data$path1),
+      target = paste("2.", .data$path2)
+    ) %>%
+    select("source", "target", "freq")
+  
+  
+  if (suppressWarnings(!is.null(data$path3))) {
+    result2 <- data %>%
+      mutate(
+        source = paste("2.", .data$path2),
+        target = paste("3.", .data$path3)
+      ) %>%
+      select("source", "target", "freq")
+    
+    links <- dplyr::bind_rows(
+      result1, result2
+    )
+  } else {
+    links <- result1
+  }
+  
+  links <- links %>%
+    dplyr::mutate(value = round(freq / sum(freq) * 100, 2)) %>%
+    dplyr::select(-"freq")
+  
+  if (groupCombinations) {
+    links$source <- stringr::str_replace_all(
+      string = links$source, "\\w+\\+\\w+", replacement = "Combination"
+    )
+    links$target <- stringr::str_replace_all(
+      string = links$target, "\\w+\\+\\w+", replacement = "Combination"
+    )
+  }
+  
+  nodes <- data.frame(
+    names = c(links$source, links$target) %>% unique()
+  )
+
+  sourceLinks <- lapply(links$source, function(item) {
+    item <- item %>%
+      stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
+      stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
+      stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
+      stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
+      stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
+    grep(sprintf("^%s$",item), nodes$names)
+  }) %>%
+    unlist()
+  
+  targetLinks <- lapply(links$target, function(item) {
+    item <- item %>%
+      stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
+      stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
+      stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
+      stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
+      stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
+    grep(sprintf("^%s$",item), nodes$names)
+  }) %>%
+    unlist()
+  
+  links$source <- sourceLinks - 1
+  links$target <- targetLinks - 1
+  
+  links <- as.data.frame(links)
+  
+  networkD3::sankeyNetwork(
+    Links = links,
+    Nodes = nodes,
+    Source = "source",
+    Target = "target",
+    Value = "value",
+    NodeID = "names",
+    units = "%",
+    fontSize = 12,
+    nodeWidth = 30
+  )
+}
