@@ -195,7 +195,7 @@ PathwayConstructor <- R6::R6Class(
       private$cdmInterface$fetchMetadata(private$andromeda)
 
       private$cdmInterface$fetchCohortTable(
-        cohortIds = private$cohorts$cohortId,
+        cohorts = private$cohorts,
         cohortTableName = private$cohortTableName,
         andromeda = private$andromeda,
         andromedaTableName = "cohortTable",

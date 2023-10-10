@@ -85,7 +85,7 @@ CDMInterface <- R6::R6Class(
     #' @description
     #' Fetch specified cohort IDs from a specified cohort table
     #'
-    #' @template param_cohortIds
+    #' @template param_cohorts
     #' @template param_cohortTableName
     #' @template param_andromeda
     #' @param andromedaTableName (`character(1)`)\cr
@@ -93,10 +93,10 @@ CDMInterface <- R6::R6Class(
     #' @template param_minEraDuration
     #'
     #' @return (`data.frame`)
-    fetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+    fetchCohortTable = function(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
       switch(private$type,
-        CDMConnector = private$cdmconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration),
-        DatabaseConnector = private$dbconFetchCohortTable(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration)
+        CDMConnector = private$cdmconFetchCohortTable(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration),
+        DatabaseConnector = private$dbconFetchCohortTable(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration)
       )
     },
 
@@ -168,24 +168,28 @@ CDMInterface <- R6::R6Class(
     #### DatabaseConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
-    dbconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+    dbconFetchCohortTable = function(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+      targetCohortId <- cohorts %>%
+        dplyr::filter(.data$type == "target") %>%
+        dplyr::select("cohortId") %>%
+        dplyr::pull()
+      
       renderedSql <- SqlRender::render(
         sql = "
-        SELECT
-          *
-        FROM
-          @resultSchema.@cohortTableName
-        WHERE
-          cohort_definition_id
-        IN
-          (@cohortIds)
-        AND
-          cohort_end_date - cohort_start_date > @minEraDuration
+        SELECT *
+        FROM @resultSchema.@cohortTableName
+        WHERE subject_id IN (
+          SELECT subject_id
+          FROM @resultSchema.@cohortTableName
+          WHERE cohort_definition_id IN (@targetCohortId))
+        AND cohort_definition_id IN (@cohortIds)
+        AND cohort_end_date - cohort_start_date > @minEraDuration
         ;",
         resultSchema = private$resultSchema,
         cohortTableName = cohortTableName,
-        cohortIds = cohortIds,
-        minEraDuration = minEraDuration
+        cohortIds = cohorts$cohortId,
+        minEraDuration = minEraDuration,
+        targetCohortId = targetCohortId
       )
 
       translatedSql <- SqlRender::translate(
@@ -211,15 +215,10 @@ CDMInterface <- R6::R6Class(
 
       renderedSql <- SqlRender::render(
         sql = "
-        SELECT
-          person_id,
-          year_of_birth
-        FROM
-          @cdmSchema.person
-        WHERE
-          person_id
-        IN
-          (@personIds)
+        SELECT person_id, year_of_birth
+        FROM @cdmSchema.person
+        WHERE person_id
+        IN (@personIds)
         ;",
         cdmSchema = private$cdmSchema,
         personIds = personIds
@@ -252,19 +251,11 @@ CDMInterface <- R6::R6Class(
 
       renderedSql <- SqlRender::render(
         sql = "
-        SELECT
-          person_id,
-          concept_name AS sex
-        FROM
-          @cdmSchema.person
-        INNER JOIN
-          @cdmSchema.concept
-        ON
-          person.gender_concept_id = concept.concept_id
-        WHERE
-          person_id
-        IN
-          (@personIds)
+        SELECT person_id, concept_name AS sex
+        FROM @cdmSchema.person
+        INNER JOIN @cdmSchema.concept
+        ON person.gender_concept_id = concept.concept_id
+        WHERE person_id IN (@personIds)
         ;",
         cdmSchema = private$cdmSchema,
         personIds = personIds
@@ -294,8 +285,7 @@ CDMInterface <- R6::R6Class(
           cdm_source_abbreviation,
           cdm_release_date,
           vocabulary_version
-        FROM
-          @cdmSchema.cdm_source
+        FROM @cdmSchema.cdm_source
       ;",
         cdmSchema = private$cdmSchema
       )
@@ -318,15 +308,26 @@ CDMInterface <- R6::R6Class(
       
       return(invisible(self))
     },
+    
     #### CDMConnector ----
     # cohortIds (`integer(n)`)
     # cohortTableName (`character(1)`)
     # andromeda (`Andromeda::andromeda()`)
     # andromedaTableName (`character(1)`)
-    cdmconFetchCohortTable = function(cohortIds, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+    cdmconFetchCohortTable = function(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+      targetCohortIds <- cohorts %>%
+        dplyr::filter(.data$type == "target") %>%
+        dplyr::select("cohortId") %>%
+        dplyr::pull()
+      
+      cohortIds <- cohorts$cohortId
+      
       andromeda[[andromedaTableName]] <- private$cdm[[cohortTableName]] %>%
         dplyr::filter(.data$cohort_definition_id %in% cohortIds) %>%
-        dplyr::filter(.data$cohort_end_date - .data$cohort_start_date >= minEraDuration)
+        dplyr::filter(.data$cohort_end_date - .data$cohort_start_date >= minEraDuration) %>%
+        dplyr::group_by(.data$subject_id) %>%
+        dplyr::filter(any(.data$cohort_definition_id %in% targetCohortIds, na.rm = TRUE)) %>%
+        dplyr::ungroup()
       return(invisible(self))
     },
 

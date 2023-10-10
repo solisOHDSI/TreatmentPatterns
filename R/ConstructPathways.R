@@ -24,7 +24,8 @@ constructPathways <- function(
     select("cohortId") %>%
     pull()
 
-  andromeda$cohorts <- cohorts
+  andromeda$cohorts <- cohorts %>%
+    as.data.frame()
 
   message(sprintf("Constructing treatment pathways: %s", settings$studyName))
 
