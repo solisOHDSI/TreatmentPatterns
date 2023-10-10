@@ -91,7 +91,7 @@ if (ableToRun()) {
   test_that("Method: fetchCohortTable", {
     # Viral Sinusitis
     cdmInterface$fetchCohortTable(
-      cohortIds = 1,
+      cohorts = cohorts,
       cohortTableName = "CohortTable",
       andromeda = andromDBC,
       andromedaTableName = "cohortTable",
@@ -101,11 +101,15 @@ if (ableToRun()) {
     res <- andromDBC$cohortTable %>% dplyr::collect()
 
     expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 2644L)
+    expect_identical(nrow(res), 11354L)
 
     # Empty
     cdmInterface$fetchCohortTable(
-      cohortIds = 23,
+      cohorts = data.frame(
+        cohortId = numeric(),
+        cohortName = character(),
+        type = character()
+      ),
       cohortTableName = "CohortTable",
       andromeda = andromDBC,
       andromedaTableName = "cohortTable",

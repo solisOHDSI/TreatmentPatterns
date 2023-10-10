@@ -89,26 +89,15 @@ if (ableToRun()) {
   })
 
   test_that("Method: fetchCohortTable", {
-    # Setup dummy cohort table
-    cdm$CohortTable <- cdm$condition_occurrence %>%
-      filter(.data$condition_concept_id == 40481087) %>%
-      inner_join(cdm$person, by = join_by(person_id == person_id)) %>%
-      select("person_id", "condition_start_date", "condition_end_date") %>%
-      mutate(cohort_definition_id = 1) %>%
-      rename(
-        cohort_start_date = "condition_start_date",
-        cohort_end_date = "condition_end_date"
-      )
-
     # Update CDM with new dummy data
     cdmInterface <- TreatmentPatterns:::CDMInterface$new(
       cdm = cdm
     )
-
+    
     # Viral Sinusitis
     cdmInterface$fetchCohortTable(
-      cohortIds = 1,
-      cohortTableName = "CohortTable",
+      cohorts = cohorts,
+      cohortTableName = "cohort_table",
       andromeda = andromCDMC,
       andromedaTableName = "cohortTable",
       minEraDuration = 5
@@ -117,12 +106,16 @@ if (ableToRun()) {
     res <- andromCDMC$cohortTable
 
     expect_identical(ncol(res), 4L)
-    expect_identical(res %>% collect() %>% nrow(), 17252L)
+    expect_identical(res %>% collect() %>% nrow(), 11351L)
 
     # Empty
     cdmInterface$fetchCohortTable(
-      cohortIds = 23,
-      cohortTableName = "CohortTable",
+      cohorts = data.frame(
+        cohortId = numeric(),
+        cohortName = character(),
+        type = character()
+      ),
+      cohortTableName = "cohort_table",
       andromeda = andromCDMC,
       andromedaTableName = "cohortTable",
       minEraDuration = 5

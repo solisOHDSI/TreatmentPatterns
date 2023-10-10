@@ -75,11 +75,16 @@ if (ableToRun()) {
   )
 
   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-  cdm <- cdmFromCon(con, cdmSchema = "main")
-
-  cdm$condition_era %>%
-    filter(condition_concept_id == 40481087) %>%
-    summarise(n = n()) %>%
-    pull() %>%
-    message(" Persons with Viral sinusitis")
+  cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+  
+  cohortSet <- CDMConnector::readCohortSet(
+    path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+  )
+  
+  cdm <- CDMConnector::generateCohortSet(
+    cdm = cdm,
+    cohortSet = cohortSet,
+    name = "cohort_table",
+    computeAttrition = FALSE
+  )
 }
