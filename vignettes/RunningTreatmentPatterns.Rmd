@@ -39,7 +39,7 @@ The settings belowallow the user to influence how the events of interest should 
 | addNoPaths | FALSE | Select to include untreated persons without treatment pathway in the sunburst plot |
 
 ![pathwaySettings](../man/figures/pathwaysettings.png)
-```{r prep, echo=FALSE, results='hide', message=FALSE, warning=FALSE, error=FALSE}
+```{r prep, echo=FALSE, results='hide', message=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
 connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cdmDatabaseSchema <- "main"
 resultSchema <- "main"
@@ -95,7 +95,7 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(
 library(dplyr)
 ```
 
-```{r setupCohorts}
+```{r setupCohorts, eval=FALSE}
 # Select Viral Sinusitis Cohort
 targetCohorts <- cohortsGenerated %>%
   filter(cohortName == "ViralSinusitis") %>%
@@ -119,7 +119,7 @@ cohorts <- dplyr::bind_rows(
 
 ## DatabaseConnector
 ### All-in-one
-```{r executeTreatmentPatterns}
+```{r executeTreatmentPatterns, eval=FALSE}
 tempDir <- tempdir()
 allDir <- file.path(tempDir, "all_in_one")
 
@@ -156,6 +156,8 @@ andromeda <- TreatmentPatterns::computePathways(
   cdmSchema = "main",
   resultSchema = "main"
 )
+
+export(andromeda = andromeda, outputPath = file.path(tempDir, "segmented"))
 ```
 
 ```{r intermediateResults, eval=FALSE}
@@ -192,7 +194,7 @@ TreatmentPatterns::executeTreatmentPatterns(
 ```
 
 ## Evaluating results
-```{r}
+```{r, eval=FALSE}
 treatmentPathways <- read.csv(file.path(allDir, "treatmentPathways.csv"))
 
 data <- treatmentPathways %>%
@@ -202,10 +204,10 @@ data <- treatmentPathways %>%
   filter(path != "None")
 ```
 
-```{r sunburst}
+```{r sunburst, eval=FALSE}
 TreatmentPatterns::createSunburstPlot2(data)
 ```
 
-```{r sankey}
+```{r sankey, eval=FALSE}
 TreatmentPatterns::createSankeyDiagram2(data)
 ```

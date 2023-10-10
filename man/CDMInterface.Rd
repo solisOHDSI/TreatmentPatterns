@@ -74,7 +74,7 @@ Validation method
 Fetch specified cohort IDs from a specified cohort table
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{CDMInterface$fetchCohortTable(
-  cohortIds,
+  cohorts,
   cohortTableName,
   andromeda,
   andromedaTableName,
@@ -85,8 +85,13 @@ Fetch specified cohort IDs from a specified cohort table
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cohortIds}}{(\code{integer(1)})\cr
-Cohort ID's of cohorts to investigate.}
+\item{\code{cohorts}}{(\code{data.frame()})\cr
+Data frame containing the following columns and data types:
+\describe{
+\item{cohortId \code{numeric(1)}}{Cohort ID's of the cohorts to be used in the cohort table.}
+\item{cohortName \code{character(1)}}{Cohort names of the cohorts to be used in the cohort table.}
+\item{type \code{character(1)} ["target", "event', "exit"]}{Cohort type, describing if the cohort is a target, event, or exit cohort}
+}}
 
 \item{\code{cohortTableName}}{(\code{character(1)})\cr
 Cohort table name.}
