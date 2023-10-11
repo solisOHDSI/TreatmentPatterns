@@ -38,7 +38,7 @@ if (ableToRun()) {
     cdmSchema = "main",
     resultSchema = "main"
   )
-
+  
   setupTempDir <- file.path(tempdir(), "setup")
 
   if (!dir.exists(setupTempDir)) {

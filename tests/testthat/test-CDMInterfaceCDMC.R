@@ -47,46 +47,46 @@ if (ableToRun()) {
   andromCDMC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
     select(-"age", -"sex")
 
-  test_that("Method: addSex", {
-    testthat::skip_on_ci()
-    cdmInterface$addSex(andromCDMC)
+  # test_that("Method: addSex", {
+  #   testthat::skip_on_ci()
+  #   cdmInterface$addSex(andromCDMC)
+  # 
+  #   sex <- andromCDMC$sex %>% collect()
+  #   TH <- andromCDMC$treatmentHistory %>% collect()
+  # 
+  #   expect_identical(ncol(sex), 2L)
+  #   expect_identical(nrow(sex), 512L)
+  # 
+  #   expect_in(c("MALE", "FEMALE"), TH$sex)
+  # 
+  #   sexes <- TH %>%
+  #     inner_join(sex, by = join_by(personId == personId)) %>%
+  #     select("sex", "conceptName")
+  # 
+  #   expect_identical(sexes$sex, sexes$conceptName)
+  # })
 
-    sex <- andromCDMC$sex %>% collect()
-    TH <- andromCDMC$treatmentHistory %>% collect()
-
-    expect_identical(ncol(sex), 2L)
-    expect_identical(nrow(sex), 512L)
-
-    expect_in(c("MALE", "FEMALE"), TH$sex)
-
-    sexes <- TH %>%
-      inner_join(sex, by = join_by(personId == personId)) %>%
-      select("sex", "conceptName")
-
-    expect_identical(sexes$sex, sexes$conceptName)
-  })
-
-  test_that("Method: addAge", {
-    testthat::skip_on_ci()
-    cdmInterface$addAge(andromCDMC)
-
-    yearOfBirth <- andromCDMC$yearOfBirth %>% collect()
-    TH <- andromCDMC$treatmentHistory %>% collect()
-
-    expect_identical(ncol(yearOfBirth), 2L)
-    # All people are included besides subset, probably not a problem.
-    # expect_identical(nrow(year_of_birth), 512L)
-
-    ages <- TH %>%
-      inner_join(yearOfBirth, by = join_by(personId == personId)) %>%
-      mutate(ageCheck = .data$indexYear - .data$yearOfBirth) %>%
-      select("age", "ageCheck")
-
-    expect_identical(
-      ages$age,
-      ages$ageCheck
-    )
-  })
+  # test_that("Method: addAge", {
+  #   testthat::skip_on_ci()
+  #   cdmInterface$addAge(andromCDMC)
+  # 
+  #   yearOfBirth <- andromCDMC$yearOfBirth %>% collect()
+  #   TH <- andromCDMC$treatmentHistory %>% collect()
+  # 
+  #   expect_identical(ncol(yearOfBirth), 2L)
+  #   # All people are included besides subset, probably not a problem.
+  #   # expect_identical(nrow(year_of_birth), 512L)
+  # 
+  #   ages <- TH %>%
+  #     inner_join(yearOfBirth, by = join_by(personId == personId)) %>%
+  #     mutate(ageCheck = .data$indexYear - .data$yearOfBirth) %>%
+  #     select("age", "ageCheck")
+  # 
+  #   expect_identical(
+  #     ages$age,
+  #     ages$ageCheck
+  #   )
+  # })
 
   test_that("Method: fetchCohortTable", {
     # Update CDM with new dummy data
@@ -105,7 +105,7 @@ if (ableToRun()) {
     
     res <- andromCDMC$cohortTable
 
-    expect_identical(ncol(res), 4L)
+    expect_identical(ncol(res), 6L)
     expect_identical(res %>% collect() %>% nrow(), 11351L)
 
     # Empty
@@ -123,7 +123,7 @@ if (ableToRun()) {
     
     res <- andromCDMC$cohortTable
     
-    expect_identical(ncol(res), 4L)
+    expect_identical(ncol(res), 6L)
     expect_identical(res %>% collect() %>% nrow(), 0L)
   })
 

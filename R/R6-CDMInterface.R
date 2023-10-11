@@ -13,16 +13,18 @@ CDMInterface <- R6::R6Class(
     #' @template param_connectionDetails
     #' @template param_cdmSchema
     #' @template param_resultSchema
+    #' @param tempEmulationSchema Schema used to emulate temp tables.
     #' @template param_cdm
     #'
     #' @return (`invisible(self)`)
-    initialize = function(connectionDetails = NULL, cdmSchema = NULL, resultSchema = NULL, cdm = NULL) {
+    initialize = function(connectionDetails = NULL, cdmSchema = NULL, resultSchema = NULL, tempEmulationSchema = NULL, cdm = NULL) {
       private$connectionDetails <- connectionDetails
       if (!is.null(private$connectionDetails)) {
         private$connection <- DatabaseConnector::connect(private$connectionDetails)
       }
       private$cdmSchema <- cdmSchema
       private$resultSchema <- resultSchema
+      private$tempEmulationSchema <- tempEmulationSchema
       private$cdm <- cdm
 
       if (!is.null(cdm)) {
@@ -93,36 +95,10 @@ CDMInterface <- R6::R6Class(
     #' @template param_minEraDuration
     #'
     #' @return (`data.frame`)
-    fetchCohortTable = function(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration) {
+    fetchCohortTable = function(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration = NULL) {
       switch(private$type,
         CDMConnector = private$cdmconFetchCohortTable(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration),
         DatabaseConnector = private$dbconFetchCohortTable(cohorts, cohortTableName, andromeda, andromedaTableName, minEraDuration)
-      )
-    },
-
-    #' @description
-    #' Stratisfy the treatmentHistory data frame by age.
-    #'
-    #' @template param_andromeda
-    #'
-    #' @return (`data.frame()`)
-    addAge = function(andromeda) {
-      switch(private$type,
-        CDMConnector = private$cdmconAddAge(andromeda),
-        DatabaseConnector = private$dbconAddAge(andromeda)
-      )
-    },
-
-    #' @description
-    #' Stratisfy the treatmentHistory data frame by sex.
-    #'
-    #' @template param_andromeda
-    #'
-    #' @return (`data.frame()`)
-    addSex = function(andromeda) {
-      switch(private$type,
-        CDMConnector = private$cdmconAddSex(andromeda),
-        DatabaseConnector = private$dbconAddSex(andromeda)
       )
     },
 
@@ -155,6 +131,7 @@ CDMInterface <- R6::R6Class(
     connection = NULL,
     cdmSchema = NULL,
     resultSchema = NULL,
+    tempEmulationSchema = NULL,
     cdm = NULL,
     type = "",
 
@@ -174,109 +151,35 @@ CDMInterface <- R6::R6Class(
         dplyr::select("cohortId") %>%
         dplyr::pull()
       
-      renderedSql <- SqlRender::render(
-        sql = "
-        SELECT *
-        FROM @resultSchema.@cohortTableName
-        WHERE subject_id IN (
-          SELECT subject_id
-          FROM @resultSchema.@cohortTableName
-          WHERE cohort_definition_id IN (@targetCohortId))
-        AND cohort_definition_id IN (@cohortIds)
-        AND cohort_end_date - cohort_start_date > @minEraDuration
-        ;",
+      # Select relevant data
+      sql <- SqlRender::loadRenderTranslateSql(
+        sqlFilename = "selectData.sql",
+        packageName = "TreatmentPatterns",
+        dbms = private$connection@dbms,
+        tempEmulationSchema = private$tempEmulationSchema,
         resultSchema = private$resultSchema,
-        cohortTableName = cohortTableName,
+        cdmSchema = private$cdmSchema,
+        cohortTable = cohortTableName,
         cohortIds = cohorts$cohortId,
         minEraDuration = minEraDuration,
         targetCohortId = targetCohortId
       )
-
-      translatedSql <- SqlRender::translate(
-        sql = renderedSql,
-        targetDialect = private$connection@dbms
+      
+      DatabaseConnector::executeSql(
+        connection = private$connection,
+        sql = sql
       )
       
-      DatabaseConnector::querySqlToAndromeda(
+      # Fetch data
+      DatabaseConnector::renderTranslateQuerySqlToAndromeda(
         connection = private$connection,
-        sql = translatedSql,
+        sql = "SELECT * FROM #tp_data;",
         andromeda = andromeda,
         andromedaTableName = andromedaTableName
       )
-      
       return(invisible(self))
     },
 
-    # andromeda (`Andromeda::andromeda()`)
-    dbconAddAge = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>%
-        select("personId") %>%
-        pull()
-
-      renderedSql <- SqlRender::render(
-        sql = "
-        SELECT person_id, year_of_birth
-        FROM @cdmSchema.person
-        WHERE person_id
-        IN (@personIds)
-        ;",
-        cdmSchema = private$cdmSchema,
-        personIds = personIds
-      )
-
-      translatedSql <- SqlRender::translate(
-        sql = renderedSql,
-        targetDialect = private$connection@dbms
-      )
-
-      andromeda$yearOfBirth <- DatabaseConnector::querySql(
-        connection = private$connection,
-        sql = translatedSql,
-        snakeCaseToCamelCase = TRUE
-      )
-
-      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::inner_join(andromeda$yearOfBirth, by = dplyr::join_by(personId == personId)) %>%
-        dplyr::mutate(age = .data$indexYear - .data$yearOfBirth) %>%
-        dplyr::select(-"yearOfBirth")
-
-      return(invisible(self))
-    },
-
-    # andromeda (`Andromeda::andromeda()`)
-    dbconAddSex = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>%
-        select("personId") %>%
-        pull()
-
-      renderedSql <- SqlRender::render(
-        sql = "
-        SELECT person_id, concept_name AS sex
-        FROM @cdmSchema.person
-        INNER JOIN @cdmSchema.concept
-        ON person.gender_concept_id = concept.concept_id
-        WHERE person_id IN (@personIds)
-        ;",
-        cdmSchema = private$cdmSchema,
-        personIds = personIds
-      )
-
-      translatedSql <- SqlRender::translate(
-        sql = renderedSql,
-        targetDialect = private$connection@dbms
-      )
-
-      andromeda$sex <- DatabaseConnector::querySql(
-        connection = private$connection,
-        sql = translatedSql,
-        snakeCaseToCamelCase = TRUE
-      )
-
-      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::inner_join(andromeda$sex, by = dplyr::join_by(personId == personId))
-
-      return(invisible(self))
-    },
     dbconFetchMetadata = function(andromeda) {
       renderedSql <- SqlRender::render(
         sql = "
@@ -328,13 +231,16 @@ CDMInterface <- R6::R6Class(
         dplyr::group_by(.data$subject_id) %>%
         dplyr::filter(any(.data$cohort_definition_id %in% targetCohortIds, na.rm = TRUE)) %>%
         dplyr::ungroup()
+      
+      private$cdmconAddAge(andromeda, andromedaTableName)
+      private$cdmconAddSex(andromeda, andromedaTableName)
       return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
-    cdmconAddAge = function(andromeda) {
-      personIds <- andromeda$treatmentHistory %>%
-        dplyr::select("personId") %>%
+    cdmconAddAge = function(andromeda, andromedaTableName) {
+      personIds <- andromeda[[andromedaTableName]] %>%
+        dplyr::select("subject_id") %>%
         dplyr::pull()
 
       andromeda$yearOfBirth <- private$cdm$person %>%
@@ -343,19 +249,19 @@ CDMInterface <- R6::R6Class(
       andromeda$yearOfBirth <- andromeda$yearOfBirth %>%
         SqlRender::snakeCaseToCamelCaseNames()
       
-      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::inner_join(andromeda$yearOfBirth, by = dplyr::join_by(personId == personId)) %>%
-        dplyr::mutate(age = .data$indexYear - .data$yearOfBirth) %>%
+      andromeda[[andromedaTableName]] <- andromeda[[andromedaTableName]] %>%
+        dplyr::inner_join(andromeda$yearOfBirth, by = dplyr::join_by(subject_id == personId)) %>%
+        dplyr::mutate(age = as.Date(.data$cohort_start_date) - as.Date(.data$yearOfBirth)) %>%
         dplyr::select(-"yearOfBirth")
 
       return(invisible(self))
     },
 
     # andromeda (`Andromeda::andromeda()`)
-    cdmconAddSex = function(andromeda) {
+    cdmconAddSex = function(andromeda, andromedaTableName) {
       # message("Not yet implemented")
-      personIds <- andromeda$treatmentHistory %>%
-        select("personId") %>%
+      personIds <- andromeda[[andromedaTableName]] %>%
+        select("subject_id") %>%
         pull()
       # personIds <- c(1,2,3,4)
 
@@ -366,8 +272,8 @@ CDMInterface <- R6::R6Class(
         dplyr::collect() %>%
         SqlRender::snakeCaseToCamelCaseNames()
 
-      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::inner_join(andromeda$sex, by = join_by(personId == personId)) %>%
+      andromeda[[andromedaTableName]] <- andromeda[[andromedaTableName]] %>%
+        dplyr::inner_join(andromeda$sex, by = join_by(subject_id == personId)) %>%
         dplyr::rename(sex = "conceptName")
 
       return(invisible(self))

@@ -234,7 +234,9 @@ createTreatmentHistory <- function(
       eventCohortId = "cohortId.x",
       eventStartDate = "startDate.x",
       eventEndDate = "endDate.x",
-      type = "type.x") %>%
+      type = "type.x",
+      age = "age.x",
+      sex = "sex.x") %>%
     dplyr::mutate(
       durationEra = .data$eventEndDate - .data$eventStartDate) %>%
     dplyr::filter(!is.na(.data$indexYear))
