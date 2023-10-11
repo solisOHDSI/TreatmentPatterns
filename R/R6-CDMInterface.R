@@ -165,18 +165,13 @@ CDMInterface <- R6::R6Class(
         targetCohortId = targetCohortId
       )
       
-      DatabaseConnector::executeSql(
+      DatabaseConnector::querySqlToAndromeda(
         connection = private$connection,
-        sql = sql
-      )
-      
-      # Fetch data
-      DatabaseConnector::renderTranslateQuerySqlToAndromeda(
-        connection = private$connection,
-        sql = "SELECT * FROM #tp_data;",
+        sql = sql,
         andromeda = andromeda,
         andromedaTableName = andromedaTableName
       )
+
       return(invisible(self))
     },
 

@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS #tp_data;
-
 SELECT
   @resultSchema.@cohortTable.cohort_definition_id,
   @resultSchema.@cohortTable.subject_id,
@@ -27,4 +25,3 @@ INNER JOIN
 WHERE
   cohort_definition_id IN (@cohortIds)
   AND cohort_end_date - cohort_start_date > @minEraDuration
-INTO #tp_data;
