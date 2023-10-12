@@ -221,6 +221,12 @@ createTreatmentPathways <- function(treatmentHistory) {
       .groups = "drop"
     )
   
+  # layers <- treatmentPathways %>%
+  #   dplyr::rowwise() %>%
+  #   dplyr::mutate(l = length(.data$pathway)) %>%
+  #   dplyr::select("l") %>%
+  #   max()
+  
   treatmentPathways <- treatmentPathways %>%
     dplyr::group_by(.data$indexYear, .data$pathway) %>%
     dplyr::summarise(freq = length(.data$personId), .groups = "drop")
