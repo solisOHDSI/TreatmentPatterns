@@ -10,7 +10,7 @@ SELECT
   ) as age,
   @cdmSchema.concept.concept_name as sex
 FROM
-  @resultSchema.cohortTable
+  @resultSchema.@cohortTable
 INNER JOIN @cdmSchema.person
   ON @resultSchema.@cohortTable.subject_id = @cdmSchema.person.person_id
 INNER JOIN @cdmSchema.concept
