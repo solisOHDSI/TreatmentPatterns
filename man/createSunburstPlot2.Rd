@@ -4,11 +4,17 @@
 \alias{createSunburstPlot2}
 \title{createSunburstPlot2}
 \usage{
-createSunburstPlot2(treatmentPathways, ...)
+createSunburstPlot2(treatmentPathways, groupCombinations = FALSE, ...)
 }
 \arguments{
 \item{treatmentPathways}{(\code{data.frame()})\cr
 The contents of the treatmentPathways.csv-file as a data.frame().}
+
+\item{groupCombinations}{(\code{logical(1)}: \code{FALSE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
 
 \item{...}{Other optional parameters for \link[sunburstR]{sunburst}.}
 }

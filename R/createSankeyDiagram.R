@@ -39,6 +39,12 @@ createSankeyDiagram <- function(
     returnHTML = FALSE,
     groupCombinations = FALSE,
     minFreq = 5) {
+  
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
   data <- treatmentPathways %>%
     rowwise() %>%
     dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
@@ -79,15 +85,6 @@ createSankeyDiagram <- function(
     dplyr::filter(.data$freq >= minFreq) %>%
     dplyr::mutate(`%` = round(freq / sum(freq) * 100, 2)) %>%
     dplyr::select(-"freq")
-
-  if (groupCombinations) {
-    links$source <- stringr::str_replace_all(
-      string = links$source, "\\w+\\+\\w+", replacement = "Combination"
-    )
-    links$target <- stringr::str_replace_all(
-      string = links$target, "\\w+\\+\\w+", replacement = "Combination"
-    )
-  }
   
   # Draw sankey network
   plot <- googleVis::gvisSankey(
@@ -161,22 +158,19 @@ createLinks <- function(data) {
     dplyr::select(-"freq")
 }
 
-doGroupCombinations <- function(links, groupCombinations) {
+doGroupCombinations <- function(treatmentPathways, groupCombinations) {
   if (groupCombinations) {
-    links$source <- stringr::str_replace_all(
-      string = links$source, "\\w+\\+\\w+", replacement = "Combination"
-    )
-    links$target <- stringr::str_replace_all(
-      string = links$target, "\\w+\\+\\w+", replacement = "Combination"
-    )
+    treatmentPathways$path <- treatmentPathways$path %>%
+      stringr::str_replace_all(
+        pattern = "\\w+\\+\\w+",
+        replacement = "Combination"
+      )
   }
-  return(links)
+  return(treatmentPathways)
 }
 
-createLinkedData <- function(data, groupCombinations) {
+createLinkedData <- function(data) {
   links <- createLinks(data)
-
-  doGroupCombinations(links, groupCombinations)
 
   nodes <- data.frame(
     names = c(links$source, links$target) %>% unique()
@@ -229,9 +223,14 @@ nameToId <- function(item, names) {
 #' 
 #' createSankeyDiagram2(treatmentPathways)
 createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
   data <- splitPathItems(treatmentPathways)
   
-  linkedData <- createLinkedData(data, groupCombinations)
+  linkedData <- createLinkedData(data)
   
   networkD3::sankeyNetwork(
     Links = linkedData$links,

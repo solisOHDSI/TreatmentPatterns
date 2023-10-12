@@ -351,6 +351,7 @@ toFile <- function(json, treatmentPathways, outputFile) {
 #'
 #' @template param_treatmentPathways
 #' @template param_outputFile
+#' @template param_groupCombinations
 #' @template param_returnHTML
 #'
 #' @export
@@ -376,7 +377,12 @@ toFile <- function(json, treatmentPathways, outputFile) {
 #'   treatmentPatwhays,
 #'   outputFile
 #' )
-createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE) {
+createSunburstPlot <- function(treatmentPathways, outputFile, groupCombinations = FALSE, returnHTML = FALSE) {
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
   data <- treatmentPathways %>%
     mutate(freq = as.integer(.data$freq)) %>%
     select("path", "freq")
@@ -404,6 +410,7 @@ createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE
 #' New sunburstPlot function
 #'
 #' @template param_treatmentPathways 
+#' @template param_groupCombinations
 #' @param ... Other optional parameters for \link[sunburstR]{sunburst}.
 #'
 #' @return (`htmlwidget`)
@@ -421,6 +428,11 @@ createSunburstPlot <- function(treatmentPathways, outputFile, returnHTML = FALSE
 #' )
 #' 
 #' createSunburstPlot2(treatmentPatwhays)
-createSunburstPlot2 <- function(treatmentPathways, ...) {
+createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, ...) {
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
   sunburstR::sunburst(data = treatmentPathways, ...)
 }

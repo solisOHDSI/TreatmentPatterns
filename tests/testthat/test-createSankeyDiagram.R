@@ -118,5 +118,5 @@ test_that("groupCombinations: TRUE", {
 
   json <- fetchJson(tempFile)
 
-  expect_true(all(unlist(json[2]) == c("1. Combination", "2. Stopped", "25")))
+  expect_true(all(unlist(json[5]) == c("1. Combination", "2. Stopped", "25")))
 })
