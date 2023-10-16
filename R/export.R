@@ -125,9 +125,14 @@ export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveNa
   if (!file.exists(outputPath)) {
     dir.create(outputPath)
   }
-
+  
   treatmentHistory <- andromeda$treatmentHistory %>%
     dplyr::collect()
+  
+  if (nrow(treatmentHistory) == 0) {
+    message("Treatment History table is empty. Nothing to export.")
+    return(invisible(NULL))
+  }
 
   # metadata
   metadataPath <- file.path(outputPath, "metadata.csv")

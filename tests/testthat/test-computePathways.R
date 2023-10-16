@@ -1,6 +1,8 @@
 if (ableToRun()) {
   library(testthat)
   library(TreatmentPatterns)
+  library(CDMConnector)
+  library(dplyr)
 
   test_that("computePathways DatabaseConnector", {
     expect_message(
@@ -175,5 +177,53 @@ if (ableToRun()) {
       ),
       "Must be of type.+'numeric'"
     )
+  })
+  
+    
+  # Setup connection
+  localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  
+  # Setup cohort table
+  cohort_table <- tibble(
+    cohort_definition_id = c(11, 6, 6, 3, 11, 6, 28),
+    subject_id = rep(1, 7),
+    cohort_start_date = as.Date(c(
+      "2017-03-21", "2017-03-21", "2018-07-18", "2019-06-25",
+      "2015-10-05", "2015-10-05", "2016-07-18"
+    )),
+    cohort_end_date = as.Date(c(
+      "2017-06-04", "2017-06-04", "2018-09-11", "2019-07-22",
+      "2015-11-29", "2016-10-23", "2020-10-23"
+    ))
+  )
+  
+  # Write cohort table to connection
+  copy_to(localCon, cohort_table, overwrite = TRUE)
+  
+  localCDM <- cdmFromCon(
+    con = localCon,
+    cdmSchema = "main",
+    writeSchema = "main",
+    cohortTables = "cohort_table"
+  )
+  
+  expect_message(
+    andromeda <- TreatmentPatterns::computePathways(
+      cohorts = cohorts,
+      cdm = localCDM,
+      cohortTableName = "cohort_table"
+    ),
+    "LRFS Combinations: 1"
+  )
+  
+  result <- andromeda$treatmentHistory %>%
+    collect()
+  
+  test_that("identical treatment timeframe", {
+    expect_identical(result$eventCohortId, c("11+6", "6"))
+  })
+  
+  withr::defer({
+    DBI::dbDisconnect(localCon)
   })
 }
