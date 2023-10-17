@@ -92,7 +92,7 @@ constructPathways <- function(
 
     andromeda$exitHistory <- andromeda$exitHistory %>%
       dplyr::mutate(eventCohortId = as.character(as.integer(.data$eventCohortId)))
-
+    
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
       dplyr::union_all(andromeda$exitHistory)
 
@@ -580,8 +580,8 @@ doCombinationWindow <- function(
 
     andromeda$treatmentHistory <- treatmentHistory %>%
       dplyr::select(
-        "personId", "indexYear", "eventCohortId",
-        "eventStartDate", "eventEndDate", "durationEra", "gapPrevious"
+        "personId", "indexYear", "eventCohortId", "eventStartDate", "age",
+        "sex", "eventEndDate", "durationEra", "gapPrevious"
       )
 
     selectRowsCombinationWindow(andromeda)

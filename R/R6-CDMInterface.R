@@ -222,55 +222,26 @@ CDMInterface <- R6::R6Class(
       
       andromeda[[andromedaTableName]] <- private$cdm[[cohortTableName]] %>%
         dplyr::filter(.data$cohort_definition_id %in% cohortIds) %>%
-        dplyr::filter(.data$cohort_end_date - .data$cohort_start_date >= minEraDuration) %>%
+        dplyr::filter(.data$cohort_end_date - .data$cohort_start_date >= 0) %>%
         dplyr::group_by(.data$subject_id) %>%
         dplyr::filter(any(.data$cohort_definition_id %in% targetCohortIds, na.rm = TRUE)) %>%
-        dplyr::ungroup()
-      
-      private$cdmconAddAge(andromeda, andromedaTableName)
-      private$cdmconAddSex(andromeda, andromedaTableName)
-      return(invisible(self))
-    },
-
-    # andromeda (`Andromeda::andromeda()`)
-    cdmconAddAge = function(andromeda, andromedaTableName) {
-      personIds <- andromeda[[andromedaTableName]] %>%
-        dplyr::select("subject_id") %>%
-        dplyr::pull()
-
-      andromeda$yearOfBirth <- private$cdm$person %>%
-        dplyr::select("person_id", "year_of_birth")
-      
-      andromeda$yearOfBirth <- andromeda$yearOfBirth %>%
-        SqlRender::snakeCaseToCamelCaseNames()
-      
-      andromeda[[andromedaTableName]] <- andromeda[[andromedaTableName]] %>%
-        dplyr::inner_join(andromeda$yearOfBirth, by = dplyr::join_by(subject_id == personId)) %>%
-        dplyr::mutate(age = as.Date(.data$cohort_start_date) - as.Date(.data$yearOfBirth)) %>%
-        dplyr::select(-"yearOfBirth")
-
-      return(invisible(self))
-    },
-
-    # andromeda (`Andromeda::andromeda()`)
-    cdmconAddSex = function(andromeda, andromedaTableName) {
-      # message("Not yet implemented")
-      personIds <- andromeda[[andromedaTableName]] %>%
-        select("subject_id") %>%
-        pull()
-      # personIds <- c(1,2,3,4)
-
-      andromeda$sex <- private$cdm$person %>%
-        dplyr::filter(.data$person_id %in% personIds) %>%
-        dplyr::inner_join(private$cdm$concept, by = join_by(gender_concept_id == concept_id)) %>%
-        dplyr::select("person_id", "concept_name") %>%
-        dplyr::collect() %>%
-        SqlRender::snakeCaseToCamelCaseNames()
-
-      andromeda[[andromedaTableName]] <- andromeda[[andromedaTableName]] %>%
-        dplyr::inner_join(andromeda$sex, by = join_by(subject_id == personId)) %>%
-        dplyr::rename(sex = "conceptName")
-
+        dplyr::ungroup() %>%
+        dplyr::inner_join(
+          private$cdm$person,
+          by = dplyr::join_by(subject_id == person_id)) %>%
+        dplyr::inner_join(
+          private$cdm$concept,
+          by = dplyr::join_by(gender_concept_id == concept_id)) %>%
+        dplyr::mutate(
+          age = !!CDMConnector::datediff("birth_datetime", "cohort_end_date", interval = "year")) %>%
+        dplyr::rename(sex = "concept_name") %>%
+        dplyr::select(
+          "cohort_definition_id",
+          "subject_id",
+          "cohort_start_date",
+          "cohort_end_date",
+          "age",
+          "sex")
       return(invisible(self))
     },
 
