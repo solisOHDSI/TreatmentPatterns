@@ -52,20 +52,6 @@ if (ableToRun()) {
     overwrite = TRUE
   )
 
-  # TreatmentPatterns::export(andromeda, outputPath = setupTempDir)
-  # treatmentPathways <- read.csv(file.path(setupTempDir, "treatmentPathways.csv"))
-  #
-  # pathways <- treatmentPathways %>%
-  #   dplyr::filter(.data$sex == "all" & .data$age == "all" & .data$index_year == "all")
-  #
-  # TreatmentPatterns::createSunburstPlot(
-  #   treatmentPathways = pathways,
-  #   outputFile = file.path(setupTempDir, "sunburst.html"))
-  #
-  # TreatmentPatterns::createSankeyDiagram(
-  #   treatmentPathways = pathways,
-  #   outputFile = file.path(setupTempDir, "sankey.html"))
-
   withr::local_envvar(
     EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
   )

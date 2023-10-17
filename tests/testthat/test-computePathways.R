@@ -15,9 +15,9 @@ if (ableToRun()) {
             cdmSchema = "main",
             resultSchema = "main"
           ),
-          "After maxPathLength: 553"
+          "After maxPathLength: 554"
         ),
-        "After combinationWindow: 554"
+        "After combinationWindow: 555"
       ),
       "Original number of rows: 8334"
     )
@@ -183,6 +183,13 @@ if (ableToRun()) {
   # Setup connection
   localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
   
+  # Setup local Cohorts
+  localCohorts <- data.frame(
+    cohortId = c(28, 6, 3,11),
+    cohortName = c("Disease X", "Drug A", "Drug B","Drug C"),
+    type = c("target", "event", "event", "event")
+  )
+  
   # Setup cohort table
   cohort_table <- tibble(
     cohort_definition_id = c(11, 6, 6, 3, 11, 6, 28),
@@ -209,7 +216,7 @@ if (ableToRun()) {
   
   expect_message(
     andromeda <- TreatmentPatterns::computePathways(
-      cohorts = cohorts,
+      cohorts = localCohorts,
       cdm = localCDM,
       cohortTableName = "cohort_table"
     ),
