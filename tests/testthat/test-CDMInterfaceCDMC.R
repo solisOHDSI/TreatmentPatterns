@@ -106,7 +106,7 @@ if (ableToRun()) {
     res <- andromCDMC$cohortTable
 
     expect_identical(ncol(res), 6L)
-    expect_identical(res %>% collect() %>% nrow(), 11351L)
+    expect_identical(res %>% collect() %>% nrow(), 11386L)
 
     # Empty
     cdmInterface$fetchCohortTable(
