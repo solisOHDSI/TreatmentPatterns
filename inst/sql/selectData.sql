@@ -3,12 +3,8 @@ SELECT
   @resultSchema.@cohortTable.subject_id,
   @resultSchema.@cohortTable.cohort_start_date,
   @resultSchema.@cohortTable.cohort_end_date,
-  DATEDIFF(
-    year,
-    @cdmSchema.person.birth_datetime,
-    @resultSchema.@cohortTable.cohort_start_date
-  ) as age,
-  @cdmSchema.concept.concept_name as sex
+  @cdmSchema.person.year_of_birth - YEAR(@resultSchema.@cohortTable.cohort_start_date) AS age,
+  @cdmSchema.concept.concept_name AS sex
 FROM
   @resultSchema.@cohortTable
 INNER JOIN @cdmSchema.person

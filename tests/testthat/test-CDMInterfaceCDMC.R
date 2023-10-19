@@ -1,15 +1,10 @@
-if (ableToRun()) {
-  library(testthat)
-  library(TreatmentPatterns)
-  library(dplyr)
-  library(R6)
-  library(DBI)
-  library(duckdb)
+localAndromeda <- Andromeda::andromeda()
 
-  andromedaSetup <- Andromeda::loadAndromeda(
-    fileName = file.path(setupTempDir, "Andromeda")
-  )
+withr::defer({
+  Andromeda::close(localAndromeda)
+})
 
+if (ableToRunCDMC()) {
   test_that("Method: new", {
     expect_true(R6::is.R6(
       TreatmentPatterns:::CDMInterface$new(
@@ -26,12 +21,10 @@ if (ableToRun()) {
     expect_true(R6::is.R6(cdmInterface$validate()))
   })
 
-  andromCDMC <- Andromeda::andromeda()
-
   test_that("Method: fetchMetadata", {
-    cdmInterface$fetchMetadata(andromCDMC)
+    cdmInterface$fetchMetadata(localAndromeda)
 
-    metadata <- andromCDMC$metadata %>% collect()
+    metadata <- localAndromeda$metadata %>% collect()
 
     expect_in(
       c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
@@ -44,49 +37,8 @@ if (ableToRun()) {
     expect_identical(ncol(metadata), 8L)
   })
 
-  andromCDMC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
+  localAndromeda$treatmentHistory <- CDMCAndromeda$treatmentHistory %>%
     select(-"age", -"sex")
-
-  # test_that("Method: addSex", {
-  #   testthat::skip_on_ci()
-  #   cdmInterface$addSex(andromCDMC)
-  # 
-  #   sex <- andromCDMC$sex %>% collect()
-  #   TH <- andromCDMC$treatmentHistory %>% collect()
-  # 
-  #   expect_identical(ncol(sex), 2L)
-  #   expect_identical(nrow(sex), 512L)
-  # 
-  #   expect_in(c("MALE", "FEMALE"), TH$sex)
-  # 
-  #   sexes <- TH %>%
-  #     inner_join(sex, by = join_by(personId == personId)) %>%
-  #     select("sex", "conceptName")
-  # 
-  #   expect_identical(sexes$sex, sexes$conceptName)
-  # })
-
-  # test_that("Method: addAge", {
-  #   testthat::skip_on_ci()
-  #   cdmInterface$addAge(andromCDMC)
-  # 
-  #   yearOfBirth <- andromCDMC$yearOfBirth %>% collect()
-  #   TH <- andromCDMC$treatmentHistory %>% collect()
-  # 
-  #   expect_identical(ncol(yearOfBirth), 2L)
-  #   # All people are included besides subset, probably not a problem.
-  #   # expect_identical(nrow(year_of_birth), 512L)
-  # 
-  #   ages <- TH %>%
-  #     inner_join(yearOfBirth, by = join_by(personId == personId)) %>%
-  #     mutate(ageCheck = .data$indexYear - .data$yearOfBirth) %>%
-  #     select("age", "ageCheck")
-  # 
-  #   expect_identical(
-  #     ages$age,
-  #     ages$ageCheck
-  #   )
-  # })
 
   test_that("Method: fetchCohortTable", {
     # Update CDM with new dummy data
@@ -98,12 +50,12 @@ if (ableToRun()) {
     cdmInterface$fetchCohortTable(
       cohorts = cohorts,
       cohortTableName = "cohort_table",
-      andromeda = andromCDMC,
+      andromeda = localAndromeda,
       andromedaTableName = "cohortTable",
       minEraDuration = 5
     )
     
-    res <- andromCDMC$cohortTable
+    res <- localAndromeda$cohortTable
 
     expect_identical(ncol(res), 6L)
     expect_identical(res %>% collect() %>% nrow(), 11386L)
@@ -116,16 +68,14 @@ if (ableToRun()) {
         type = character()
       ),
       cohortTableName = "cohort_table",
-      andromeda = andromCDMC,
+      andromeda = localAndromeda,
       andromedaTableName = "cohortTable",
       minEraDuration = 5
     )
     
-    res <- andromCDMC$cohortTable
+    res <- localAndromeda$cohortTable
     
     expect_identical(ncol(res), 6L)
     expect_identical(res %>% collect() %>% nrow(), 0L)
   })
-
-  Andromeda::close(andromCDMC)
 }
