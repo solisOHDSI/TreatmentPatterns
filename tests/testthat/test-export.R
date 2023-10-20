@@ -2,8 +2,15 @@
 library(TreatmentPatterns)
 library(testthat)
 
-andromedaCG <- Andromeda::loadAndromeda(andromedaCGPath)
-# andromedaCDMC <- Andromeda::loadAndromeda(andromedaCDMCPath)
+connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+andromedaCG <- setupCohortGenerator(connectionDetails)
+andromedaCDMC <- setupCDMConnector()
+
+withr::defer({
+  Andromeda::close(andromedaCG)
+  Andromeda::close(andromedaCDMC)
+  rm("andromedaCG", "andromedaCDMC", "connectionDetails")
+})
 
 # Tests ----
 test_that("void", {
@@ -15,26 +22,28 @@ test_that("void", {
 # CohortGenerator ----
 test_that("outputPath", {
   ## file.path(tempDirCG) ----
-  export(andromedaCG, outputPath = tempDirCG)
+  tempDirLocal <- file.path(tempdir(), "output")
+  
+  export(andromedaCG, outputPath = tempDirLocal)
   
   expect_true(
-    file.exists(file.path(tempDirCG, "treatmentPathways.csv"))
+    file.exists(file.path(tempDirLocal, "treatmentPathways.csv"))
   )
   
   expect_true(
-    file.exists(file.path(tempDirCG, "summaryStatsTherapyDuraion.csv"))
+    file.exists(file.path(tempDirLocal, "summaryStatsTherapyDuraion.csv"))
   )
   
   expect_true(
-    file.exists(file.path(tempDirCG, "countsYear.csv"))
+    file.exists(file.path(tempDirLocal, "countsYear.csv"))
   )
   
   expect_true(
-    file.exists(file.path(tempDirCG, "countsAge.csv"))
+    file.exists(file.path(tempDirLocal, "countsAge.csv"))
   )
   
   expect_true(
-    file.exists(file.path(tempDirCG, "countsSex.csv"))
+    file.exists(file.path(tempDirLocal, "countsSex.csv"))
   )
   
   ## 3 ----
@@ -42,51 +51,65 @@ test_that("outputPath", {
     export(andromedaCG, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
+  
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("tempDirLocal")
+  })
 })
 
 test_that("ageWindow", {
+  tempDirLocal <- file.path(tempdir(), "output")
+  
   ## 10 ----
   expect_message(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       ageWindow = 10
     )
   )
   
-  treatmentPathways <- read.csv(file.path(tempDirCG, "treatmentPathways.csv"))
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
-  expect_true(all(c("0-10", "10-20", "all") %in% treatmentPathways$age))
+  expect_true(
+    all(c("0-10", "10-20", "20-30", "30-40", "40-50", "all") %in% treatmentPathways$age))
   
   ## c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150) ----
   expect_message(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       ageWindow = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150)
     )
   )
   
-  treatmentPathways <- read.csv(file.path(tempDirCG, "treatmentPathways.csv"))
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
   expect_true(all(
     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
   ))
+  
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("treatmentPathways", "tempDirLocal")
+  })
 })
 
 test_that("minFreq", {
+  tempDirLocal <- file.path(tempdir(), "output")
   ## 10 ----
   expect_message(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       minFreq = 10
     ),
     "Removed \\d+ pathways with a frequency < 10."
   )
   
-  treatmentPathways <- read.csv(file.path(tempDirCG, "treatmentPathways.csv"))
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
   expect_equal(min(treatmentPathways$freq), 10)
   
@@ -94,150 +117,180 @@ test_that("minFreq", {
   expect_error(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       minFreq = "10"
     )
   )
+  
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("treatmentPathways", "tempDirLocal")
+  })
 })
 
 test_that("archiveName", {
+  tempDirLocal <- file.path(tempdir(), "output")
   ## "output.zip" ----
   expect_message(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       archiveName = "output.zip"
     )
   )
 
   expect_true(
-    file.exists(file.path(tempDirCG, "output.zip"))
+    file.exists(file.path(tempDirLocal, "output.zip"))
   )
   
   ## 3 ----
   expect_error(
     export(
       andromeda = andromedaCG,
-      outputPath = tempDirCG,
+      outputPath = tempDirLocal,
       archiveName = 3
     )
   )
+  
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("tempDirLocal")
+  })
 })
 
-# # CDMConnector ----
-# test_that("outputPath", {
-#   ## file.path(tempDirCDMC) ----
-#   export(andromedaCDMC, outputPath = tempDirCDMC)
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "treatmentPathways.csv"))
-#   )
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "summaryStatsTherapyDuraion.csv"))
-#   )
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "countsYear.csv"))
-#   )
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "countsAge.csv"))
-#   )
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "countsSex.csv"))
-#   )
-#   
-#   ## 3 ----
-#   expect_error(
-#     export(andromedaCDMC, outputPath = 3),
-#     "Variable 'outputPath': No path provided"
-#   )
-# })
-# 
-# test_that("ageWindow", {
-#   ## 10 ----
-#   expect_message(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       ageWindow = 10
-#     )
-#   )
-#   
-#   treatmentPathways <- read.csv(file.path(tempDirCDMC, "treatmentPathways.csv"))
-#   
-#   expect_true(all(c("0-10", "10-20", "all") %in% treatmentPathways$age))
-#   
-#   ## c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150) ----
-#   expect_message(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       ageWindow = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150)
-#     )
-#   )
-#   
-#   treatmentPathways <- read.csv(file.path(tempDirCDMC, "treatmentPathways.csv"))
-#   
-#   expect_true(all(
-#     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
-#       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
-#   ))
-# })
-# 
-# test_that("minFreq", {
-#   ## 10 ----
-#   expect_message(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       minFreq = 10
-#     ),
-#     "Removed \\d+ pathways with a frequency < 10."
-#   )
-#   
-#   treatmentPathways <- read.csv(file.path(tempDirCDMC, "treatmentPathways.csv"))
-#   
-#   expect_equal(min(treatmentPathways$freq), 10)
-#   
-#   ## "10" ----
-#   expect_error(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       minFreq = "10"
-#     )
-#   )
-# })
-# 
-# test_that("archiveName", {
-#   ## "output.zip" ----
-#   expect_message(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       archiveName = "output.zip"
-#     )
-#   )
-#   
-#   expect_true(
-#     file.exists(file.path(tempDirCDMC, "output.zip"))
-#   )
-#   
-#   ## 3 ----
-#   expect_error(
-#     export(
-#       andromeda = andromedaCDMC,
-#       outputPath = tempDirCDMC,
-#       archiveName = 3
-#     )
-#   )
-# })
-# 
-# # Clean-up ----
-# withr::defer({
-#   Andromeda::close(andromedaCG)
-#   Andromeda::close(andromedaCDMC)
-# })
+# CDMConnector ----
+test_that("outputPath", {
+  tempDirLocal <- file.path(tempdir(), "output")
+
+  export(andromedaCDMC, outputPath = tempDirLocal)
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "treatmentPathways.csv"))
+  )
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "summaryStatsTherapyDuraion.csv"))
+  )
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "countsYear.csv"))
+  )
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "countsAge.csv"))
+  )
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "countsSex.csv"))
+  )
+
+  ## 3 ----
+  expect_error(
+    export(andromedaCDMC, outputPath = 3),
+    "Variable 'outputPath': No path provided"
+  )
+
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("tempDirLocal")
+  })
+})
+
+test_that("ageWindow", {
+  tempDirLocal <- file.path(tempdir(), "output")
+
+  ## 10 ----
+  expect_message(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      ageWindow = 10
+    )
+  )
+
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
+
+  expect_true(all(c("0-10", "10-20", "all") %in% treatmentPathways$age))
+
+  ## c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150) ----
+  expect_message(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      ageWindow = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150)
+    )
+  )
+
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
+
+  expect_true(all(
+    c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
+      "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
+  ))
+
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("treatmentPathways", "tempDirLocal")
+  })
+})
+
+test_that("minFreq", {
+  tempDirLocal <- file.path(tempdir(), "output")
+  ## 10 ----
+  expect_message(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      minFreq = 10
+    ),
+    "Removed \\d+ pathways with a frequency < 10."
+  )
+
+  treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
+
+  expect_equal(min(treatmentPathways$freq), 10)
+
+  ## "10" ----
+  expect_error(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      minFreq = "10"
+    )
+  )
+
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("treatmentPathways", "tempDirLocal")
+  })
+})
+
+test_that("archiveName", {
+  tempDirLocal <- file.path(tempdir(), "output")
+  ## "output.zip" ----
+  expect_message(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      archiveName = "output.zip"
+    )
+  )
+
+  expect_true(
+    file.exists(file.path(tempDirLocal, "output.zip"))
+  )
+
+  ## 3 ----
+  expect_error(
+    export(
+      andromeda = andromedaCDMC,
+      outputPath = tempDirLocal,
+      archiveName = 3
+    )
+  )
+
+  withr::defer({
+    unlink(tempDirLocal, recursive = TRUE)
+    rm("tempDirLocal")
+  })
+})

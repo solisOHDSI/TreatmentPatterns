@@ -1,30 +1,12 @@
-# ableToRun ----
-ableToRunCG <- function() {
-  invisible(all(
-    require("Eunomia", character.only = TRUE),
-    require("CirceR", character.only = TRUE),
-    require("CohortGenerator", character.only = TRUE)
-  ))
-}
+library(CohortGenerator)
+library(CirceR)
+library(Eunomia)
 
-library(testthat)
-library(TreatmentPatterns)
-library(dplyr)
-library(R6)
-library(Andromeda)
+cdmDatabaseSchema <- "main"
+resultSchema <- "main"
+cohortTable <- "CohortTable"
 
-tempDirCG <- file.path(tempdir(), "CohortGenerator")
-dir.create(tempDirCG)
-
-andromedaCGPath <- file.path(tempDirCG, "andromeda")
-
-# Setup CohortGenerator ----
-if (ableToRunCG()) {
-  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-  cdmDatabaseSchema <- "main"
-  resultSchema <- "main"
-  cohortTable <- "CohortTable"
-  
+setupCohorts <- function(connectionDetails) {
   cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
   
   cohortJsonFiles <- list.files(
@@ -69,6 +51,10 @@ if (ableToRunCG()) {
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsToCreate)
   
+  return(cohortsGenerated)
+}
+
+setupCohortTypes <- function(cohortsGenerated, connectionDetails) {
   # Select Viral Sinusitis Cohort
   targetCohorts <- cohortsGenerated %>%
     filter(cohortName == "ViralSinusitis") %>%
@@ -88,6 +74,12 @@ if (ableToRunCG()) {
     eventCohorts %>% mutate(type = "event"),
     exitCohorts %>% mutate(type = "exit")
   )
+  return(cohorts)
+}
+
+setupCohortGenerator <- function(connectionDetails) {
+  cohortsGenerated <- setupCohorts(connectionDetails)
+  cohorts <- setupCohortTypes(cohortsGenerated, connectionDetails)
   
   andromeda <- TreatmentPatterns::computePathways(
     cohorts = cohorts,
@@ -96,16 +88,5 @@ if (ableToRunCG()) {
     cdmSchema = "main",
     resultSchema = "main"
   )
-  
-  Andromeda::saveAndromeda(
-    andromeda = andromeda,
-    fileName = andromedaCGPath,
-    maintainConnection = FALSE,
-    overwrite = TRUE
-  )
-  
-  withr::defer({
-    # Clean-up tempdir
-    unlink(x = tempDirCG, recursive = TRUE)
-  })
+  return(andromeda)
 }

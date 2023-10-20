@@ -3,7 +3,7 @@ SELECT
   @resultSchema.@cohortTable.subject_id,
   @resultSchema.@cohortTable.cohort_start_date,
   @resultSchema.@cohortTable.cohort_end_date,
-  @cdmSchema.person.year_of_birth - YEAR(@resultSchema.@cohortTable.cohort_start_date) AS age,
+  YEAR(@resultSchema.@cohortTable.cohort_start_date) - @cdmSchema.person.year_of_birth AS age,
   @cdmSchema.concept.concept_name AS sex
 FROM
   @resultSchema.@cohortTable
