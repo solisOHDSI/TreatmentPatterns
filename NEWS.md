@@ -6,6 +6,8 @@
 * Internal performance updates.
 * Internal code style updates.
 * Moved basic filtering when fetching cohort table.
+* Updated ReadMe with functionalities
+* Internal updates to LRFS paths, to allow paths of identical duration.
 
 # TreatmentPatterns 2.5.2
 ----------
