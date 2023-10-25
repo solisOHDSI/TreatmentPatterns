@@ -40,6 +40,8 @@ DatabaseConnector::renderTranslateExecuteSql(
   "
 )
 
+DatabaseConnector::disconnect(connection)
+
 cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   connectionDetails = connectionDetails,
   cdmSchema = "main",
@@ -48,8 +50,6 @@ cdmInterface <- TreatmentPatterns:::CDMInterface$new(
 
 withr::defer({
   Andromeda::close(localAndromeda)
-  
-  DatabaseConnector::disconnect(connection)
   rm("localAndromeda", "cdmInterface", "connection", "connectionDetails", "cohorts")
 })
 
