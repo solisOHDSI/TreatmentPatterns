@@ -1,126 +1,246 @@
-#' groupInfrequentCombinations
-#'
-#' Help function to group combinations
-#'
-#' @param data
-#'     Data
-#' @param groupCombinations
-#'     Group combinations
-#'
-#' @returns data.table
-groupInfrequentCombinations <- function(data, groupCombinations) {
-  data <- as.data.frame(data)
-  
-  # Find all non-fixed combinations occurring
-  findCombinations <- apply(
-    X = data,
-    MARGIN = 2,
-    FUN = function(x) {
-      grepl("+", x, fixed = TRUE)
-    }
-  )
-  
-  # Group all non-fixed combinations in one group if TRUE
-  if (groupCombinations == TRUE) {
-    data[findCombinations] <- "Other"
-  } else {
-    # Otherwise: group infrequent treatments below groupCombinations as "other"
-    combinations <- as.matrix(data)[findCombinations == TRUE]
-    
-    freqCombinations <- matrix(
-      rep(data$freq, times = ncol(data)),
-      ncol = ncol(data))[findCombinations == TRUE]
-    
-    summaryCombinations <- data.table::data.table(
-      combination = combinations,
-      freq = freqCombinations
-    )
-    
-    if (nrow(summaryCombinations) > 0) {
-      summaryCombinations <- summaryCombinations[
-        , .(freq = sum(freq)),
-        by = combination
-      ][order(-freq)]
-      
-      summarizeCombinations <- summaryCombinations$combination[
-        summaryCombinations$freq <= as.numeric(groupCombinations)]
-      
-      selectedCombinations <- apply(
-        X = data,
-        MARGIN = 2,
-        FUN = function(x) {
-          x %in% summarizeCombinations
-        }
-      )
-      data[selectedCombinations] <- "Other"
-    }
-  }
-  return(data.table::as.data.table(data))
-}
-
 #' createSankeyDiagram
 #'
-#' @param data
-#'     Dataframe with event cohorts of the target cohort in different columns.
-#' @param outputFolder
-#'     Path to the output folder.
-#' @param groupCombinations
-#'     Select to group all non-fixed combinations in one category "other" in
-#'     the sunburst plot.
-#' @param fileName
-#'     File name of the html-file to output.
+#' Writes the Sankey diagram to a HTML-file, to a specified file path.
+#'
+#' @template param_treatmentPathways
+#' @template param_outputFile
+#' @template param_returnHTML
+#' @template param_groupCombinations
+#' @template param_minFreq
 #'
 #' @export
 #'
-#' @returns NULL
+#' @returns invisible(NULL)
+#'
+#' @examples
+#' # treatmentPathways <- read.csv(treatmentPathways.csv)
 #' 
-#' @examples \dontrun{
-#'   creaeSankeyDiagram(
-#'     data = read.csv("freqPerYear.csv"),
-#'     groupCombinations = FALSE,
-#'     outputFolder = "output")
-#' }
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPathways <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' outputFile <- tempfile(pattern = "mySankeyDiagram", fileext = "html")
+#'
+#' createSankeyDiagram(
+#'   treatmentPathways,
+#'   outputFile,
+#'   groupCombinations = FALSE,
+#'   minFreq = 5
+#' )
 createSankeyDiagram <- function(
-    data,
-    outputFolder,
-    groupCombinations,
-    fileName = "sankeyDiagram.html") {
-  # Group non-fixed combinations in one group according to groupCobinations
-  data <- groupInfrequentCombinations(data, groupCombinations)
+    treatmentPathways,
+    outputFile,
+    returnHTML = FALSE,
+    groupCombinations = FALSE,
+    minFreq = 5) {
   
-  # Define stop treatment
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
+  data <- treatmentPathways %>%
+    rowwise() %>%
+    dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
+    dplyr::mutate(freq = as.integer(.data$freq))
+
+  data <- data %>%
+    tidyr::unnest_wider(path, names_sep = "")
+
+  data <- data %>%
+    dplyr::group_by_at(grep("path", names(data))) %>%
+    dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
+
   data[is.na(data)] <- "Stopped"
-  
-  # Sankey diagram for first three treatment layers
-  data$event_cohort_name1 <- paste0("1. ", data$event_cohort_name1)
-  data$event_cohort_name2 <- paste0("2. ", data$event_cohort_name2)
-  data$event_cohort_name3 <- paste0("3. ", data$event_cohort_name3)
-  
-  results1 <- data %>%
-    dplyr::group_by(event_cohort_name1, event_cohort_name2) %>%
-    dplyr::summarise(freq = sum(freq))
-  
-  results2 <- data %>%
-    dplyr::group_by(event_cohort_name2, event_cohort_name3) %>%
-    dplyr::summarise(freq = sum(freq))
-  
-  # Format in prep for sankey diagram
-  colnames(results1) <- c("source", "target", "value")
-  colnames(results2) <- c("source", "target", "value")
-  links <- as.data.frame(rbind(results1, results2))
+
+  result1 <- data %>%
+    mutate(
+      source = paste("1.", .data$path1),
+      target = paste("2.", .data$path2)
+    ) %>%
+    select("source", "target", "freq")
+
+  if (suppressWarnings(!is.null(data$path3))) {
+    result2 <- data %>%
+      mutate(
+        source = paste("2.", .data$path2),
+        target = paste("3.", .data$path3)
+      ) %>%
+      select("source", "target", "freq")
+
+    links <- dplyr::bind_rows(
+      result1, result2
+    )
+  } else {
+    links <- result1
+  }
+
+  links <- links %>%
+    dplyr::filter(.data$freq >= minFreq) %>%
+    dplyr::mutate(`%` = round(freq / sum(freq) * 100, 2)) %>%
+    dplyr::select(-"freq")
   
   # Draw sankey network
   plot <- googleVis::gvisSankey(
     links,
     from = "source",
     to = "target",
-    weight = "value",
+    weight = "%",
     chartid = 1,
     options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
   )
+
+  if (returnHTML) {
+    return(plot)
+  } else {
+    message(sprintf("Writing Sankey diagram to %s", file.path(outputFile)))
+    
+    writeLines(
+      text = plot$html$chart,
+      con = file.path(outputFile)
+    )
+    
+    return(invisible(NULL))
+  }
+}
+utils::globalVariables(c(".", "freq", "combination"))
+
+
+splitPathItems <- function(treatmentPathways) {
+  data <- treatmentPathways %>%
+    rowwise() %>%
+    dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
+    dplyr::mutate(freq = as.integer(.data$freq))
   
-  writeLines(
-    text = plot$html$chart,
-    con = normalizePath(paste0(outputFolder, "/", fileName), mustWork = FALSE)
+  data <- data %>%
+    tidyr::unnest_wider(path, names_sep = "")
+  
+  data <- data %>%
+    dplyr::group_by_at(grep("path", names(data))) %>%
+    dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
+  
+  data[is.na(data)] <- "Stopped"
+  return(data)
+}
+
+createLinks <- function(data) {
+  result1 <- data %>%
+    mutate(
+      source = paste("1.", .data$path1),
+      target = paste("2.", .data$path2)
+    ) %>%
+    select("source", "target", "freq")
+  
+  
+  if (suppressWarnings(!is.null(data$path3))) {
+    result2 <- data %>%
+      mutate(
+        source = paste("2.", .data$path2),
+        target = paste("3.", .data$path3)
+      ) %>%
+      select("source", "target", "freq")
+    
+    links <- dplyr::bind_rows(
+      result1, result2
+    )
+  } else {
+    links <- result1
+  }
+  
+  links <- links %>%
+    dplyr::mutate(value = round(freq / sum(freq) * 100, 2)) %>%
+    dplyr::select(-"freq")
+}
+
+doGroupCombinations <- function(treatmentPathways, groupCombinations) {
+  if (groupCombinations) {
+    treatmentPathways$path <- treatmentPathways$path %>%
+      stringr::str_replace_all(
+        pattern = "\\w+\\+\\w+",
+        replacement = "Combination"
+      )
+  }
+  return(treatmentPathways)
+}
+
+createLinkedData <- function(data) {
+  links <- createLinks(data)
+
+  nodes <- data.frame(
+    names = c(links$source, links$target) %>% unique()
+  )
+
+  links$source <- lapply(links$source, nameToId, names = nodes$names) %>%
+    unlist()
+
+  links$target <- lapply(links$target, nameToId, names = nodes$names) %>%
+    unlist()
+
+  links <- links %>%
+    dplyr::group_by(.data$source, .data$target) %>%
+    dplyr::summarise(value = sum(.data$value), .groups = "drop") %>%
+    as.data.frame()
+
+  return(list(links = links, nodes = nodes))
+}
+
+nameToId <- function(item, names) {
+  item <- item %>%
+    stringr::str_replace(pattern = "\\(", replacement = "\\\\(") %>%
+    stringr::str_replace(pattern = "\\)", replacement = "\\\\)") %>%
+    stringr::str_replace(pattern = "\\+", replacement = "\\\\+") %>%
+    stringr::str_replace(pattern = "\\&", replacement = "\\\\&") %>%
+    stringr::str_replace(pattern = "\\.", replacement = "\\\\.")
+  return(grep(sprintf("^%s$",item), names) - 1)
+}
+
+#' createSankeyDiagram2
+#' 
+#' Create sankey diagram, will replace `createSankeyDiagram`.
+#'
+#' @template param_treatmentPathways
+#' @template param_groupCombinations
+#'
+#' @return (`htmlwidget`)
+#' @export
+#'
+#' @examples
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPathways <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' createSankeyDiagram2(treatmentPathways)
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+  treatmentPathways <- doGroupCombinations(
+    treatmentPathways = treatmentPathways,
+    groupCombinations = groupCombinations
+  )
+  
+  data <- splitPathItems(treatmentPathways)
+  
+  linkedData <- createLinkedData(data)
+  
+  networkD3::sankeyNetwork(
+    Links = linkedData$links,
+    Nodes = linkedData$nodes,
+    Source = "source",
+    Target = "target",
+    Value = "value",
+    NodeID = "names",
+    units = "%",
+    fontSize = 12,
+    nodeWidth = 30
   )
 }

@@ -4,26 +4,56 @@
 \alias{createSunburstPlot}
 \title{createSunburstPlot}
 \usage{
-createSunburstPlot(data, folder, fileName)
+createSunburstPlot(
+  treatmentPathways,
+  outputFile,
+  groupCombinations = FALSE,
+  returnHTML = FALSE
+)
 }
 \arguments{
-\item{data}{A data frame containing two columns: 1) column "path" should specify the
-event cohorts separated by dashes - (combinations can be indicated using
-&) and 2) column "freq" should specify how often that (unique) path
-occurs.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+The contents of the treatmentPathways.csv-file as a data.frame().}
 
-\item{folder}{Root folder to store the results.}
+\item{outputFile}{(\code{character(1)})\cr
+Path where the Sankey diagram should be written to.}
 
-\item{fileName}{File name for the results.}
+\item{groupCombinations}{(\code{logical(1)}: \code{FALSE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
+
+\item{returnHTML}{(\code{logical(1)}: \code{FALSE})\cr
+Logical to return HTML or not.
+\describe{
+\item{\code{TRUE}}{Returns HTML as \code{character(n)}, does not requie \code{outputPath} to be specified.}
+\item{\code{FALSE}}{Returns \code{NULL}, but writes the HTML to the specified file instead. Requires \code{outputPath} to be specified.}
+}}
+}
+\value{
+(\code{NULL})
 }
 \description{
-Export a sunburst plot from a data.frame object.
+Generate a sunburst plot from the treatment pathways.
 }
 \examples{
-\dontrun{
+# treatmentPathways <- read.csv("treatmentPathways.csv")
+
+# Dummy data, typically read from treatmentPathways.csv
+treatmentPatwhays <- data.frame(
+  path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+           "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+  freq = c(206, 6, 14, 48, 221),
+  sex = rep("all", 5),
+  age = rep("all", 5),
+  index_year = rep("all", 5)
+)
+
+outputFile <- tempfile(pattern = "mySunburstPlot", fileext = "html")
+
 createSunburstPlot(
-  data = data.frame(
-    path = c("1", "2"),
-    freq = c("0.5", "0.5")))
-}
+  treatmentPatwhays,
+  outputFile
+)
 }

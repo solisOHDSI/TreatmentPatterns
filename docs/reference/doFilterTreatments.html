@@ -18,7 +18,7 @@ maintained for the visualizations"><!-- mathjax --><script src="https://cdnjs.cl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -33,10 +33,25 @@ maintained for the visualizations"><!-- mathjax --><script src="https://cdnjs.cl
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/DarwinTreatmentPatternsStudy.html">Perform a Darwin study using the TreatmentPatterns package</a>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+    </li>
+    <li>
+      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+    </li>
+    <li>
+      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -46,7 +61,7 @@ maintained for the visualizations"><!-- mathjax --><script src="https://cdnjs.cl
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>doFilterTreatments</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/blob/HEAD/R/ConstructPathways.R" class="external-link"><code>R/ConstructPathways.R</code></a></small>
     <div class="hidden name"><code>doFilterTreatments.Rd</code></div>
     </div>
 
@@ -56,41 +71,26 @@ maintained for the visualizations</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doFilterTreatments</span><span class="op">(</span><span class="va">treatmentHistory</span>, <span class="va">filterTreatments</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">doFilterTreatments</span><span class="op">(</span><span class="va">andromeda</span>, <span class="va">filterTreatments</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>treatmentHistory</dt>
-<dd><p>Dataframe with event cohorts of the target cohort in different rows.</p></dd>
+    <dl><dt>andromeda</dt>
+<dd><p>(<code><a href="https://rdrr.io/pkg/Andromeda/man/andromeda_constructor.html" class="external-link">Andromeda::andromeda()</a></code>)</p></dd>
 
 
 <dt>filterTreatments</dt>
-<dd><p>Select first occurrence of ('First') / changes between ('Changes') / all
-event cohorts ('All').</p></dd>
+<dd><p>(<code>character(1)</code>)</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>treatmentHistory
-    Updated dataframe, where the desired event cohorts are maintained for
-    the visualizations.</p>
+<p>(<code>invisible(NULL)</code>)</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="va">th</span> <span class="op">&lt;-</span> <span class="fu"><a href="doCreateTreatmentHistory.html">doCreateTreatmentHistory</a></span><span class="op">(</span>current_cohorts <span class="op">=</span> <span class="va">currentCohorts</span>,</span></span>
-<span class="r-in"><span>                               targetCohortId <span class="op">=</span> <span class="va">targetCohortId</span>,</span></span>
-<span class="r-in"><span>                               eventCohortIds <span class="op">=</span> <span class="va">eventCohortIds</span>,</span></span>
-<span class="r-in"><span>                               periodPriorToIndex <span class="op">=</span> <span class="va">periodPriorToIndex</span>,</span></span>
-<span class="r-in"><span>                               includeTreatments <span class="op">=</span> <span class="va">includeTreatments</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">doFilterTreatments</span><span class="op">(</span>treatmentHistory <span class="op">=</span> <span class="va">th</span>, filterTreatments <span class="op">=</span> <span class="st">"All"</span><span class="op">)</span><span class="op">}</span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -99,7 +99,7 @@ event cohorts ('All').</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Maarten van Kessel.</p>
+  <p></p><p>Developed by Aniek Markus, Maarten van Kessel.</p>
 </div>
 
 <div class="pkgdown">

@@ -5,30 +5,62 @@
 \title{createSankeyDiagram}
 \usage{
 createSankeyDiagram(
-  data,
-  outputFolder,
-  groupCombinations,
-  fileName = "sankeyDiagram.html"
+  treatmentPathways,
+  outputFile,
+  returnHTML = FALSE,
+  groupCombinations = FALSE,
+  minFreq = 5
 )
 }
 \arguments{
-\item{data}{Dataframe with event cohorts of the target cohort in different columns.}
+\item{treatmentPathways}{(\code{data.frame()})\cr
+The contents of the treatmentPathways.csv-file as a data.frame().}
 
-\item{outputFolder}{Path to the output folder.}
+\item{outputFile}{(\code{character(1)})\cr
+Path where the Sankey diagram should be written to.}
 
-\item{groupCombinations}{Select to group all non-fixed combinations in one category "other" in
-the sunburst plot.}
+\item{returnHTML}{(\code{logical(1)}: \code{FALSE})\cr
+Logical to return HTML or not.
+\describe{
+\item{\code{TRUE}}{Returns HTML as \code{character(n)}, does not requie \code{outputPath} to be specified.}
+\item{\code{FALSE}}{Returns \code{NULL}, but writes the HTML to the specified file instead. Requires \code{outputPath} to be specified.}
+}}
 
-\item{fileName}{File name of the html-file to output.}
+\item{groupCombinations}{(\code{logical(1)}: \code{FALSE})\cr
+\describe{
+\item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
+\item{\code{FALSE}}{Do not group combination treatments.}
+}}
+
+\item{minFreq}{(\code{integer(1)}: \code{5})\cr
+Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+minimum value will carry over to the sankey diagram and sunburst plot.}
+}
+\value{
+invisible(NULL)
 }
 \description{
-createSankeyDiagram
+Writes the Sankey diagram to a HTML-file, to a specified file path.
 }
 \examples{
-\dontrun{
-  creaeSankeyDiagram(
-    data = read.csv("freqPerYear.csv"),
-    groupCombinations = FALSE,
-    outputFolder = "output")
-}
+# treatmentPathways <- read.csv(treatmentPathways.csv)
+
+# Dummy data, typically read from treatmentPathways.csv
+treatmentPathways <- data.frame(
+  path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+           "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+  freq = c(206, 6, 14, 48, 221),
+  sex = rep("all", 5),
+  age = rep("all", 5),
+  index_year = rep("all", 5)
+)
+
+outputFile <- tempfile(pattern = "mySankeyDiagram", fileext = "html")
+
+createSankeyDiagram(
+  treatmentPathways,
+  outputFile,
+  groupCombinations = FALSE,
+  minFreq = 5
+)
 }

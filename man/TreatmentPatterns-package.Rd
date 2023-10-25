@@ -4,8 +4,25 @@
 \name{TreatmentPatterns-package}
 \alias{TreatmentPatterns}
 \alias{TreatmentPatterns-package}
-\title{TreatmentPatterns: A package to analyse real-world treatment patterns of a study population of interest}
+\title{TreatmentPatterns: Analyzes Real-World Treatment Patterns of a Study Population of Interest}
 \description{
-This package gives insight in treatment patterns, the following tasks should be performed sequentially: 1. Construct treatment pathways. 2. Generate output (sunburst plots, Sankey diagrams and more). 3. Launch shiny application to visualize the results.
+Computes treatment patterns within a given cohort using the Observational Medical Outcomes Partnership (OMOP) common data model (CDM). As described in Markus, Verhamme, Kors, and Rijnbeek (2022) \doi{10.1016/j.cmpb.2022.107081}.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/darwin-eu-dev/TreatmentPatterns}
+  \item Report bugs at \url{https://github.com/darwin-eu-dev/TreatmentPatterns/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Maarten van Kessel \email{m.l.vankessel@erasmusmc.nl} (\href{https://orcid.org/0009-0006-8832-6030}{ORCID})
+
+Authors:
+\itemize{
+  \item Aniek Markus (\href{https://orcid.org/0000-0001-5779-4794}{ORCID})
+}
+
 }
 \keyword{internal}

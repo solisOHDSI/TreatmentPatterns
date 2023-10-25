@@ -2,6 +2,9 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/darwin-eu-dev/TreatmentPatterns/actions/workflows/R-CMD-check.yaml/badge.svg?branch=dev)](https://github.com/darwin-eu-dev/TreatmentPatterns/actions/workflows/R-CMD-check.yaml)
+
+![CRAN](https://www.r-pkg.org/badges/version/TreatmentPatterns)
+[![Codecov test coverage](https://codecov.io/gh/darwin-eu-dev/TreatmentPatterns/branch/master/graph/badge.svg)](https://app.codecov.io/gh/darwin-eu-dev/TreatmentPatterns?branch=master)
 <!-- badges: end -->
 
 This R package contains the resources for performing a treatment pathway analysis of a study population of interest in observational databases. The package partially relies on the Observational Medical Outcomes Partnership Common Data Model (OMOP CDM), but the main parts of the package are also usable with different data formats.
@@ -42,18 +45,18 @@ This R package contains the resources for performing a treatment pathway analysi
 2. In R, use the following commands to download and install TreatmentPatterns:
 
   ```r
+  install.packages("TreatmentPatterns")
+  ```
+
+  ```r
   install.packages("remotes")
-  remotes::install_github("mi-erasmusmc/TreatmentPatterns")
+  remotes::install_github("darwin-eu-dev/TreatmentPatterns")
   ```
 
 ## User Documentation
 Available documentation includes:
-- Vignette: [Perform a study using the TreatmentPatterns package](https://darwin-eu-dev.github.io/TreatmentPatterns/articles/TreatmentPatternsStudy.html)
+- Vignette: [Perform a study using the TreatmentPatterns package](https://darwin-eu-dev.github.io/TreatmentPatterns/articles/)
 - Package manual: [TreatmentPatterns](https://darwin-eu-dev.github.io/TreatmentPatterns/reference/index.html)
-
-## Package Structure
-<img src="man/figures/package.png"/>
-
 
 ## Support
 We use the <a href="https://github.com/darwin-eu-dev/TreatmentPatterns/issues">GitHub issue tracker</a> for all bugs/issues/enhancements.
