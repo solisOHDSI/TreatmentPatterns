@@ -10,7 +10,14 @@
 ![CRAN](https://www.r-pkg.org/badges/version/TreatmentPatterns)
 [![Codecov test
 coverage](https://codecov.io/gh/darwin-eu-dev/TreatmentPatterns/branch/master/graph/badge.svg)](https://app.codecov.io/gh/darwin-eu-dev/TreatmentPatterns?branch=master)
+
 <!-- badges: end -->
+
+[*Markus A, Verhamme K, Kors J, Rijnbeek P (2002). “TreatmentPatterns:
+An R package to facilitate the standardized development and analysis of
+treatment patterns across disease domains.” Computer Methods and
+Programs in
+Biomedicine.*](https://www.sciencedirect.com/science/article/pii/S016926072200462X?via%3Dihub)
 
 This R package contains the resources for performing a treatment pathway
 analysis of a study population of interest in observational databases.
