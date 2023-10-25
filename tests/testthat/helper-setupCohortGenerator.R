@@ -2,10 +2,6 @@ library(CohortGenerator)
 library(CirceR)
 library(Eunomia)
 
-cdmDatabaseSchema <- "main"
-resultSchema <- "main"
-cohortTable <- "CohortTable"
-
 setupCohorts <- function(connectionDetails) {
   cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
   
@@ -36,18 +32,18 @@ setupCohorts <- function(connectionDetails) {
   }
   
   cohortTableNames <- CohortGenerator::getCohortTableNames(
-    cohortTable = cohortTable)
+    cohortTable = "CohortTable")
   
   CohortGenerator::createCohortTables(
     connectionDetails = connectionDetails,
-    cohortDatabaseSchema = resultSchema,
+    cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames)
   
   # Generate the cohorts
   cohortsGenerated <- CohortGenerator::generateCohortSet(
     connectionDetails = connectionDetails,
-    cdmDatabaseSchema = cdmDatabaseSchema,
-    cohortDatabaseSchema = resultSchema,
+    cdmDatabaseSchema = "main",
+    cohortDatabaseSchema = "main",
     cohortTableNames = cohortTableNames,
     cohortDefinitionSet = cohortsToCreate)
   
