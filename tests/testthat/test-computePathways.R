@@ -13,7 +13,7 @@ cdm <- setupCohortsCDM(cdm)
 
 withr::defer({
   DBI::dbDisconnect(con)
-  rm("cohortsGenerated", "cohorts", "cdm", "connectionDetails")
+  rm("cohortsGenerated", "cohorts", "cdm")
 })
 
 test_that("computePathways DatabaseConnector", {
@@ -237,7 +237,7 @@ test_that("identical treatment timeframe", {
   
   result <- andromeda$treatmentHistory %>%
     collect()
-
+  
   expect_identical(result$eventCohortId, c("11+6", "6"))
   
   withr::defer({
