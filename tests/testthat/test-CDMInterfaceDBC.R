@@ -82,16 +82,22 @@ test_that("Method: fetchMetadata", {
 })
 
 test_that("Method: fetchCohortTable", {
+  a <- Andromeda::andromeda()
+  
+  withr::defer({
+    Andromeda::close(a)
+  })
+  
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
     cohorts = cohorts,
     cohortTableName = "cohort_table",
-    andromeda = localAndromeda,
+    andromeda = a,
     andromedaTableName = "cohortTable",
-    minEraDuration = 5
+    minEraDuration = 0
   )
 
-  res <- localAndromeda$cohortTable %>% dplyr::collect()
+  res <- a$cohortTable %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 3L)
@@ -104,12 +110,12 @@ test_that("Method: fetchCohortTable", {
       type = character()
     ),
     cohortTableName = "cohort_table",
-    andromeda = localAndromeda,
+    andromeda = a,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
   )
 
-  res <- localAndromeda$cohortTable %>% dplyr::collect()
+  res <- a$cohortTable %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 0L)
