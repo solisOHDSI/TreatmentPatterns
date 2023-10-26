@@ -12,8 +12,6 @@ cohorts <- data.frame(
   type = c("target", "event", "event")
 )
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-
 connection <- DatabaseConnector::connect(connectionDetails)
 
 DatabaseConnector::renderTranslateExecuteSql(

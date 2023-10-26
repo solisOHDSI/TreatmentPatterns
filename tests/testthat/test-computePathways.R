@@ -5,7 +5,6 @@ library(CDMConnector)
 library(dplyr)
 library(Eunomia)
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cohortsGenerated <- setupCohorts(connectionDetails)
 cohorts <- setupCohortTypes(cohortsGenerated, connectionDetails)
 
