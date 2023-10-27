@@ -2,14 +2,13 @@
 library(TreatmentPatterns)
 library(testthat)
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 andromedaCG <- setupCohortGenerator(connectionDetails)
 andromedaCDMC <- setupCDMConnector()
 
 withr::defer({
   Andromeda::close(andromedaCG)
   Andromeda::close(andromedaCDMC)
-  rm("andromedaCG", "andromedaCDMC", "connectionDetails")
+  rm("andromedaCG", "andromedaCDMC")
 })
 
 # Tests ----

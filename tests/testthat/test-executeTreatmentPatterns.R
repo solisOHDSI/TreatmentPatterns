@@ -1,7 +1,6 @@
 library(testthat)
 library(TreatmentPatterns)
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cohortsGenerated <- setupCohorts(connectionDetails)
 cohorts <- setupCohortTypes(cohortsGenerated, connectionDetails)
 
@@ -10,7 +9,7 @@ cdm <- setupCohortsCDM(cdm)
 
 withr::defer({
   DBI::dbDisconnect(con)
-  rm("cohortsGenerated", "cohorts", "cdm", "connectionDetails")
+  rm("cohortsGenerated", "cohorts", "cdm")
 })
 
 test_that("void", {
