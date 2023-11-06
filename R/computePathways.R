@@ -137,12 +137,15 @@ computePathways <- function(
     filterTreatments = "First",
     maxPathLength = 5,
     addNoPaths = TRUE) {
+  
   cdmInterface <- CDMInterface$new(
     connectionDetails = connectionDetails,
     cdmSchema = cdmSchema,
     resultSchema = resultSchema,
+    tempEmulationSchema = tempEmulationSchema,
     cdm = cdm
   )
+  
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,
     cohortTableName = cohortTableName,
