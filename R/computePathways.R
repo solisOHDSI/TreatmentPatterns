@@ -143,8 +143,6 @@ computePathways <- function(
     resultSchema = resultSchema,
     cdm = cdm
   )
-  on.exit(cdmInterface$destroy())
-
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,
     cohortTableName = cohortTableName,
@@ -166,8 +164,6 @@ computePathways <- function(
   )
   pathwayConstructor$construct(minEraDuration)
   andromeda <- pathwayConstructor$getAndromeda()
-  #cdmInterface$addSex(andromeda = andromeda)
-  #cdmInterface$addAge(andromeda = andromeda)
 
   andromeda$metadata <- andromeda$metadata %>%
     dplyr::collect() %>%
