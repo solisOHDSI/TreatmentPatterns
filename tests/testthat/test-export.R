@@ -13,6 +13,8 @@ test_that("void", {
 test_that("outputPath", {
   ## file.path(tempDirCG) ----
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
 
   export(andromedaCG, outputPath = tempDirLocal)
 
@@ -38,7 +40,7 @@ test_that("outputPath", {
 
   ## 3 ----
   expect_error(
-    export(andromedaCG, outputPath = 3),
+    TreatmentPatterns::export(andromedaCG, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
 
@@ -50,6 +52,8 @@ test_that("outputPath", {
 
 test_that("ageWindow", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
 
   ## 10 ----
   expect_message(
@@ -89,6 +93,9 @@ test_that("ageWindow", {
 
 test_that("minFreq", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
+  
   ## 10 ----
   expect_message(
     export(
@@ -120,6 +127,9 @@ test_that("minFreq", {
 
 test_that("archiveName", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
+  
   ## "output.zip" ----
   expect_message(
     export(
@@ -151,6 +161,8 @@ test_that("archiveName", {
 # CDMConnector ----
 test_that("outputPath", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
 
   export(andromedaCDMC, outputPath = tempDirLocal)
 
@@ -188,6 +200,8 @@ test_that("outputPath", {
 
 test_that("ageWindow", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
 
   ## 10 ----
   expect_message(
@@ -226,6 +240,9 @@ test_that("ageWindow", {
 
 test_that("minFreq", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
+  
   ## 10 ----
   expect_message(
     export(
@@ -257,6 +274,9 @@ test_that("minFreq", {
 
 test_that("archiveName", {
   tempDirLocal <- file.path(tempdir(), "output")
+  
+  dir.create(tempDirLocal)
+  
   ## "output.zip" ----
   expect_message(
     export(
