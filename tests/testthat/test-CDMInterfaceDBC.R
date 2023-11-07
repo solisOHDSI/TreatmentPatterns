@@ -6,6 +6,34 @@ library(DatabaseConnector)
 
 localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
 
+connection <- DatabaseConnector::connect(localConnectionDetails)
+
+DatabaseConnector::renderTranslateExecuteSql(
+  connection = connection,
+  sql = "
+  DROP TABLE IF EXISTS cohort_table;
+
+  CREATE TABLE cohort_table (
+    cohort_definition_id INT,
+    subject_id INT,
+    cohort_start_date DATE,
+    cohort_end_date DATE
+  );
+
+  INSERT INTO cohort_table (
+    cohort_definition_id,
+    subject_id,
+    cohort_start_date,
+    cohort_end_date
+  ) VALUES
+  (3, 1, 2014-10-10, 2015-08-01),
+  (2, 1, 2014-11-17, 2014-12-04),
+  (1, 1, 2014-10-10, 2015-08-01);
+  "
+)
+
+DatabaseConnector::disconnect(connection)
+
 cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   connectionDetails = localConnectionDetails,
   cdmSchema = "main",
@@ -57,39 +85,6 @@ test_that("Method: fetchCohortTable", {
     cohortName = c("Disease X", "Drug A", "Drug B"),
     type = c("target", "event", "event")
   )
-
-  connection <- DatabaseConnector::connect(localConnectionDetails)
-
-  DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
-    sql = "
-  DROP TABLE IF EXISTS cohort_table;
-
-  CREATE TABLE cohort_table (
-    cohort_definition_id INT,
-    subject_id INT,
-    cohort_start_date DATE,
-    cohort_end_date DATE
-  );
-
-  INSERT INTO cohort_table (
-    cohort_definition_id,
-    subject_id,
-    cohort_start_date,
-    cohort_end_date
-  ) VALUES
-  (3, 1, 2014-10-10, 2015-08-01),
-  (2, 1, 2014-11-17, 2014-12-04),
-  (1, 1, 2014-10-10, 2015-08-01);
-  "
-  )
-
-  DatabaseConnector::disconnect(connection)
-
-  withr::defer({
-    Andromeda::close(localAndromeda)
-    rm("cohorts", "connection", "localAndromeda", "res")
-  })
 
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
