@@ -57,11 +57,6 @@ test_that("Method: validate", {
 test_that("Method: fetchMetadata", {
   localAndromeda <- Andromeda::andromeda()
 
-  withr::defer({
-    Andromeda::close(localAndromeda)
-    rm("localAndromeda")
-  })
-
   cdmInterface$fetchMetadata(localAndromeda)
 
   metadata <- localAndromeda$metadata %>% collect()
