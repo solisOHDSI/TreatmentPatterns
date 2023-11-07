@@ -63,12 +63,6 @@ test_that("Method: fetchMetadata", {
 test_that("Method: fetchCohortTable", {
   localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
-  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = localConnectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
-  )
-  
   connection <- DatabaseConnector::connect(localConnectionDetails)
   
   DatabaseConnector::renderTranslateExecuteSql(
@@ -98,6 +92,12 @@ test_that("Method: fetchCohortTable", {
   DatabaseConnector::disconnect(connection)
   
   localAndromeda <- Andromeda::andromeda()
+  
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = localConnectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
 
   cohorts <- data.frame(
     cohortId = c(1, 2, 3),
