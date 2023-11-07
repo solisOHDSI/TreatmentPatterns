@@ -3,15 +3,16 @@ library(testthat)
 library(TreatmentPatterns)
 
 test_that("computePathways DatabaseConnector", {
+  
   expect_message(
     expect_message(
       expect_message(
         computePathways(
           cohorts = cohorts,
-          cohortTableName = "CohortTable",
+          cohortTableName = cohortTableName,
           connectionDetails = connectionDetails,
-          cdmSchema = "main",
-          resultSchema = "main"
+          cdmSchema = cdmSchema,
+          resultSchema = resultSchema
         ),
         "After maxPathLength: 554"
       ),
