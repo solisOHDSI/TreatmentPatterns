@@ -61,16 +61,16 @@ createSankeyDiagram <- function(
 
   result1 <- data %>%
     mutate(
-      source = paste("1.", .data$path1),
-      target = paste("2.", .data$path2)
+      source = paste0("1.", .data$path1),
+      target = paste0("2.", .data$path2)
     ) %>%
     select("source", "target", "freq")
 
   if (suppressWarnings(!is.null(data$path3))) {
     result2 <- data %>%
       mutate(
-        source = paste("2.", .data$path2),
-        target = paste("3.", .data$path3)
+        source = paste0("2.", .data$path2),
+        target = paste0("3.", .data$path3)
       ) %>%
       select("source", "target", "freq")
 
@@ -132,8 +132,8 @@ splitPathItems <- function(treatmentPathways) {
 createLinks <- function(data) {
   result1 <- data %>%
     mutate(
-      source = paste("1.", .data$path1),
-      target = paste("2.", .data$path2)
+      source = paste0("1.", .data$path1),
+      target = paste0("2.", .data$path2)
     ) %>%
     select("source", "target", "freq")
   
@@ -141,8 +141,8 @@ createLinks <- function(data) {
   if (suppressWarnings(!is.null(data$path3))) {
     result2 <- data %>%
       mutate(
-        source = paste("2.", .data$path2),
-        target = paste("3.", .data$path3)
+        source = paste0("2.", .data$path2),
+        target = paste0("3.", .data$path3)
       ) %>%
       select("source", "target", "freq")
     
