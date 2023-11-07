@@ -10,10 +10,6 @@ cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   resultSchema = "main"
 )
 
-withr::defer({
-  rm("cdmInterface")
-})
-
 test_that("Method: new", {
   expect_true(R6::is.R6(
     TreatmentPatterns:::CDMInterface$new(
