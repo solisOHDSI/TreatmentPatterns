@@ -122,7 +122,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveNa
   checkmate::assertCharacter(archiveName, len = 1, add = collection, null.ok = TRUE)
   checkmate::reportAssertions(collection)
   
-  if (!file.exists(outputPath)) {
+  if (!dir.exists(outputPath)) {
     dir.create(outputPath)
   }
   
