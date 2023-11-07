@@ -4,8 +4,10 @@ library(dplyr)
 library(Eunomia)
 library(DatabaseConnector)
 
+localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+
 cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-  connectionDetails = connectionDetails,
+  connectionDetails = localConnectionDetails,
   cdmSchema = "main",
   resultSchema = "main"
 )
@@ -13,7 +15,7 @@ cdmInterface <- TreatmentPatterns:::CDMInterface$new(
 test_that("Method: new", {
   expect_true(R6::is.R6(
     TreatmentPatterns:::CDMInterface$new(
-      connectionDetails = connectionDetails,
+      connectionDetails = localConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main"
     )
@@ -56,7 +58,7 @@ test_that("Method: fetchCohortTable", {
     type = c("target", "event", "event")
   )
 
-  connection <- DatabaseConnector::connect(connectionDetails)
+  connection <- DatabaseConnector::connect(localConnectionDetails)
 
   DatabaseConnector::renderTranslateExecuteSql(
     connection = connection,
