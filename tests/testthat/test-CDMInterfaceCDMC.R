@@ -7,7 +7,7 @@ localAndromeda <- Andromeda::andromeda()
 
 con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
 
-cohorts <- data.frame(
+localCohorts <- data.frame(
   cohortId = c(1, 2, 3),
   cohortName = c("Disease X", "Drug A", "Drug B"),
   type = c("target", "event", "event")
@@ -69,7 +69,7 @@ test_that("Method: fetchCohortTable", {
   
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
-    cohorts = cohorts,
+    cohorts = localCohorts,
     cohortTableName = "cohort_table",
     andromeda = localAndromeda,
     andromedaTableName = "cohortTable",

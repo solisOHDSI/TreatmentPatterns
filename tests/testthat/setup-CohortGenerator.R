@@ -69,14 +69,14 @@ exitCohorts <- cohortsGenerated %>%
   filter(cohortName == "Death") %>%
   select(cohortId, cohortName)
 
-cohorts <- dplyr::bind_rows(
+cohortsDBC <- dplyr::bind_rows(
   targetCohorts %>% mutate(type = "target"),
   eventCohorts %>% mutate(type = "event"),
   exitCohorts %>% mutate(type = "exit")
 )
 
 andromedaCG <- TreatmentPatterns::computePathways(
-  cohorts = cohorts,
+  cohorts = cohortsDBC,
   cohortTableName = cohortTableName,
   connectionDetails = connectionDetails,
   cdmSchema = cdmSchema,

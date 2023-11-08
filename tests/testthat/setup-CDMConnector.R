@@ -39,14 +39,14 @@ cdm <- CDMConnector::generateCohortSet(
   computeAttrition = FALSE
 )
 
-cohorts <- data.frame(
+cohortsCDMC <- data.frame(
   cohortId = cohortsSet$cohort_definition_id,
   cohortName = cohortsSet$cohort_name,
   type = c("event", "event", "event", "event", "exit", "event", "event", "target")
 )
 
 andromedaCDMC <- TreatmentPatterns::computePathways(
-  cohorts = cohorts,
+  cohorts = cohortsCDMC,
   cohortTableName = "cohort_table",
   cdm = cdm
 )

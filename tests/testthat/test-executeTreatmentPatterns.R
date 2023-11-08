@@ -11,8 +11,8 @@ test_that("CohortGenerator", {
 
   expect_message(
     TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = cohorts,
-      cohortTableName = "cohortTable",
+      cohorts = cohortsDBC,
+      cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
@@ -45,7 +45,7 @@ test_that("CDMConnector", {
   tempDir <- tempdir()
   expect_message(
     TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = cohorts,
+      cohorts = cohortsCDMC,
       cohortTableName = "cohort_table",
       cdm = cdm,
       outputPath = tempDir

@@ -8,11 +8,11 @@ test_that("computePathways DatabaseConnector", {
     expect_message(
       expect_message(
         computePathways(
-          cohorts = cohorts,
-          cohortTableName = cohortTableName,
+          cohorts = cohortsDBC,
+          cohortTableName = "CohortTable",
           connectionDetails = connectionDetails,
-          cdmSchema = cdmSchema,
-          resultSchema = resultSchema
+          cdmSchema = "main",
+          resultSchema = "main"
         ),
         "After maxPathLength: 554"
       ),
@@ -27,7 +27,7 @@ test_that("computePathways CDMConnector", {
   expect_message(
     computePathways(
       cdm = cdm,
-      cohorts = cohorts,
+      cohorts = cohortsCDMC,
       cohortTableName = "cohort_table"
     ),
     "After maxPathLength: 554"
@@ -39,7 +39,7 @@ test_that("includeTreatments", {
   expect_error(
     expect_error(
       computePathways(
-        cohorts = cohorts,
+        cohorts = cohortsDBC,
         cohortTableName = "CohortTable",
         connectionDetails = connectionDetails,
         cdmSchema = "main",
@@ -55,7 +55,7 @@ test_that("includeTreatments", {
 test_that("periodPriorToIndex", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -69,7 +69,7 @@ test_that("periodPriorToIndex", {
 test_that("minEraDuration", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -83,7 +83,7 @@ test_that("minEraDuration", {
 test_that("splitEventCohorts", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -97,7 +97,7 @@ test_that("splitEventCohorts", {
 test_that("splitTime", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -111,7 +111,7 @@ test_that("splitTime", {
 test_that("eraCollapseSize", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -125,7 +125,7 @@ test_that("eraCollapseSize", {
 test_that("combinationWindow", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -139,7 +139,7 @@ test_that("combinationWindow", {
 test_that("minPostCombinationDuration", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -153,7 +153,7 @@ test_that("minPostCombinationDuration", {
 test_that("filterTreatments", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",
@@ -167,7 +167,7 @@ test_that("filterTreatments", {
 test_that("includeTreatments", {
   expect_error(
     computePathways(
-      cohorts = cohorts,
+      cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
       connectionDetails = connectionDetails,
       cdmSchema = "main",

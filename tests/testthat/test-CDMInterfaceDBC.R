@@ -68,16 +68,16 @@ test_that("Method: fetchCohortTable", {
   DatabaseConnector::renderTranslateExecuteSql(
     connection = localConnection,
     sql = "
-  DROP TABLE IF EXISTS cohort_table;
+  DROP TABLE IF EXISTS local_cohort_table;
 
-  CREATE TABLE cohort_table (
+  CREATE TABLE local_cohort_table (
     cohort_definition_id INT,
     subject_id INT,
     cohort_start_date DATE,
     cohort_end_date DATE
   );
 
-  INSERT INTO cohort_table (
+  INSERT INTO local_cohort_table (
     cohort_definition_id,
     subject_id,
     cohort_start_date,
@@ -99,7 +99,7 @@ test_that("Method: fetchCohortTable", {
     resultSchema = "main"
   )
 
-  cohorts <- data.frame(
+  localCohorts <- data.frame(
     cohortId = c(1, 2, 3),
     cohortName = c("Disease X", "Drug A", "Drug B"),
     type = c("target", "event", "event")
@@ -107,8 +107,8 @@ test_that("Method: fetchCohortTable", {
 
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
-    cohorts = cohorts,
-    cohortTableName = "cohort_table",
+    cohorts = localCohorts,
+    cohortTableName = "local_cohort_table",
     andromeda = localAndromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 0
@@ -126,7 +126,7 @@ test_that("Method: fetchCohortTable", {
       cohortName = character(),
       type = character()
     ),
-    cohortTableName = "cohort_table",
+    cohortTableName = "local_cohort_table",
     andromeda = localAndromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
