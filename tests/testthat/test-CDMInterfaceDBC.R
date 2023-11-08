@@ -63,10 +63,10 @@ test_that("Method: fetchMetadata", {
 test_that("Method: fetchCohortTable", {
   localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
-  connection <- DatabaseConnector::connect(localConnectionDetails)
+  localConnection <- DatabaseConnector::connect(localConnectionDetails)
   
   DatabaseConnector::renderTranslateExecuteSql(
-    connection = connection,
+    connection = localConnection,
     sql = "
   DROP TABLE IF EXISTS cohort_table;
 
@@ -89,7 +89,7 @@ test_that("Method: fetchCohortTable", {
   "
   )
   
-  DatabaseConnector::disconnect(connection)
+  DatabaseConnector::disconnect(localConnection)
   
   localAndromeda <- Andromeda::andromeda()
   

@@ -226,9 +226,4 @@ test_that("identical treatment timeframe", {
     collect()
 
   expect_identical(result$eventCohortId, c("11+6", "6"))
-
-  withr::defer({
-    DBI::dbDisconnect(localCon)
-    rm("localCon", "localCohorts", "cohort_table", "localCDM", "andromeda", "result")
-  })
 })

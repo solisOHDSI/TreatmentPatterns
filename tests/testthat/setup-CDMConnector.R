@@ -2,6 +2,7 @@ library(CDMConnector)
 library(CirceR)
 library(DBI)
 library(duckdb)
+library(withr)
 
 withr::local_envvar(
   R_USER_CACHE_DIR = tempfile(),

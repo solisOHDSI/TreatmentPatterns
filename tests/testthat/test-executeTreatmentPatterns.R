@@ -39,10 +39,6 @@ test_that("CohortGenerator", {
   expect_true(
     file.exists(file.path(tempDir, "countsSex.csv"))
   )
-
-  withr::defer({
-    unlink(tempDir, recursive = TRUE)
-  })
 })
 
 test_that("CDMConnector", {
@@ -75,8 +71,4 @@ test_that("CDMConnector", {
   expect_true(
     file.exists(file.path(tempDir, "countsSex.csv"))
   )
-
-  withr::defer({
-    unlink(tempDir, recursive = TRUE)
-  })
 })

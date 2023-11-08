@@ -5,7 +5,7 @@ library(testthat)
 # Tests ----
 test_that("void", {
   expect_error(
-    export()
+    TreatmentPatterns::export()
   )
 })
 
@@ -41,11 +41,6 @@ test_that("outputPath", {
     TreatmentPatterns::export(andromedaCG, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("tempDirLocal")
-  })
 })
 
 test_that("ageWindow", {
@@ -80,11 +75,6 @@ test_that("ageWindow", {
     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
   ))
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("treatmentPathways", "tempDirLocal")
-  })
 })
 
 test_that("minFreq", {
@@ -112,11 +102,6 @@ test_that("minFreq", {
       minFreq = "10"
     )
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("treatmentPathways", "tempDirLocal")
-  })
 })
 
 test_that("archiveName", {
@@ -143,11 +128,6 @@ test_that("archiveName", {
       archiveName = 3
     )
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("tempDirLocal")
-  })
 })
 
 # CDMConnector ----
@@ -181,11 +161,6 @@ test_that("outputPath", {
     export(andromedaCDMC, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("tempDirLocal")
-  })
 })
 
 test_that("ageWindow", {
@@ -219,11 +194,6 @@ test_that("ageWindow", {
     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
   ))
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("treatmentPathways", "tempDirLocal")
-  })
 })
 
 test_that("minFreq", {
@@ -251,11 +221,6 @@ test_that("minFreq", {
       minFreq = "10"
     )
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("treatmentPathways", "tempDirLocal")
-  })
 })
 
 test_that("archiveName", {
@@ -282,9 +247,4 @@ test_that("archiveName", {
       archiveName = 3
     )
   )
-
-  withr::defer({
-    unlink(tempDirLocal, recursive = TRUE)
-    rm("tempDirLocal")
-  })
 })

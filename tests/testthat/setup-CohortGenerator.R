@@ -1,7 +1,6 @@
 library(testthat)
 library(TreatmentPatterns)
 library(Eunomia)
-library(withr)
 library(CohortGenerator)
 library(tools)
 library(CirceR)

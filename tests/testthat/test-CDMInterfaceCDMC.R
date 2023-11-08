@@ -33,14 +33,6 @@ cdmInterface <- TreatmentPatterns:::CDMInterface$new(
   cdm = cdm
 )
 
-withr::defer({
-  Andromeda::close(localAndromeda)
-  
-  DBI::dbDisconnect(con)
-  
-  rm("localAndromeda", "cdm", "cdmInterface", "cohort_table", "cohorts", "con")
-})
-
 test_that("Method: new", {
   expect_true(R6::is.R6(
     TreatmentPatterns:::CDMInterface$new(
