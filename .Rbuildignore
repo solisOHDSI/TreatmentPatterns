@@ -16,3 +16,4 @@
 ^CRAN-SUBMISSION$
 ^codecov\.yml$
 ^README\.Rmd$
+^sql$

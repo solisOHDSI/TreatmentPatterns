@@ -5,7 +5,12 @@ library(CDMConnector)
 
 localAndromeda <- Andromeda::andromeda()
 
-con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+
+withr::defer({
+  Andromeda::close(localAndromeda)
+  DBI::dbDisconnect(localCon, shutdown = TRUE)
+})
 
 localCohorts <- data.frame(
   cohortId = c(1, 2, 3),
@@ -20,24 +25,20 @@ cohort_table <- tibble(
   cohort_end_date = as.Date(c("2015-08-01", "2014-12-04", "2015-08-01"))
 )
 
-copy_to(con, cohort_table, overwrite = TRUE)
+dplyr::copy_to(localCon, cohort_table, overwrite = TRUE)
 
-cdm <- cdmFromCon(
-  con = con,
+localCdm <- cdmFromCon(
+  con = localCon,
   cdmSchema = "main",
   writeSchema = "main",
   cohortTables = "cohort_table"
 )
 
-cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-  cdm = cdm
-)
+cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = localCdm)
 
 test_that("Method: new", {
   expect_true(R6::is.R6(
-    TreatmentPatterns:::CDMInterface$new(
-      cdm = cdm
-    )
+    TreatmentPatterns:::CDMInterface$new(cdm = localCdm)
   ))
 })
 
@@ -64,7 +65,7 @@ test_that("Method: fetchMetadata", {
 test_that("Method: fetchCohortTable", {
   # Update CDM with new dummy data
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    cdm = cdm
+    cdm = localCdm
   )
   
   # Viral Sinusitis

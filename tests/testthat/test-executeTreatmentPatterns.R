@@ -1,6 +1,5 @@
 library(testthat)
 library(TreatmentPatterns)
-library(Eunomia)
 
 test_that("void", {
   expect_error(TreatmentPatterns::executeTreatmentPatterns())
