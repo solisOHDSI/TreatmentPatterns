@@ -180,7 +180,11 @@ test_that("includeTreatments", {
 
 test_that("identical treatment timeframe", {
   # Setup connection
-  localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = CDMConnector::eunomia_dir())
+  
+  withr::defer({
+    DBI::dbDisconnect(localCon, shutdown = TRUE)
+  })
 
   # Setup local Cohorts
   localCohorts <- data.frame(
@@ -204,9 +208,9 @@ test_that("identical treatment timeframe", {
   )
 
   # Write cohort table to connection
-  copy_to(localCon, cohort_table, overwrite = TRUE)
+  dplyr::copy_to(localCon, cohort_table, overwrite = TRUE)
 
-  localCDM <- cdmFromCon(
+  localCDM <- CDMConnector::cdmFromCon(
     con = localCon,
     cdmSchema = "main",
     writeSchema = "main",
