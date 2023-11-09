@@ -27,7 +27,8 @@ Imports:
     tidyr,
     R6,
     sunburstR,
-    networkD3
+    networkD3,
+    htmlwidgets
 Suggests:
     knitr,
     rmarkdown,
