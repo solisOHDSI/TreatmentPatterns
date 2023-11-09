@@ -200,12 +200,28 @@ nameToId <- function(item, names) {
   return(grep(sprintf("^%s$",item), names) - 1)
 }
 
+getColorPalette <- function(treatmentPathways) {
+  palette <- c(
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"
+  )
+  
+  n <- treatmentPathways$path |> 
+    stringr::str_split(pattern = "-") |>
+    unlist() |>
+    unique() |>
+    length()
+  
+  return(palette[0:n])
+}
+
 #' createSankeyDiagram2
 #' 
 #' Create sankey diagram, will replace `createSankeyDiagram`.
 #'
 #' @template param_treatmentPathways
 #' @template param_groupCombinations
+#' @param colors (`character(n)`) Vector of hex color codes.
 #'
 #' @return (`htmlwidget`)
 #' @export
@@ -222,11 +238,18 @@ nameToId <- function(item, names) {
 #' )
 #' 
 #' createSankeyDiagram2(treatmentPathways)
-createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL) {
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
     groupCombinations = groupCombinations
   )
+  
+  if (is.null(colors)) {
+    colors <- sprintf(
+      'd3.scaleOrdinal([%s])',
+      paste0('"', getColorPalette(treatmentPathways),'"', collapse = ", ")
+    )
+  }
   
   data <- splitPathItems(treatmentPathways)
   
@@ -240,6 +263,7 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE) {
     Value = "value",
     NodeID = "names",
     units = "%",
+    colourScale = colors,
     fontSize = 12,
     nodeWidth = 30
   )

@@ -411,7 +411,7 @@ createSunburstPlot <- function(treatmentPathways, outputFile, groupCombinations 
 #'
 #' @template param_treatmentPathways 
 #' @template param_groupCombinations
-#' @param ... Other optional parameters for \link[sunburstR]{sunburst}.
+#' @param colors (`character(n)`) Vector of hex colors codes.
 #'
 #' @return (`htmlwidget`)
 #' @export
@@ -428,11 +428,19 @@ createSunburstPlot <- function(treatmentPathways, outputFile, groupCombinations 
 #' )
 #' 
 #' createSunburstPlot2(treatmentPatwhays)
-createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, ...) {
+createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL) {
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
     groupCombinations = groupCombinations
   )
   
-  sunburstR::sunburst(data = treatmentPathways, ...)
+  if (is.null(colors)) {
+    colors <- getColorPalette(treatmentPathways)
+  }
+  
+  sunburstR::sunburst(
+    data = treatmentPathways,
+    colors = colors,
+    sortFunction = htmlwidgets::JS("function (a, b) {return a.value - b.value;}")
+  )
 }
