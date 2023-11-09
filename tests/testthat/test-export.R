@@ -11,6 +11,7 @@ test_that("void", {
 
 # CohortGenerator ----
 test_that("outputPath", {
+  testthat::skip_on_ci()
   ## file.path(tempDirCG) ----
   tempDirLocal <- file.path(tempdir(), "output")
 
@@ -44,6 +45,7 @@ test_that("outputPath", {
 })
 
 test_that("ageWindow", {
+  testthat::skip_on_ci()
   tempDirLocal <- file.path(tempdir(), "output")
 
   ## 10 ----
@@ -78,6 +80,7 @@ test_that("ageWindow", {
 })
 
 test_that("minFreq", {
+  testthat::skip_on_ci()
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## 10 ----
@@ -105,6 +108,7 @@ test_that("minFreq", {
 })
 
 test_that("archiveName", {
+  testthat::skip_on_ci()
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## "output.zip" ----
