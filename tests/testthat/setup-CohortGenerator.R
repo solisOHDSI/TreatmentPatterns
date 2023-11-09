@@ -57,22 +57,22 @@ cohortsGenerated <- CohortGenerator::generateCohortSet(
 
 # Select Viral Sinusitis Cohort
 targetCohorts <- cohortsGenerated %>%
-  filter(cohortName == "ViralSinusitis") %>%
-  select(cohortId, cohortName)
+  dplyr::filter(cohortName == "ViralSinusitis") %>%
+  dplyr::select(cohortId, cohortName)
 
 # Select everything BUT Viral Sinusitis cohorts
 eventCohorts <- cohortsGenerated %>%
-  filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
-  select(cohortId, cohortName)
+  dplyr::filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
+  dplyr::select(cohortId, cohortName)
 
 exitCohorts <- cohortsGenerated %>%
-  filter(cohortName == "Death") %>%
-  select(cohortId, cohortName)
+  dplyr::filter(cohortName == "Death") %>%
+  dplyr::select(cohortId, cohortName)
 
 cohortsDBC <- dplyr::bind_rows(
-  targetCohorts %>% mutate(type = "target"),
-  eventCohorts %>% mutate(type = "event"),
-  exitCohorts %>% mutate(type = "exit")
+  targetCohorts %>% dplyr::mutate(type = "target"),
+  eventCohorts %>% dplyr::mutate(type = "event"),
+  exitCohorts %>% dplyr::mutate(type = "exit")
 )
 
 andromedaCG <- TreatmentPatterns::computePathways(

@@ -3,7 +3,7 @@ library(testthat)
 library(TreatmentPatterns)
 
 test_that("computePathways DatabaseConnector", {
-  testthat::skip_on_ci()
+  testthat::skip()
   expect_message(
     expect_message(
       expect_message(

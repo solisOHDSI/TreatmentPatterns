@@ -6,16 +6,17 @@ test_that("void", {
 })
 
 test_that("CohortGenerator", {
-  testthat::skip_on_ci()
+  globals <- computePathwaysCG()
+  
   tempDir <- tempdir()
 
   expect_message(
     TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       outputPath = tempDir
     )
   )
