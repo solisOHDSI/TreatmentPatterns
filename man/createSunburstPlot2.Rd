@@ -4,7 +4,11 @@
 \alias{createSunburstPlot2}
 \title{createSunburstPlot2}
 \usage{
-createSunburstPlot2(treatmentPathways, groupCombinations = FALSE, ...)
+createSunburstPlot2(
+  treatmentPathways,
+  groupCombinations = FALSE,
+  colors = NULL
+)
 }
 \arguments{
 \item{treatmentPathways}{(\code{data.frame()})\cr
@@ -16,7 +20,7 @@ The contents of the treatmentPathways.csv-file as a data.frame().}
 \item{\code{FALSE}}{Do not group combination treatments.}
 }}
 
-\item{...}{Other optional parameters for \link[sunburstR]{sunburst}.}
+\item{colors}{(\code{character(n)}) Vector of hex colors codes.}
 }
 \value{
 (\code{htmlwidget})

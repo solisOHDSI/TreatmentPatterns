@@ -4,7 +4,11 @@
 \alias{createSankeyDiagram2}
 \title{createSankeyDiagram2}
 \usage{
-createSankeyDiagram2(treatmentPathways, groupCombinations = FALSE)
+createSankeyDiagram2(
+  treatmentPathways,
+  groupCombinations = FALSE,
+  colors = NULL
+)
 }
 \arguments{
 \item{treatmentPathways}{(\code{data.frame()})\cr
@@ -15,6 +19,8 @@ The contents of the treatmentPathways.csv-file as a data.frame().}
 \item{\code{TRUE}}{Group all combination treatments in category \code{"Combination"}.}
 \item{\code{FALSE}}{Do not group combination treatments.}
 }}
+
+\item{colors}{(\code{character(n)}) Vector of hex color codes.}
 }
 \value{
 (\code{htmlwidget})
