@@ -10,6 +10,7 @@
 #' @import R6
 #' @import sunburstR
 #' @import networkD3
+#' @imoprtFrom htmlwidgets JS
 #' @importFrom stats sd median
 #' @importFrom tidyr pivot_wider
 #' @importFrom googleVis gvisSankey

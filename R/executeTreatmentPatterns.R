@@ -12,6 +12,7 @@
 #' @template param_connectionDetails
 #' @template param_cdmSchema
 #' @template param_resultSchema
+#' @param tempEmulationSchema (`character(1)`) Schema to emulate temp tables.
 #' @template param_includeTreatments
 #' @template param_periodPriorToIndex
 #' @template param_minEraDuration
