@@ -1,4 +1,4 @@
-computePathwaysCG <- function() {
+generateCohortTableCG <- function() {
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   cohortTableName <- "CohortTable"
   resultSchema <- "main"

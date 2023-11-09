@@ -6,7 +6,7 @@ test_that("void", {
 })
 
 test_that("CohortGenerator", {
-  globals <- computePathwaysCG()
+  globals <- generateCohortTableCG()
   
   tempDir <- tempdir()
 
