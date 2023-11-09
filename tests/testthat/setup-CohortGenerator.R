@@ -6,7 +6,7 @@ library(tools)
 library(CirceR)
 library(dplyr)
 
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+globalConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
 cohortTableName <- "CohortTable"
 resultSchema <- "main"
 cdmSchema <- "main"
@@ -43,13 +43,13 @@ cohortTableNames <- CohortGenerator::getCohortTableNames(
   cohortTable = cohortTableName)
 
 CohortGenerator::createCohortTables(
-  connectionDetails = connectionDetails,
+  connectionDetails = globalConnectionDetails,
   cohortDatabaseSchema = resultSchema,
   cohortTableNames = cohortTableNames)
 
 # Generate the cohorts
 cohortsGenerated <- CohortGenerator::generateCohortSet(
-  connectionDetails = connectionDetails,
+  connectionDetails = globalConnectionDetails,
   cdmDatabaseSchema = cdmSchema,
   cohortDatabaseSchema = resultSchema,
   cohortTableNames = cohortTableNames,
@@ -78,7 +78,7 @@ cohortsDBC <- dplyr::bind_rows(
 andromedaCG <- TreatmentPatterns::computePathways(
   cohorts = cohortsDBC,
   cohortTableName = cohortTableName,
-  connectionDetails = connectionDetails,
+  connectionDetails = globalConnectionDetails,
   cdmSchema = cdmSchema,
   resultSchema = resultSchema,
   tempEmulationSchema = NULL

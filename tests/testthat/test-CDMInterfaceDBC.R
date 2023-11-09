@@ -136,4 +136,6 @@ test_that("Method: fetchCohortTable", {
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 0L)
+  
+  cdmInterface$destroy()
 })

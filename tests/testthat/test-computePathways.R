@@ -10,7 +10,7 @@ test_that("computePathways DatabaseConnector", {
         computePathways(
           cohorts = cohortsDBC,
           cohortTableName = "CohortTable",
-          connectionDetails = connectionDetails,
+          connectionDetails = globalConnectionDetails,
           cdmSchema = "main",
           resultSchema = "main"
         ),
@@ -41,7 +41,7 @@ test_that("includeTreatments", {
       computePathways(
         cohorts = cohortsDBC,
         cohortTableName = "CohortTable",
-        connectionDetails = connectionDetails,
+        connectionDetails = globalConnectionDetails,
         cdmSchema = "main",
         resultSchema = "main",
         includeTreatments = 0
@@ -57,7 +57,7 @@ test_that("periodPriorToIndex", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       periodPriorToIndex = "0"
@@ -71,7 +71,7 @@ test_that("minEraDuration", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       minEraDuration = "0"
@@ -85,7 +85,7 @@ test_that("splitEventCohorts", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       splitEventCohorts = 1
@@ -99,7 +99,7 @@ test_that("splitTime", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       splitTime = "1"
@@ -113,7 +113,7 @@ test_that("eraCollapseSize", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       eraCollapseSize = ""
@@ -127,7 +127,7 @@ test_that("combinationWindow", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       combinationWindow = ""
@@ -141,7 +141,7 @@ test_that("minPostCombinationDuration", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       minPostCombinationDuration = "Stuff"
@@ -155,7 +155,7 @@ test_that("filterTreatments", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       filterTreatments = ""
@@ -169,7 +169,7 @@ test_that("includeTreatments", {
     computePathways(
       cohorts = cohortsDBC,
       cohortTableName = "CohortTable",
-      connectionDetails = connectionDetails,
+      connectionDetails = globalConnectionDetails,
       cdmSchema = "main",
       resultSchema = "main",
       maxPathLength = ""
