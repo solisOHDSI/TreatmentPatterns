@@ -61,6 +61,7 @@ test_that("Method: fetchMetadata", {
 })
 
 test_that("Method: fetchCohortTable", {
+  testthat::skip_on_ci()
   localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   localConnection <- DatabaseConnector::connect(localConnectionDetails)

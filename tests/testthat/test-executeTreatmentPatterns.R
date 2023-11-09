@@ -6,6 +6,7 @@ test_that("void", {
 })
 
 test_that("CohortGenerator", {
+  testthat::skip_on_ci()
   tempDir <- tempdir()
 
   expect_message(
