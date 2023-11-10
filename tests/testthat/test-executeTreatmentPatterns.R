@@ -13,15 +13,13 @@ test_that("CohortGenerator", {
   
   tempDir <- tempdir()
 
-  expect_message(
-    TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = global$cohorts,
-      cohortTableName = global$cohortTableName,
-      connectionDetails = global$connectionDetails,
-      cdmSchema = global$cdmSchema,
-      resultSchema = global$resultSchema,
-      outputPath = tempDir
-    )
+  TreatmentPatterns::executeTreatmentPatterns(
+    cohorts = global$cohorts,
+    cohortTableName = global$cohortTableName,
+    connectionDetails = global$connectionDetails,
+    cdmSchema = global$cdmSchema,
+    resultSchema = global$resultSchema,
+    outputPath = tempDir
   )
 
   expect_true(
@@ -52,13 +50,11 @@ test_that("CDMConnector", {
   
   tempDir <- tempdir()
   
-  expect_message(
-    TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = globals$cohorts,
-      cohortTableName = globals$cohortTableName,
-      cdm = globals$cdm,
-      outputPath = tempDir
-    )
+  TreatmentPatterns::executeTreatmentPatterns(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    cdm = globals$cdm,
+    outputPath = tempDir
   )
 
   expect_true(

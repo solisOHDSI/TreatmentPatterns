@@ -3,7 +3,7 @@ library(testthat)
 library(TreatmentPatterns)
 
 test_that("computePathways DatabaseConnector", {
-  testthat::skip_on_ci()
+  # testthat::skip_on_ci()
   testthat::skip_on_cran()
   
   globals <- generateCohortTableCG()
