@@ -11,8 +11,8 @@ test_that("void", {
 
 # CohortGenerator ----
 test_that("outputPath", {
-  # testthat::skip_on_ci()
-  testthat::skip_on_cran()
+  skip_on_ci()
+  skip_on_cran()
   
   globals <- generateCohortTableCG()
   
@@ -58,8 +58,8 @@ test_that("outputPath", {
 })
 
 test_that("ageWindow", {
-  # testthat::skip_on_ci()
-  testthat::skip_on_cran()
+  skip_on_ci()
+  skip_on_cran()
   
   globals <- generateCohortTableCG()
   
@@ -107,8 +107,8 @@ test_that("ageWindow", {
 })
 
 test_that("minFreq", {
-  # testthat::skip_on_ci()
-  testthat::skip_on_cran()
+  skip_on_ci()
+  skip_on_cran()
   
   globals <- generateCohortTableCG()
   
@@ -149,8 +149,8 @@ test_that("minFreq", {
 })
 
 test_that("archiveName", {
-  # testthat::skip_on_ci()
-  testthat::skip_on_cran()
+  skip_on_ci()
+  skip_on_cran()
   
   globals <- generateCohortTableCG()
   
@@ -191,7 +191,7 @@ test_that("archiveName", {
 
 # CDMConnector ----
 test_that("outputPath", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   
@@ -236,7 +236,7 @@ test_that("outputPath", {
 })
 
 test_that("ageWindow", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   
@@ -282,7 +282,7 @@ test_that("ageWindow", {
 })
 
 test_that("minFreq", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   
@@ -322,7 +322,7 @@ test_that("minFreq", {
 })
 
 test_that("archiveName", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   

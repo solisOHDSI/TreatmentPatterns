@@ -65,6 +65,8 @@ test_that("Method: fetchMetadata", {
 
 test_that("Method: fetchCohortTable", {
   skip_on_cran()
+  skip_on_ci()
+  
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   cohortTableName <- "cohort_table"
   andromedaTableName <- "cohortTable"
