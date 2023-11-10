@@ -5,6 +5,7 @@ library(Eunomia)
 library(DatabaseConnector)
 
 test_that("Method: new", {
+  skip_on_cran()
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
@@ -23,6 +24,7 @@ test_that("Method: new", {
 })
 
 test_that("Method: validate", {
+  skip_on_cran()
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
@@ -35,6 +37,7 @@ test_that("Method: validate", {
 })
 
 test_that("Method: fetchMetadata", {
+  skip_on_cran()
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
@@ -61,7 +64,12 @@ test_that("Method: fetchMetadata", {
 })
 
 test_that("Method: fetchCohortTable", {
+  skip_on_cran()
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  cohortTableName <- "cohort_table"
+  andromedaTableName <- "cohortTable"
+  cdmSchema <- "main"
+  resultSchema <- "main"
   
   connection <- DatabaseConnector::connect(connectionDetails)
   
@@ -95,8 +103,8 @@ test_that("Method: fetchCohortTable", {
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
     connectionDetails = connectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
+    cdmSchema = cdmSchema,
+    resultSchema = resultSchema
   )
 
   cohorts <- data.frame(
@@ -108,13 +116,13 @@ test_that("Method: fetchCohortTable", {
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
     cohorts = cohorts,
-    cohortTableName = "cohort_table",
+    cohortTableName = cohortTableName,
     andromeda = andromeda,
-    andromedaTableName = "cohortTable",
+    andromedaTableName = andromedaTableName,
     minEraDuration = 0
   )
 
-  res <- andromeda$cohortTable %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 3L)
@@ -132,7 +140,7 @@ test_that("Method: fetchCohortTable", {
     minEraDuration = 5
   )
 
-  res <- andromeda$cohortTable %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 0L)
