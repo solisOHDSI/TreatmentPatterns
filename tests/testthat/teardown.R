@@ -1,4 +1,3 @@
-if (ableToRun()) {
-  DBI::dbDisconnect(con, shutdown = TRUE)
-  Andromeda::close(andromedaSetup)
-}
+Andromeda::close(andromedaCG)
+Andromeda::close(andromedaCDMC)
+DBI::dbDisconnect(con, shutdown = TRUE)

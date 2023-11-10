@@ -1,0 +1,85 @@
+library(testthat)
+library(TreatmentPatterns)
+library(Eunomia)
+library(CohortGenerator)
+library(tools)
+library(CirceR)
+library(dplyr)
+
+globalConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+cohortTableName <- "CohortTable"
+resultSchema <- "main"
+cdmSchema <- "main"
+
+cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
+
+cohortJsonFiles <- list.files(
+  system.file(
+    package = "TreatmentPatterns",
+    "exampleCohorts"),
+  full.names = TRUE)
+
+for (i in seq_len(length(cohortJsonFiles))) {
+  cohortJsonFileName <- cohortJsonFiles[i]
+  cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
+  cohortJson <- readChar(cohortJsonFileName, file.info(
+    cohortJsonFileName)$size)
+  
+  cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
+  
+  cohortSql <- CirceR::buildCohortQuery(
+    cohortExpression,
+    options = CirceR::createGenerateOptions(generateStats = FALSE))
+  cohortsToCreate <- rbind(
+    cohortsToCreate,
+    data.frame(
+      cohortId = i,
+      cohortName = cohortName,
+      sql = cohortSql,
+      stringsAsFactors = FALSE))
+}
+
+cohortTableNames <- CohortGenerator::getCohortTableNames(
+  cohortTable = cohortTableName)
+
+CohortGenerator::createCohortTables(
+  connectionDetails = globalConnectionDetails,
+  cohortDatabaseSchema = resultSchema,
+  cohortTableNames = cohortTableNames)
+
+# Generate the cohorts
+cohortsGenerated <- CohortGenerator::generateCohortSet(
+  connectionDetails = globalConnectionDetails,
+  cdmDatabaseSchema = cdmSchema,
+  cohortDatabaseSchema = resultSchema,
+  cohortTableNames = cohortTableNames,
+  cohortDefinitionSet = cohortsToCreate)
+
+# Select Viral Sinusitis Cohort
+targetCohorts <- cohortsGenerated %>%
+  dplyr::filter(cohortName == "ViralSinusitis") %>%
+  dplyr::select(cohortId, cohortName)
+
+# Select everything BUT Viral Sinusitis cohorts
+eventCohorts <- cohortsGenerated %>%
+  dplyr::filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
+  dplyr::select(cohortId, cohortName)
+
+exitCohorts <- cohortsGenerated %>%
+  dplyr::filter(cohortName == "Death") %>%
+  dplyr::select(cohortId, cohortName)
+
+cohortsDBC <- dplyr::bind_rows(
+  targetCohorts %>% dplyr::mutate(type = "target"),
+  eventCohorts %>% dplyr::mutate(type = "event"),
+  exitCohorts %>% dplyr::mutate(type = "exit")
+)
+
+andromedaCG <- TreatmentPatterns::computePathways(
+  cohorts = cohortsDBC,
+  cohortTableName = cohortTableName,
+  connectionDetails = globalConnectionDetails,
+  cdmSchema = cdmSchema,
+  resultSchema = resultSchema,
+  tempEmulationSchema = NULL
+)

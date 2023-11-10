@@ -60,6 +60,8 @@ jobs:
             install.packages("DBI")
             install.packages("duckdb")
             install.packages("withr")
+            install.packages("DatabaseConnector")
+            install.packages("SqlRender")
         shell: Rscript {0}
         
         

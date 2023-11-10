@@ -55,7 +55,13 @@
     <loc>/reference/createSankeyDiagram.html</loc>
   </url>
   <url>
+    <loc>/reference/createSankeyDiagram2.html</loc>
+  </url>
+  <url>
     <loc>/reference/createSunburstPlot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/createSunburstPlot2.html</loc>
   </url>
   <url>
     <loc>/reference/createTreatmentHistory.html</loc>
@@ -104,6 +110,12 @@
   </url>
   <url>
     <loc>/reference/stripname.html</loc>
+  </url>
+  <url>
+    <loc>/reference/toFile.html</loc>
+  </url>
+  <url>
+    <loc>/reference/toList.html</loc>
   </url>
   <url>
     <loc>/reference/transformCSVtoJSON.html</loc>

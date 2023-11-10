@@ -1,106 +1,142 @@
-if (ableToRun()) {
-  library(testthat)
-  library(TreatmentPatterns)
-  library(dplyr)
+library(testthat)
+library(TreatmentPatterns)
+library(dplyr)
+library(Eunomia)
+library(DatabaseConnector)
 
-  andromedaSetup <- Andromeda::loadAndromeda(
-    fileName = file.path(setupTempDir, "Andromeda")
+test_that("Method: new", {
+  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = localConnectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
+  
+  expect_true(R6::is.R6(
+    TreatmentPatterns:::CDMInterface$new(
+      connectionDetails = localConnectionDetails,
+      cdmSchema = "main",
+      resultSchema = "main"
+    )
+  ))
+})
+
+test_that("Method: validate", {
+  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = localConnectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
+  
+  expect_true(R6::is.R6(cdmInterface$validate()))
+})
+
+test_that("Method: fetchMetadata", {
+  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = localConnectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
+  
+  localAndromeda <- Andromeda::andromeda()
+
+  cdmInterface$fetchMetadata(localAndromeda)
+
+  metadata <- localAndromeda$metadata %>% collect()
+
+  expect_in(
+    c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
+    names(metadata)
   )
 
-  test_that("Method: new", {
-    expect_true(R6::is.R6(
-      TreatmentPatterns:::CDMInterface$new(
-        connectionDetails = connectionDetails,
-        cdmSchema = "main",
-        resultSchema = "main"
-      )
-    ))
-  })
+  expect_identical(metadata$rVersion, base::version$version.string)
+  expect_identical(metadata$platform, base::version$platform)
+  expect_identical(nrow(metadata), 1L)
+  expect_identical(ncol(metadata), 8L)
+})
 
+test_that("Method: fetchCohortTable", {
+  testthat::skip_on_ci()
+  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  
+  localConnection <- DatabaseConnector::connect(localConnectionDetails)
+  
+  DatabaseConnector::renderTranslateExecuteSql(
+    connection = localConnection,
+    sql = "
+  DROP TABLE IF EXISTS local_cohort_table;
+
+  CREATE TABLE local_cohort_table (
+    cohort_definition_id INT,
+    subject_id INT,
+    cohort_start_date DATE,
+    cohort_end_date DATE
+  );
+
+  INSERT INTO local_cohort_table (
+    cohort_definition_id,
+    subject_id,
+    cohort_start_date,
+    cohort_end_date
+  ) VALUES
+  (3, 1, 2014-10-10, 2015-08-01),
+  (2, 1, 2014-11-17, 2014-12-04),
+  (1, 1, 2014-10-10, 2015-08-01);
+  "
+  )
+  
+  DatabaseConnector::disconnect(localConnection)
+  
+  localAndromeda <- Andromeda::andromeda()
+  
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = connectionDetails,
+    connectionDetails = localConnectionDetails,
     cdmSchema = "main",
     resultSchema = "main"
   )
 
-  test_that("Method: validate", {
-    expect_true(R6::is.R6(cdmInterface$validate()))
-  })
+  localCohorts <- data.frame(
+    cohortId = c(1, 2, 3),
+    cohortName = c("Disease X", "Drug A", "Drug B"),
+    type = c("target", "event", "event")
+  )
 
-  andromDBC <- Andromeda::andromeda()
+  # Viral Sinusitis
+  cdmInterface$fetchCohortTable(
+    cohorts = localCohorts,
+    cohortTableName = "local_cohort_table",
+    andromeda = localAndromeda,
+    andromedaTableName = "cohortTable",
+    minEraDuration = 0
+  )
 
-  test_that("Method: fetchMetadata", {
-    cdmInterface$fetchMetadata(andromDBC)
+  res <- localAndromeda$cohortTable %>% dplyr::collect()
 
-    metadata <- andromDBC$metadata %>% collect()
+  expect_identical(ncol(res), 6L)
+  expect_identical(nrow(res), 3L)
 
-    expect_in(
-      c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
-      names(metadata)
-    )
+  # Empty
+  cdmInterface$fetchCohortTable(
+    cohorts = data.frame(
+      cohortId = numeric(),
+      cohortName = character(),
+      type = character()
+    ),
+    cohortTableName = "local_cohort_table",
+    andromeda = localAndromeda,
+    andromedaTableName = "cohortTable",
+    minEraDuration = 5
+  )
 
-    expect_identical(metadata$rVersion, base::version$version.string)
-    expect_identical(metadata$platform, base::version$platform)
-    expect_identical(nrow(metadata), 1L)
-    expect_identical(ncol(metadata), 8L)
-  })
+  res <- localAndromeda$cohortTable %>% dplyr::collect()
 
-  andromDBC$treatmentHistory <- andromedaSetup$treatmentHistory %>%
-    select(-"age", -"sex")
-
-  test_that("Method: addSex", {
-    skip_on_ci()
-    cdmInterface$addSex(andromDBC)
-
-    sex <- andromDBC$sex %>% collect()
-    TH <- andromDBC$treatmentHistory %>% collect()
-
-    expect_identical(ncol(sex), 2L)
-    expect_identical(nrow(sex), 512L)
-
-    expect_in(c("MALE", "FEMALE"), TH$sex)
-
-    sexes <- TH %>%
-      inner_join(sex, by = join_by(personId == personId)) %>%
-      select("sex.x", "sex.y")
-
-    expect_identical(sexes$sex.x, sexes$sex.y)
-  })
-
-  test_that("Method: addAge", {
-    skip_on_ci()
-    cdmInterface$addAge(andromDBC)
-
-    yearOfBirth <- andromDBC$yearOfBirth %>% collect()
-    TH <- andromDBC$treatmentHistory %>% collect()
-
-    expect_identical(ncol(yearOfBirth), 2L)
-    expect_identical(nrow(yearOfBirth), 512L)
-
-    ages <- TH %>%
-      inner_join(yearOfBirth, by = join_by(personId == personId)) %>%
-      mutate(ageCheck = .data$indexYear - .data$yearOfBirth) %>%
-      select("age", "ageCheck")
-
-    expect_identical(
-      ages$age,
-      ages$ageCheck
-    )
-  })
-
-  test_that("Method: fetchCohortTable", {
-    # Viral Sinusitis
-    res <- cdmInterface$fetchCohortTable(1, cohortTableName = "CohortTable")
-
-    expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 2679L)
-
-    # Empty
-    res <- cdmInterface$fetchCohortTable(23, cohortTableName = "CohortTable")
-    expect_identical(ncol(res), 4L)
-    expect_identical(nrow(res), 0L)
-  })
-
-  Andromeda::close(andromDBC)
-  Andromeda::close(andromedaSetup)
-}
+  expect_identical(ncol(res), 6L)
+  expect_identical(nrow(res), 0L)
+  
+  cdmInterface$destroy()
+})

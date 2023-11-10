@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -72,6 +72,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createSankeyDiagram</span><span class="op">(</span></span>
 <span>  <span class="va">treatmentPathways</span>,</span>
 <span>  <span class="va">outputFile</span>,</span>
+<span>  returnHTML <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  minFreq <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -87,6 +88,18 @@ The contents of the treatmentPathways.csv-file as a data.frame().</p></dd>
 <dt>outputFile</dt>
 <dd><p>(<code>character(1)</code>)<br>
 Path where the Sankey diagram should be written to.</p></dd>
+
+
+<dt>returnHTML</dt>
+<dd><p>(<code>logical(1)</code>: <code>FALSE</code>)<br>
+Logical to return HTML or not.</p><dl><dt><code>TRUE</code></dt>
+<dd><p>Returns HTML as <code>character(n)</code>, does not requie <code>outputPath</code> to be specified.</p></dd>
+
+<dt><code>FALSE</code></dt>
+<dd><p>Returns <code>NULL</code>, but writes the HTML to the specified file instead. Requires <code>outputPath</code> to be specified.</p></dd>
+
+
+</dl></dd>
 
 
 <dt>groupCombinations</dt>
@@ -135,7 +148,7 @@ minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
 <span class="r-in"><span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>  minFreq <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing Sankey diagram to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp2rzb84\mySankeyDiagram1ef026cc3e0dhtml</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing Sankey diagram to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpMno2kV\mySankeyDiagram2f144fc23043html</span>
 </code></pre></div>
     </div>
   </div>
