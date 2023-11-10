@@ -6,7 +6,8 @@ test_that("void", {
 })
 
 test_that("CohortGenerator", {
-  testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  # testthat::skip_on_ci()
   
   global <- generateCohortTableCG()
   
@@ -45,12 +46,17 @@ test_that("CohortGenerator", {
 })
 
 test_that("CDMConnector", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
   tempDir <- tempdir()
+  
   expect_message(
     TreatmentPatterns::executeTreatmentPatterns(
-      cohorts = cohortsCDMC,
-      cohortTableName = "cohort_table",
-      cdm = cdm,
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      cdm = globals$cdm,
       outputPath = tempDir
     )
   )
@@ -74,4 +80,6 @@ test_that("CDMConnector", {
   expect_true(
     file.exists(file.path(tempDir, "countsSex.csv"))
   )
+  
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })

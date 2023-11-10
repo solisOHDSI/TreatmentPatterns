@@ -4,13 +4,17 @@ library(TreatmentPatterns)
 
 test_that("computePathways DatabaseConnector", {
   testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_message(
     expect_message(
       expect_message(
         computePathways(
-          cohorts = cohortsDBC,
-          cohortTableName = "CohortTable",
-          connectionDetails = globalConnectionDetails,
+          cohorts = globals$cohorts,
+          cohortTableName = globals$cohortTableName,
+          connectionDetails = globals$connectionDetails,
           cdmSchema = "main",
           resultSchema = "main"
         ),
@@ -24,26 +28,36 @@ test_that("computePathways DatabaseConnector", {
 
 # CDMConnector ----
 test_that("computePathways CDMConnector", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
   expect_message(
     computePathways(
-      cdm = cdm,
-      cohorts = cohortsCDMC,
-      cohortTableName = "cohort_table"
+      cdm = globals$cdm,
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName
     ),
     "After maxPathLength: 554"
   )
+  
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
 # Parameter sweep ----
 test_that("includeTreatments", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     expect_error(
       computePathways(
-        cohorts = cohortsDBC,
-        cohortTableName = "CohortTable",
-        connectionDetails = globalConnectionDetails,
-        cdmSchema = "main",
-        resultSchema = "main",
+        cohorts = globals$cohorts,
+        cohortTableName = globals$cohortTableName,
+        connectionDetails = globals$connectionDetails,
+        cdmSchema = globals$cdmSchema,
+        resultSchema = globals$resultSchema,
         includeTreatments = 0
       ),
       "Must be of type 'character'"
@@ -53,13 +67,17 @@ test_that("includeTreatments", {
 })
 
 test_that("periodPriorToIndex", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       periodPriorToIndex = "0"
     ),
     "Must be of type.+'numeric'"
@@ -67,13 +85,17 @@ test_that("periodPriorToIndex", {
 })
 
 test_that("minEraDuration", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       minEraDuration = "0"
     ),
     "Must be of type.+'numeric'"
@@ -81,13 +103,17 @@ test_that("minEraDuration", {
 })
 
 test_that("splitEventCohorts", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       splitEventCohorts = 1
     ),
     "Must be of type.+'character'"
@@ -95,13 +121,17 @@ test_that("splitEventCohorts", {
 })
 
 test_that("splitTime", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       splitTime = "1"
     ),
     "Must be of type.+'numeric'"
@@ -109,13 +139,17 @@ test_that("splitTime", {
 })
 
 test_that("eraCollapseSize", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       eraCollapseSize = ""
     ),
     " Must be of type.+'numeric'"
@@ -123,13 +157,17 @@ test_that("eraCollapseSize", {
 })
 
 test_that("combinationWindow", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       combinationWindow = ""
     ),
     "Must be of type.+'numeric'"
@@ -137,13 +175,17 @@ test_that("combinationWindow", {
 })
 
 test_that("minPostCombinationDuration", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       minPostCombinationDuration = "Stuff"
     ),
     "Must be of.+type.+"
@@ -151,13 +193,17 @@ test_that("minPostCombinationDuration", {
 })
 
 test_that("filterTreatments", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       filterTreatments = ""
     ),
     "Must be a subset of"
@@ -165,13 +211,17 @@ test_that("filterTreatments", {
 })
 
 test_that("includeTreatments", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
   expect_error(
     computePathways(
-      cohorts = cohortsDBC,
-      cohortTableName = "CohortTable",
-      connectionDetails = globalConnectionDetails,
-      cdmSchema = "main",
-      resultSchema = "main",
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
       maxPathLength = ""
     ),
     "Must be of type.+'numeric'"

@@ -11,11 +11,22 @@ test_that("void", {
 
 # CohortGenerator ----
 test_that("outputPath", {
-  testthat::skip_on_ci()
+  # testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema)
+  
   ## file.path(tempDirCG) ----
   tempDirLocal <- file.path(tempdir(), "output")
 
-  export(andromedaCG, outputPath = tempDirLocal)
+  export(andromeda, outputPath = tempDirLocal)
 
   expect_true(
     file.exists(file.path(tempDirLocal, "treatmentPathways.csv"))
@@ -39,19 +50,33 @@ test_that("outputPath", {
 
   ## 3 ----
   expect_error(
-    TreatmentPatterns::export(andromedaCG, outputPath = 3),
+    TreatmentPatterns::export(andromeda, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
+  
+  Andromeda::close(andromeda)
 })
 
 test_that("ageWindow", {
-  testthat::skip_on_ci()
+  # testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
 
   ## 10 ----
   expect_message(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       ageWindow = 10
     )
@@ -65,7 +90,7 @@ test_that("ageWindow", {
   ## c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150) ----
   expect_message(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       ageWindow = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150)
     )
@@ -77,16 +102,30 @@ test_that("ageWindow", {
     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
   ))
+  
+  Andromeda::close(andromeda)
 })
 
 test_that("minFreq", {
-  testthat::skip_on_ci()
+  # testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## 10 ----
   expect_message(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       minFreq = 10
     ),
@@ -100,21 +139,35 @@ test_that("minFreq", {
   ## "10" ----
   expect_error(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       minFreq = "10"
     )
   )
+  
+  Andromeda::close(andromeda)
 })
 
 test_that("archiveName", {
-  testthat::skip_on_ci()
+  # testthat::skip_on_ci()
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCG()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## "output.zip" ----
   expect_message(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       archiveName = "output.zip"
     )
@@ -127,18 +180,30 @@ test_that("archiveName", {
   ## 3 ----
   expect_error(
     export(
-      andromeda = andromedaCG,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       archiveName = 3
     )
   )
+  
+  Andromeda::close(andromeda)
 })
 
 # CDMConnector ----
 test_that("outputPath", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    cdm = globals$cdm
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
-  export(andromedaCDMC, outputPath = tempDirLocal)
+  export(andromeda, outputPath = tempDirLocal)
 
   expect_true(
     file.exists(file.path(tempDirLocal, "treatmentPathways.csv"))
@@ -162,18 +227,31 @@ test_that("outputPath", {
 
   ## 3 ----
   expect_error(
-    export(andromedaCDMC, outputPath = 3),
+    export(andromeda, outputPath = 3),
     "Variable 'outputPath': No path provided"
   )
+  
+  Andromeda::close(andromeda)
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
 test_that("ageWindow", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    cdm = globals$cdm
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## 10 ----
   expect_message(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       ageWindow = 10
     )
@@ -186,7 +264,7 @@ test_that("ageWindow", {
   ## c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150) ----
   expect_message(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       ageWindow = c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 150)
     )
@@ -198,15 +276,28 @@ test_that("ageWindow", {
     c("0-2", "2-4", "4-6", "6-8", "8-10", "10-12",
       "12-14", "14-16", "16-18", "18-150", "all") %in% treatmentPathways$age
   ))
+  
+  Andromeda::close(andromeda)
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
 test_that("minFreq", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    cdm = globals$cdm
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## 10 ----
   expect_message(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       minFreq = 10
     ),
@@ -220,20 +311,33 @@ test_that("minFreq", {
   ## "10" ----
   expect_error(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       minFreq = "10"
     )
   )
+  
+  Andromeda::close(andromeda)
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
 test_that("archiveName", {
+  testthat::skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    cdm = globals$cdm
+  )
+  
   tempDirLocal <- file.path(tempdir(), "output")
   
   ## "output.zip" ----
   expect_message(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       archiveName = "output.zip"
     )
@@ -246,9 +350,12 @@ test_that("archiveName", {
   ## 3 ----
   expect_error(
     export(
-      andromeda = andromedaCDMC,
+      andromeda = andromeda,
       outputPath = tempDirLocal,
       archiveName = 3
     )
   )
+  
+  Andromeda::close(andromeda)
+  DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
