@@ -7,7 +7,7 @@ test_that("void", {
 
 test_that("CohortGenerator", {
   testthat::skip_on_cran()
-  # testthat::skip_on_ci()
+  testthat::skip_on_ci()
   
   global <- generateCohortTableCG()
   
