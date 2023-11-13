@@ -1,7 +1,7 @@
 library(testthat)
 library(TreatmentPatterns)
 library(dplyr)
-library(Eunomia)
+require("Eunomia", character.only = TRUE, quietly = TRUE)
 library(DatabaseConnector)
 
 test_that("Method: new", {
