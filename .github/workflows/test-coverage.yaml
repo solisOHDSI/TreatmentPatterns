@@ -41,6 +41,12 @@ jobs:
             install.packages("withr")
             install.packages("DatabaseConnector")
             install.packages("SqlRender")
+            install.packages("rjson")
+            install.packages("Andromeda")
+            install.packages("googleVis")
+            install.packages("sunburstR")
+            install.packages("networkD3")
+            install.packages("htmlwidgets")
         shell: Rscript {0}
         
         
