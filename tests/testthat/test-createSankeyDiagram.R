@@ -120,3 +120,16 @@ test_that("groupCombinations: TRUE", {
 
   expect_true(all(unlist(json[5]) == c("1.Combination", "2.Stopped", "25")))
 })
+
+test_that("returnHTML: TRUE", {
+  html <- createSankeyDiagram(
+      treatmentPathways = dummyData,
+      outputFile = tempFile,
+      groupCombinations = TRUE,
+      returnHTML = TRUE
+    )
+  
+  expect_identical(html$type, "Sankey")
+  expect_identical(html$chartid, 1)
+  expect_equal(names(html$html), c("header", "chart", "caption", "footer"))
+})
