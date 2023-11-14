@@ -2,9 +2,9 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [master, rc, dev]
   pull_request:
-    branches: [main, master]
+    branches: [master, rc, dev]
 
 name: test-coverage
 
@@ -21,10 +21,62 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::covr
-          needs: coverage
+      - name: Install Linux jre and jdk
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y default-jre
+          sudo apt-get install -y default-jdk
+          sudo R CMD javareconf
+        
+      - name: Install Suggests
+        run: |
+            install.packages("knitr", repos = "https://cloud.r-project.org/")
+            install.packages("rmarkdown", repos = "https://cloud.r-project.org/")
+            install.packages("tibble", repos = "https://cloud.r-project.org/")
+            install.packages("testthat", repos = "https://cloud.r-project.org/")
+            install.packages("usethis")
+            install.packages("CDMConnector")
+            install.packages("DBI")
+            install.packages("duckdb")
+            install.packages("withr")
+            install.packages("DatabaseConnector")
+            install.packages("SqlRender")
+        shell: Rscript {0}
+        
+        
+      - name: Install CirceR
+        run: |
+            install.packages("rJava", repos = "https://cloud.r-project.org/")
+            install.packages("RJSONIO", repos = "https://cloud.r-project.org/")
+            install.packages("CirceR", repos = "https://OHDSI.github.io/drat", type = "source")
+        shell: Rscript {0}
+      
+      - name: Install Eunomia
+        run: |
+            install.packages("SqlRender", repos = "https://cloud.r-project.org/")
+            install.packages("RSQLite", repos = "https://cloud.r-project.org/")
+            install.packages("readr", repos = "https://cloud.r-project.org/")
+            install.packages("urltools", repos = "https://cloud.r-project.org/")
+            install.packages("dbplyr", repos = "https://cloud.r-project.org/")
+            install.packages("Eunomia", repos = "https://OHDSI.github.io/drat", type = "source")
+        shell: Rscript {0}
+
+      - name: Install CohortGenerator
+        run: |
+            install.packages("checkmate", repos = "https://cloud.r-project.org/")
+            install.packages("digest", repos = "https://cloud.r-project.org/")
+            install.packages("dplyr", repos = "https://cloud.r-project.org/")
+            install.packages("lubridate", repos = "https://cloud.r-project.org/")
+            install.packages("ParallelLogger", repos = "https://cloud.r-project.org/")
+            install.packages("readr", repos = "https://cloud.r-project.org/")
+            install.packages("rlang", repos = "https://cloud.r-project.org/")
+            install.packages("RJSONIO", repos = "https://cloud.r-project.org/")
+            install.packages("jsonlite", repos = "https://cloud.r-project.org/")
+            install.packages("SqlRender", repos = "https://cloud.r-project.org/")
+            install.packages("stringi", repos = "https://cloud.r-project.org/")
+
+            install.packages("CohortGenerator", repos = "https://OHDSI.github.io/drat", type = "source")
+        shell: Rscript {0}
 
       - name: Test coverage
         run: |
