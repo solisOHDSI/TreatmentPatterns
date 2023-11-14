@@ -47,6 +47,7 @@ jobs:
             install.packages("sunburstR")
             install.packages("networkD3")
             install.packages("htmlwidgets")
+            install.packages("covr")
         shell: Rscript {0}
         
         
