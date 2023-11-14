@@ -41,6 +41,7 @@ jobs:
             install.packages("withr")
             install.packages("DatabaseConnector")
             install.packages("SqlRender")
+            install.packages("covr")
         shell: Rscript {0}
         
         
