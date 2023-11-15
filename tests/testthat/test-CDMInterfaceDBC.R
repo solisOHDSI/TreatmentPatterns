@@ -65,7 +65,7 @@ test_that("Method: fetchMetadata", {
 
 test_that("Method: fetchCohortTable", {
   skip_on_cran()
-  skip_on_ci()
+  # skip_on_ci()
   
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   cohortTableName <- "cohort_table"
@@ -148,4 +148,21 @@ test_that("Method: fetchCohortTable", {
   expect_identical(nrow(res), 0L)
   
   cdmInterface$destroy()
+})
+
+
+test_that("Method: destroy", {
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(
+    connectionDetails = connectionDetails,
+    cdmSchema = "main",
+    resultSchema = "main"
+  )
+  
+  andromeda <- Andromeda::andromeda()
+
+  cdmInterface$destroy()
+  
+  expect_error(cdmInterface$fetchMetadata(andromeda))
 })
