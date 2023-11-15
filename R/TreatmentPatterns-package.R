@@ -9,7 +9,7 @@
 #' @import Andromeda
 #' @import R6
 #' @import sunburstR
-#' @import networkD3
+#' @importFrom networkD3 sankeyNetwork
 #' @importFrom htmlwidgets JS
 #' @importFrom stats sd median
 #' @importFrom tidyr pivot_wider
