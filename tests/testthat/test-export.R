@@ -17,7 +17,10 @@ test_that("empty treatmentHistory table", {
     personId = numeric(0)
   )
   
-  export(localAndromeda, outputPath = tempDirLocal)
+  expect_message(
+    export(localAndromeda, outputPath = tempDirLocal),
+    "Treatment History table is empty. Nothing to export."
+  )
 })
 
 # CohortGenerator ----
