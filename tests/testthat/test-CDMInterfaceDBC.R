@@ -77,8 +77,7 @@ test_that("Method: fetchCohortTable", {
     cdmSchema = globals$cdmSchema,
     resultSchema = globals$resultSchema
   )
-  
-  # Viral Sinusitis
+
   cdmInterface$fetchCohortTable(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -87,11 +86,7 @@ test_that("Method: fetchCohortTable", {
     minEraDuration = 0
   )
 
-  # res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
-
-  # expect_identical(ncol(res), 6L)
-  # expect_identical(nrow(res), 11354L)
-  print(names(andromeda))
+  expect_equal(names(andromeda), andromedaTableName)
 })
 
 test_that("fetchCohortTable: empty", {
