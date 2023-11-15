@@ -56,3 +56,27 @@ test_that("colors", {
   
   expect_identical(pColors, actualColors)
 })
+
+test_that("2 path levels", {
+  dummyData <- data.frame(
+    path = c("A", "A-B+C", "A-D", "B+C", "D"),
+    freq = c(206, 6, 14, 48, 221),
+    sex = rep("all", 5),
+    age = rep("all", 5),
+    index_year = rep("all", 5)
+  )
+  
+  p <- createSankeyDiagram2(treatmentPathways = dummyData)
+  
+  pLabels <- stringr::str_remove_all(string = p$x$nodes$name, pattern = "\\d\\.")
+  pLabels <- pLabels["Stopped" != pLabels] |>
+    unique() |>
+    sort()
+  
+  actualLabels <- stringr::str_split(string = dummyData$path, pattern = "-") |>
+    unlist() |>
+    unique() |>
+    sort()
+  
+  expect_identical(pLabels, actualLabels)
+})
