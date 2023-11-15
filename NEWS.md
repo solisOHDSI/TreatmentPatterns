@@ -1,3 +1,8 @@
+# TreatmentPatterns 2.6.1
+----------
+* Bumped R version to 4.2.1
+* Added additional unit-tests for `createSunburstPlot2()` and `createSankeyDiagram2()`
+
 # TreatmentPatterns 2.6.0
 ----------
 * Added `createSunburstPlot2()` as a replacement of `createSunburstPlot()`. `createSunburstPlot2()` will fully replace `createSunburstPlot()` in a future version.
