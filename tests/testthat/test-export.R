@@ -9,6 +9,17 @@ test_that("void", {
   )
 })
 
+test_that("empty treatmentHistory table", {
+  tempDirLocal <- file.path(tempdir(), "output")
+  localAndromeda <- Andromeda::andromeda()
+  
+  localAndromeda$treatmentHistory <- data.frame(
+    personId = numeric(0)
+  )
+  
+  export(localAndromeda, outputPath = tempDirLocal)
+})
+
 # CohortGenerator ----
 test_that("outputPath", {
   testthat::skip_on_ci()
