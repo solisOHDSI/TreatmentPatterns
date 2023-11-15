@@ -187,9 +187,7 @@ PathwayConstructor <- R6::R6Class(
     #' @description
     #' Construct the pathways. Generates `Andromeda::andromeda()` objects,
     #' which can be fetched using `self$getAndromeda()`.
-    #' 
-    #' @template param_minEraDuration
-    construct = function(minEraDuration) {
+    construct = function() {
       # Set up Andromeda sqlite environment
       private$andromeda <- Andromeda::andromeda()
       private$cdmInterface$fetchMetadata(private$andromeda)
@@ -199,7 +197,7 @@ PathwayConstructor <- R6::R6Class(
         cohortTableName = private$cohortTableName,
         andromeda = private$andromeda,
         andromedaTableName = "cohortTable",
-        minEraDuration = minEraDuration
+        minEraDuration = private$settings$minEraDuration
       )
 
       private$andromeda$cohortTable <- private$andromeda$cohortTable %>%
