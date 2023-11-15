@@ -109,7 +109,7 @@ test_that("fetchCohortTable: empty", {
   )
   
   # Empty
-  localCDMInterface$fetchCohortTable(
+  cdmInterface$fetchCohortTable(
     cohorts = data.frame(
       cohortId = numeric(),
       cohortName = character(),
