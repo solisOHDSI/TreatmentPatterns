@@ -1,6 +1,8 @@
 # Global ----
 library(testthat)
 library(TreatmentPatterns)
+library(dplyr)
+library(stringr)
 
 test_that("computePathways DatabaseConnector", {
   testthat::skip_on_ci()
@@ -28,7 +30,7 @@ test_that("computePathways DatabaseConnector", {
 
 # CDMConnector ----
 test_that("computePathways CDMConnector", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   
@@ -44,25 +46,73 @@ test_that("computePathways CDMConnector", {
   DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
+test_that("nrow exitCohorts > 0", {
+  skip_on_cran()
+  
+  globals <- generateCohortTableCDMC()
+  
+  cohorts <- globals$cohorts %>%
+    mutate(type = case_when(
+      .data$cohortName == "Acetaminophen" ~ "exit",
+      .default = .data$type
+    ))
+  
+  expect_message(
+    computePathways(
+      cdm = globals$cdm,
+      cohorts = cohorts,
+      cohortTableName = globals$cohortTableName
+    ),
+    "After maxPathLength: 2117"
+  )
+})
+
 # Parameter sweep ----
 test_that("includeTreatments", {
   testthat::skip_on_cran()
   
   globals <- generateCohortTableCG()
   
+  andromeda_startDate <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    includeTreatments = "startDate"
+  )
+  
+  andromeda_endDate <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    includeTreatments = "endDate"
+  )
+  
+  startDate <- andromeda_startDate$treatmentHistory %>% collect()
+  endDate <- andromeda_endDate$treatmentHistory %>% collect()
+  
+  expect_false(identical(
+    startDate$eventStartDate,
+    endDate$eventStartDate
+  ))
+  
+  expect_false(identical(
+    startDate$durationEra,
+    endDate$durationEra
+  ))
+  
   expect_error(
-    expect_error(
-      computePathways(
-        cohorts = globals$cohorts,
-        cohortTableName = globals$cohortTableName,
-        connectionDetails = globals$connectionDetails,
-        cdmSchema = globals$cdmSchema,
-        resultSchema = globals$resultSchema,
-        includeTreatments = 0
-      ),
-      "Must be of type 'character'"
-    ),
-    "Must be a subset of.+'startDate','endDate'.+"
+    computePathways(
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
+      includeTreatments = "asdlf"
+    )
   )
 })
 
@@ -107,6 +157,29 @@ test_that("splitEventCohorts", {
   
   globals <- generateCohortTableCG()
   
+  andromeda_empty <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    splitEventCohorts = ""
+  )
+  
+  andromeda_Clavulanate <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    splitEventCohorts = "4"
+  )
+  
+  empty <- andromeda_empty$treatmentHistory %>% collect()
+  clavulanate <- andromeda_Clavulanate$treatmentHistory %>% collect()
+  
+  expect_false(identical(empty$eventCohortId, clavulanate$eventCohortId))
+  
   expect_error(
     computePathways(
       cohorts = globals$cohorts,
@@ -142,6 +215,24 @@ test_that("eraCollapseSize", {
   testthat::skip_on_cran()
   
   globals <- generateCohortTableCG()
+  
+  andromeda_0 <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    eraCollapseSize = 0
+  )
+  
+  andromeda_10000 <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    eraCollapseSize = 10000
+  )
   
   expect_error(
     computePathways(
@@ -222,7 +313,7 @@ test_that("includeTreatments", {
       connectionDetails = globals$connectionDetails,
       cdmSchema = globals$cdmSchema,
       resultSchema = globals$resultSchema,
-      maxPathLength = ""
+      includeTreatments = 
     ),
     "Must be of type.+'numeric'"
   )
