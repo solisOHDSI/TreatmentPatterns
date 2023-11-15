@@ -46,7 +46,7 @@ createSankeyDiagram <- function(
   )
   
   data <- treatmentPathways %>%
-    rowwise() %>%
+    dplyr::rowwise() %>%
     dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
     dplyr::mutate(freq = as.integer(.data$freq))
 
