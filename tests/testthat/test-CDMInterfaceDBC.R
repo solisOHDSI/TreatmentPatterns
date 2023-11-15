@@ -1,21 +1,22 @@
 library(testthat)
 library(TreatmentPatterns)
 library(dplyr)
-library(Eunomia)
+require("Eunomia", character.only = TRUE, quietly = TRUE)
 library(DatabaseConnector)
 
 test_that("Method: new", {
-  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  skip_on_cran()
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = localConnectionDetails,
+    connectionDetails = connectionDetails,
     cdmSchema = "main",
     resultSchema = "main"
   )
   
   expect_true(R6::is.R6(
     TreatmentPatterns:::CDMInterface$new(
-      connectionDetails = localConnectionDetails,
+      connectionDetails = connectionDetails,
       cdmSchema = "main",
       resultSchema = "main"
     )
@@ -23,10 +24,11 @@ test_that("Method: new", {
 })
 
 test_that("Method: validate", {
-  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  skip_on_cran()
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = localConnectionDetails,
+    connectionDetails = connectionDetails,
     cdmSchema = "main",
     resultSchema = "main"
   )
@@ -35,19 +37,20 @@ test_that("Method: validate", {
 })
 
 test_that("Method: fetchMetadata", {
-  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  skip_on_cran()
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = localConnectionDetails,
+    connectionDetails = connectionDetails,
     cdmSchema = "main",
     resultSchema = "main"
   )
   
-  localAndromeda <- Andromeda::andromeda()
+  andromeda <- Andromeda::andromeda()
 
-  cdmInterface$fetchMetadata(localAndromeda)
+  cdmInterface$fetchMetadata(andromeda)
 
-  metadata <- localAndromeda$metadata %>% collect()
+  metadata <- andromeda$metadata %>% collect()
 
   expect_in(
     c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
@@ -61,24 +64,30 @@ test_that("Method: fetchMetadata", {
 })
 
 test_that("Method: fetchCohortTable", {
-  testthat::skip_on_ci()
-  localConnectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  skip_on_cran()
+  skip_on_ci()
   
-  localConnection <- DatabaseConnector::connect(localConnectionDetails)
+  connectionDetails <- Eunomia::getEunomiaConnectionDetails()
+  cohortTableName <- "cohort_table"
+  andromedaTableName <- "cohortTable"
+  cdmSchema <- "main"
+  resultSchema <- "main"
+  
+  connection <- DatabaseConnector::connect(connectionDetails)
   
   DatabaseConnector::renderTranslateExecuteSql(
-    connection = localConnection,
+    connection = connection,
     sql = "
-  DROP TABLE IF EXISTS local_cohort_table;
+  DROP TABLE IF EXISTS cohort_table;
 
-  CREATE TABLE local_cohort_table (
+  CREATE TABLE cohort_table (
     cohort_definition_id INT,
     subject_id INT,
     cohort_start_date DATE,
     cohort_end_date DATE
   );
 
-  INSERT INTO local_cohort_table (
+  INSERT INTO cohort_table (
     cohort_definition_id,
     subject_id,
     cohort_start_date,
@@ -90,17 +99,17 @@ test_that("Method: fetchCohortTable", {
   "
   )
   
-  DatabaseConnector::disconnect(localConnection)
+  DatabaseConnector::disconnect(connection)
   
-  localAndromeda <- Andromeda::andromeda()
+  andromeda <- Andromeda::andromeda()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
-    connectionDetails = localConnectionDetails,
-    cdmSchema = "main",
-    resultSchema = "main"
+    connectionDetails = connectionDetails,
+    cdmSchema = cdmSchema,
+    resultSchema = resultSchema
   )
 
-  localCohorts <- data.frame(
+  cohorts <- data.frame(
     cohortId = c(1, 2, 3),
     cohortName = c("Disease X", "Drug A", "Drug B"),
     type = c("target", "event", "event")
@@ -108,14 +117,14 @@ test_that("Method: fetchCohortTable", {
 
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
-    cohorts = localCohorts,
-    cohortTableName = "local_cohort_table",
-    andromeda = localAndromeda,
-    andromedaTableName = "cohortTable",
+    cohorts = cohorts,
+    cohortTableName = cohortTableName,
+    andromeda = andromeda,
+    andromedaTableName = andromedaTableName,
     minEraDuration = 0
   )
 
-  res <- localAndromeda$cohortTable %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 3L)
@@ -127,13 +136,13 @@ test_that("Method: fetchCohortTable", {
       cohortName = character(),
       type = character()
     ),
-    cohortTableName = "local_cohort_table",
-    andromeda = localAndromeda,
+    cohortTableName = "cohort_table",
+    andromeda = andromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
   )
 
-  res <- localAndromeda$cohortTable %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 0L)

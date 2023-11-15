@@ -3,16 +3,16 @@ library(TreatmentPatterns)
 library(dplyr)
 library(CDMConnector)
 
-localAndromeda <- Andromeda::andromeda()
+andromeda <- Andromeda::andromeda()
 
-localCon <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
 
 withr::defer({
-  Andromeda::close(localAndromeda)
-  DBI::dbDisconnect(localCon, shutdown = TRUE)
+  Andromeda::close(andromeda)
+  DBI::dbDisconnect(con, shutdown = TRUE)
 })
 
-localCohorts <- data.frame(
+cohorts <- data.frame(
   cohortId = c(1, 2, 3),
   cohortName = c("Disease X", "Drug A", "Drug B"),
   type = c("target", "event", "event")
@@ -25,10 +25,10 @@ cohort_table <- tibble(
   cohort_end_date = as.Date(c("2015-08-01", "2014-12-04", "2015-08-01"))
 )
 
-dplyr::copy_to(localCon, cohort_table, overwrite = TRUE)
+dplyr::copy_to(con, cohort_table, overwrite = TRUE)
 
 localCdm <- cdmFromCon(
-  con = localCon,
+  con = con,
   cdmSchema = "main",
   writeSchema = "main",
   cohortTables = "cohort_table"
@@ -47,9 +47,9 @@ test_that("Method: validate", {
 })
 
 test_that("Method: fetchMetadata", {
-  cdmInterface$fetchMetadata(localAndromeda)
+  cdmInterface$fetchMetadata(andromeda)
 
-  metadata <- localAndromeda$metadata %>% collect()
+  metadata <- andromeda$metadata %>% collect()
 
   expect_in(
     c("cdmSourceName", "cdmSourceAbbreviation", "cdmReleaseDate", "vocabularyVersion"),
@@ -70,14 +70,14 @@ test_that("Method: fetchCohortTable", {
   
   # Viral Sinusitis
   cdmInterface$fetchCohortTable(
-    cohorts = localCohorts,
+    cohorts = cohorts,
     cohortTableName = "cohort_table",
-    andromeda = localAndromeda,
+    andromeda = andromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
   )
   
-  res <- localAndromeda$cohortTable
+  res <- andromeda$cohortTable
 
   expect_identical(ncol(res), 6L)
   expect_identical(res %>% collect() %>% nrow(), 3L)
@@ -90,12 +90,12 @@ test_that("Method: fetchCohortTable", {
       type = character()
     ),
     cohortTableName = "cohort_table",
-    andromeda = localAndromeda,
+    andromeda = andromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
   )
   
-  res <- localAndromeda$cohortTable
+  res <- andromeda$cohortTable
   
   expect_identical(ncol(res), 6L)
   expect_identical(res %>% collect() %>% nrow(), 0L)
