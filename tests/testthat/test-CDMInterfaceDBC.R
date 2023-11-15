@@ -108,16 +108,18 @@ test_that("fetchCohortTable: empty", {
     resultSchema = globals$resultSchema
   )
   
+  cohorts <- data.frame(
+    cohortId = numeric(),
+    cohortName = character(),
+    type = character()
+  )
+  
   # Empty
   cdmInterface$fetchCohortTable(
-    cohorts = data.frame(
-      cohortId = numeric(),
-      cohortName = character(),
-      type = character()
-    ),
-    cohortTableName = "cohort_table",
+    cohorts = cohorts,
+    cohortTableName = globals$cohortTableName,
     andromeda = andromeda,
-    andromedaTableName = "cohortTable",
+    andromedaTableName = andromedaTableName,
     minEraDuration = 5
   )
   
