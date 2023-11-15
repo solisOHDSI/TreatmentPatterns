@@ -13,7 +13,7 @@ Description:
 URL: https://github.com/darwin-eu-dev/TreatmentPatterns
 BugReports: https://github.com/darwin-eu-dev/TreatmentPatterns/issues
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Imports: 
     checkmate,
     dplyr,
