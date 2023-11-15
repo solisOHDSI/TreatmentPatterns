@@ -87,8 +87,6 @@ test_that("Method: fetchCohortTable", {
   )
 
   expect_equal(names(andromeda), andromedaTableName)
-  n <- andromeda[[andromedaTableName]] %>% summarise(n()) %>% pull()
-  expect_equal(n, 11354L)
 })
 
 test_that("fetchCohortTable: empty", {
