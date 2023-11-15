@@ -165,7 +165,7 @@ computePathways <- function(
     maxPathLength = maxPathLength,
     addNoPaths = addNoPaths
   )
-  pathwayConstructor$construct(minEraDuration)
+  pathwayConstructor$construct()
   andromeda <- pathwayConstructor$getAndromeda()
 
   andromeda$metadata <- andromeda$metadata %>%
