@@ -87,7 +87,7 @@ test_that("Method: fetchCohortTable", {
     minEraDuration = 0
   )
 
-  res <- andromeda[[localAndromedaTableName]] %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
 
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 11354L)
@@ -116,12 +116,12 @@ test_that("fetchCohortTable: empty", {
       type = character()
     ),
     cohortTableName = "cohort_table",
-    andromeda = localAndromeda,
+    andromeda = andromeda,
     andromedaTableName = "cohortTable",
     minEraDuration = 5
   )
   
-  res <- localAndromeda[[andromedaTableName]] %>% dplyr::collect()
+  res <- andromeda[[andromedaTableName]] %>% dplyr::collect()
   
   expect_identical(ncol(res), 6L)
   expect_identical(nrow(res), 0L)
