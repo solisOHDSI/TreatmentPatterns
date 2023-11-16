@@ -175,8 +175,8 @@ test_that("splitEventCohorts", {
     splitEventCohorts = "4"
   )
   
-  empty <- andromeda_empty$treatmentHistory %>% collect()
-  clavulanate <- andromeda_Clavulanate$treatmentHistory %>% collect()
+  empty <- andromeda_empty[["treatmentHistory"]] %>% collect()
+  clavulanate <- andromeda_Clavulanate[["treatmentHistory"]] %>% collect()
   
   expect_false(identical(empty$eventCohortId, clavulanate$eventCohortId))
   
