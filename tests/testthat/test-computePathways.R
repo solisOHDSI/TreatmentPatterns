@@ -98,8 +98,8 @@ test_that("includeTreatments", {
   andromeda_startDate <- Andromeda::loadAndromeda(file.path(tempDir, "startDate"))
   andromeda_endDate <- Andromeda::loadAndromeda(file.path(tempDir, "endDate"))
   
-  startDate <- andromeda_startDate$treatmentHistory %>% collect()
-  endDate <- andromeda_endDate$treatmentHistory %>% collect()
+  startDate <- andromeda_startDate$treatmentHistory %>% dplyr::collect()
+  endDate <- andromeda_endDate$treatmentHistory %>% dplyr::collect()
   
   expect_false(identical(
     startDate$eventStartDate,
