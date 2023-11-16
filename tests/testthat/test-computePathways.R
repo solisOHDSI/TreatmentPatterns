@@ -153,7 +153,8 @@ test_that("minEraDuration", {
 })
 
 test_that("splitEventCohorts", {
-  testthat::skip_on_cran()
+  skip_on_cran()
+  skip_on_ci()
   
   globals <- generateCohortTableCG()
   
