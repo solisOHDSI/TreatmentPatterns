@@ -114,6 +114,9 @@ test_that("includeTreatments", {
       includeTreatments = "asdlf"
     )
   )
+  
+  Andromeda::close(andromeda_startDate)
+  Andromeda::close(andromeda_endDate)
 })
 
 test_that("periodPriorToIndex", {
@@ -175,7 +178,7 @@ test_that("splitEventCohorts", {
     resultSchema = globals$resultSchema,
     splitEventCohorts = "4"
   )
-  
+
   empty <- andromeda_empty[["treatmentHistory"]] %>% collect()
   clavulanate <- andromeda_Clavulanate[["treatmentHistory"]] %>% collect()
   
@@ -192,6 +195,9 @@ test_that("splitEventCohorts", {
     ),
     "Must be of type.+'character'"
   )
+  
+  Andromeda::close(andromeda_Clavulanate)
+  Andromeda::close(andromeda_empty)
 })
 
 test_that("splitTime", {
@@ -246,6 +252,9 @@ test_that("eraCollapseSize", {
     ),
     " Must be of type.+'numeric'"
   )
+  
+  Andromeda::close(andromeda_0)
+  Andromeda::close(andromeda_10000)
 })
 
 test_that("combinationWindow", {
@@ -355,4 +364,5 @@ test_that("identical treatment timeframe", {
     collect()
 
   expect_identical(result$eventCohortId, c("11+6", "6"))
+  Andromeda::close(andromeda)
 })
