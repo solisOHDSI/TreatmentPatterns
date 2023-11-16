@@ -70,67 +70,49 @@ test_that("nrow exitCohorts > 0", {
 # Parameter sweep ----
 test_that("includeTreatments", {
   testthat::skip_on_cran()
-  
-  globals <- generateCohortTableCG()
-  
+
+  globals <- generateCohortTableCDMC()
+
   andromeda_startDate <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
-    connectionDetails = globals$connectionDetails,
-    cdmSchema = globals$cdmSchema,
-    resultSchema = globals$resultSchema,
+    cdm = globals$cdm,
     includeTreatments = "startDate"
   )
-  
+
   andromeda_endDate <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
-    connectionDetails = globals$connectionDetails,
-    cdmSchema = globals$cdmSchema,
-    resultSchema = globals$resultSchema,
+    cdm = globals$cdm,
     includeTreatments = "endDate"
   )
-  
-  # tempDir <- tempdir()
-  # Andromeda::saveAndromeda(andromeda_startDate, fileName = file.path(tempDir, "startDate"))
-  # Andromeda::saveAndromeda(andromeda_endDate, fileName = file.path(tempDir, "endDate"))
-  # 
-  # andromeda_startDate <- Andromeda::loadAndromeda(file.path(tempDir, "startDate"))
-  # andromeda_endDate <- Andromeda::loadAndromeda(file.path(tempDir, "endDate"))
-  # 
-  # startDate <- andromeda_startDate$treatmentHistory %>% dplyr::collect()
-  # endDate <- andromeda_endDate$treatmentHistory %>% dplyr::collect()
-  # 
-  # expect_false(identical(
-  #   startDate$eventStartDate,
-  #   endDate$eventStartDate
-  # ))
-  # 
-  # expect_false(identical(
-  #   startDate$durationEra,
-  #   endDate$durationEra
-  # ))
-  # 
-  # expect_error(
-  #   computePathways(
-  #     cohorts = globals$cohorts,
-  #     cohortTableName = globals$cohortTableName,
-  #     connectionDetails = globals$connectionDetails,
-  #     cdmSchema = globals$cdmSchema,
-  #     resultSchema = globals$resultSchema,
-  #     includeTreatments = "asdlf"
-  #   )
-  # )
-  # 
-  # Andromeda::close(andromeda_startDate)
-  # Andromeda::close(andromeda_endDate)
-  
-  a <- Andromeda::andromeda()
-  a$iris <- iris
-  
-  i <- a$iris %>% dplyr::collect()
-  
-  expect_class(i, "data.frame")
+
+  startDate <- andromeda_startDate$treatmentHistory %>% dplyr::collect()
+  endDate <- andromeda_endDate$treatmentHistory %>% dplyr::collect()
+
+  expect_false(identical(
+    startDate$eventStartDate,
+    endDate$eventStartDate
+  ))
+
+  expect_false(identical(
+    startDate$durationEra,
+    endDate$durationEra
+  ))
+
+  expect_error(
+    computePathways(
+      cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
+      includeTreatments = "asdlf"
+    )
+  )
+
+  Andromeda::close(andromeda_startDate)
+  Andromeda::close(andromeda_endDate)
 })
 
 test_that("periodPriorToIndex", {
