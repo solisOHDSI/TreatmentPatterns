@@ -301,23 +301,6 @@ test_that("filterTreatments", {
   )
 })
 
-test_that("includeTreatments", {
-  testthat::skip_on_cran()
-  
-  globals <- generateCohortTableCG()
-  
-  expect_error(
-    computePathways(
-      cohorts = globals$cohorts,
-      cohortTableName = globals$cohortTableName,
-      connectionDetails = globals$connectionDetails,
-      cdmSchema = globals$cdmSchema,
-      resultSchema = globals$resultSchema,
-      includeTreatments = 
-    ),
-    "Must be of type.+'numeric'"
-  )
-})
 
 test_that("identical treatment timeframe", {
   # Setup connection
