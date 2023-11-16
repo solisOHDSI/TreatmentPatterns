@@ -93,7 +93,7 @@ test_that("includeTreatments", {
   
   tempDir <- tempdir()
   Andromeda::saveAndromeda(andromeda_startDate, fileName = file.path(tempDir, "startDate"))
-  Andromeda::saveAndromeda(andromeda_startDate, fileName = file.path(tempDir, "endDate"))
+  Andromeda::saveAndromeda(andromeda_endDate, fileName = file.path(tempDir, "endDate"))
   
   andromeda_startDate <- Andromeda::loadAndromeda(file.path(tempDir, "startDate"))
   andromeda_endDate <- Andromeda::loadAndromeda(file.path(tempDir, "endDate"))
