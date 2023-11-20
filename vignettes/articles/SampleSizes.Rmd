@@ -1,0 +1,203 @@
+---
+title: "Sample sizes"
+always_allow_html: yes
+output:
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+  html_vignette:
+    toc: yes
+    toc_depth: 3
+    vignette: >
+      %\VignetteIndexEntry{RunningTreatmentPatterns}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+In this vignette we will explore different sample sizes for running a `TreatmentPatterns` study.
+
+```{r setup, echo=FALSE}
+withr::local_envvar(
+  R_USER_CACHE_DIR = tempfile(),
+  .local_envir = testthat::teardown_env(),
+  EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+)
+
+if (require("Eunomia", character.only = TRUE, quietly = TRUE)) {
+  CDMConnector::downloadEunomiaData(overwrite = TRUE)
+}
+```
+
+
+```{r setup_cdm_reference}
+library(CDMConnector)
+library(dplyr, quietly = TRUE)
+
+# Create CDM-reference
+con <- DBI::dbConnect(
+  drv = duckdb::duckdb(),
+  dbdir = eunomia_dir()
+)
+
+cdm <- cdmFromCon(
+  con = con,
+  cdmSchema = "main",
+  writeSchema = "main"
+)
+```
+
+```{r generate_cohort_set}
+# Generate cohort_table in the CDM
+cohortSet <- readCohortSet(
+  path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+)
+
+cohortSet
+
+cdm <- generateCohortSet(
+  cdm = cdm,
+  cohortSet = cohortSet,
+  name = "cohort_table",
+  overwrite = TRUE
+)
+```
+
+```{r get_cohort_counts}
+cohortCount(cdm$cohort_table) %>%
+  inner_join(y = cohortSet, by = join_by("cohort_definition_id" == "cohort_definition_id")) %>%
+  select("cohort_definition_id", "cohort_name", "number_records", "number_subjects")
+```
+
+```{r generate_sampled_cohort_tables}
+subject_ids <- cdm$cohort_table %>%
+  select("subject_id") %>%
+  pull()
+
+sample_sizes <- seq(50, 500, 50)
+
+for (size in sample_sizes) {
+  set.seed(size)
+  sample <- sample(x = subject_ids, size = size)
+
+  cdm[[sprintf("cohort_table_%s", size)]] <- cdm$cohort_table %>%
+    group_by(.data$subject_id) %>%
+    filter(subject_id %in% sample)
+}
+```
+
+```{r run_treatmentpatterns}
+library(TreatmentPatterns)
+
+cohorts <- cohortSet %>%
+  rename(
+    cohortId = "cohort_definition_id",
+    cohortName = "cohort_name"
+  ) %>%
+  select("cohortId", "cohortName") %>%
+  mutate(
+    type = c("event", "event", "event", "event", "exit", "event", "event", "target")
+  )
+
+andromedaList <- list()
+
+for (size in sample_sizes) {
+  andromedaList <- append(
+    andromedaList,
+    computePathways(
+      cohorts = cohorts,
+      cohortTableName = sprintf("cohort_table_%s", size),
+      cdm = cdm
+    )
+  )
+}
+
+names(andromedaList) <- sample_sizes
+```
+
+```{r stats}
+lapply(sample_sizes, function(size) {
+  n <- andromedaList[[sprintf("%s", size)]]$treatmentHistory %>%
+    collect() %>%
+    tally() %>%
+    pull()
+  data.frame(
+    size = size,
+    count = n,
+    loss = round(100 - (n / size * 100), 2)
+  )
+}) %>%
+  dplyr::bind_rows()
+```
+
+```{r exports}
+tempDir <- tempdir()
+
+for (size in sample_sizes) {
+  outputPath <- file.path(tempDir, size)
+  andromeda <- andromedaList[[sprintf("%s", size)]]
+  export(andromeda, outputPath)
+}
+```
+
+```{r load_pathways}
+pathways <- lapply(sample_sizes, function(size) {
+  path <- file.path(tempDir, size, "treatmentPathways.csv")
+  read.csv(path)
+})
+```
+
+```{r count_pathways}
+n_pathways <- lapply(pathways, function(pathway) {
+  n_all <- pathway %>%
+    filter(sex == "all" & age == "all" & indexYear == "all") %>%
+    summarise(sum(freq)) %>%
+    pull()
+  
+  n_male <- pathway %>%
+    filter(sex == "male" & age == "all" & indexYear == "all") %>%
+    summarise(sum(freq)) %>%
+    pull()
+  
+  n_female <- pathway %>%
+    filter(sex == "female" & age == "all" & indexYear == "all") %>%
+    summarise(sum(freq)) %>%
+    pull()
+  
+  data.frame(
+    all = n_all,
+    male = n_male,
+    female = n_female
+  )
+}) %>%
+  bind_rows() %>%
+  mutate(org_size = sample_sizes)
+```
+
+```{r}
+library(ggplot2)
+
+long_data <- data.frame(
+  count = c(n_pathways$all, n_pathways$male, n_pathways$female),
+  org_size = rep(n_pathways$org_size, 3),
+  label = c(
+    rep("all", length(n_pathways$all)),
+    rep("male", length(n_pathways$male)),
+    rep("female", length(n_pathways$female))
+  )
+)
+
+ggplot(data = long_data, mapping = aes(x = count, y = label)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_grid(.~org_size) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+
