@@ -412,6 +412,7 @@ createSunburstPlot <- function(treatmentPathways, outputFile, groupCombinations 
 #' @template param_treatmentPathways 
 #' @template param_groupCombinations
 #' @param colors (`character(n)`) Vector of hex colors codes.
+#' @param legendWith (`numeric(1)`: `400`) Width of legend in pixels.
 #'
 #' @return (`htmlwidget`)
 #' @export
@@ -428,7 +429,7 @@ createSunburstPlot <- function(treatmentPathways, outputFile, groupCombinations 
 #' )
 #' 
 #' createSunburstPlot2(treatmentPatwhays)
-createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL) {
+createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL, legendWidth = 400) {
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
     groupCombinations = groupCombinations
@@ -441,6 +442,7 @@ createSunburstPlot2 <- function(treatmentPathways, groupCombinations = FALSE, co
   sunburstR::sunburst(
     data = treatmentPathways,
     colors = colors,
-    sortFunction = htmlwidgets::JS("function (a, b) {return a.value - b.value;}")
+    sortFunction = htmlwidgets::JS("function (a, b) {return a.value - b.value;}"),
+    legend = list(w = legendWidth)
   )
 }
