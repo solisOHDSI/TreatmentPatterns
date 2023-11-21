@@ -1,3 +1,6 @@
+# TreatmentPatterns 2.6.1
+* Updated to use DATEDIFF
+
 # TreatmentPatterns 2.6.0
 ----------
 * Added `createSunburstPlot2()` as a replacement of `createSunburstPlot()`. `createSunburstPlot2()` will fully replace `createSunburstPlot()` in a future version.
