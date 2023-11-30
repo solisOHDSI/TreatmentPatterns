@@ -306,13 +306,17 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
 
   treatmentPathways[is.na(treatmentPathways)] <- "all"
 
-  a <- nrow(treatmentPathways)
-
+  censored <- treatmentPathways %>%
+    dplyr::filter(.data$freq < minFreq) %>%
+    nrow()
+  
   treatmentPathways <- treatmentPathways %>%
-    dplyr::filter(.data$freq >= minFreq)
-  b <- nrow(treatmentPathways)
-
-  message(sprintf("Removed %s pathways with a frequency < %s.", a - b, minFreq))
+    dplyr::mutate(freq = dplyr::case_when(
+      .data$freq >= minFreq ~ .data$freq,
+      .data$freq < minFreq ~ minFreq,
+      .default = .data$freq))
+  
+  message(sprintf("Censored %s pathways with a frequency <%s to %s.", censored, minFreq, minFreq))
   return(treatmentPathways)
 }
 
