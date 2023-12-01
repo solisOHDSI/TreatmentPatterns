@@ -222,6 +222,7 @@ getColorPalette <- function(treatmentPathways) {
 #' @template param_treatmentPathways
 #' @template param_groupCombinations
 #' @param colors (`character(n)`) Vector of hex color codes.
+#' @param ... Paramaters for \link[networkD3]{sankeyNetwork}.
 #'
 #' @return (`htmlwidget`)
 #' @export
@@ -238,7 +239,7 @@ getColorPalette <- function(treatmentPathways) {
 #' )
 #' 
 #' createSankeyDiagram2(treatmentPathways)
-createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL) {
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL, ...) {
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
     groupCombinations = groupCombinations
@@ -264,7 +265,6 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, c
     NodeID = "names",
     units = "%",
     colourScale = colors,
-    fontSize = 12,
-    nodeWidth = 30
+    ...
   )
 }
