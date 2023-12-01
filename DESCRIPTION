@@ -44,7 +44,11 @@ Suggests:
     CirceR,
     duckdb,
     DBI,
-    withr
+    withr,
+    shiny,
+    shinydashboard,
+    plotly,
+    ggplot2
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
