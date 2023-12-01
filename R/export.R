@@ -331,6 +331,7 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #' @template param_treatmentHistory
 #' @template param_ageWindow
 #' @template param_minFreq
+#' @template param_censorType
 #'
 #' @return (`data.frame()`)
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq, censorType) {

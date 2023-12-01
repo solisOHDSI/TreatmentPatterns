@@ -16,6 +16,12 @@ Number of years to bin age groups into.}
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
+
+\item{censorType}{(\code{character(1)})\cr
+\describe{
+\item{\code{"cell count"}}{Censors pathways <\code{minFreq} to \code{minFreq}.}
+\item{\code{"remove"}}{Censors pathways <\code{minFreq} by removing them completely.}
+}}
 }
 \value{
 (\code{data.frame()})
