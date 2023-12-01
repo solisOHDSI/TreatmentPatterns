@@ -9,6 +9,7 @@
 #' @template param_outputPath
 #' @template param_ageWindow
 #' @template param_minFreq
+#' @template param_censorType
 #' @template param_archiveName
 #'
 #' @return (`invisible(NULL)`)
@@ -113,12 +114,13 @@
 #'     )
 #'   }
 #' }
-export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveName = NULL) {
+export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, censorType = "cell count", archiveName = NULL) {
   collection <- checkmate::makeAssertCollection()
   checkmate::assertTRUE(Andromeda::isAndromeda(andromeda), add = collection)
   checkmate::assertPathForOutput(outputPath, overwrite = TRUE, add = collection)
   checkmate::assertIntegerish(ageWindow, min.len = 1, any.missing = FALSE, unique = TRUE, add = collection)
   checkmate::assertIntegerish(minFreq, len = 1, lower = 1, add = collection)
+  checkmate::assertChoice(censorType, choices = c("cell count", "remove"))
   checkmate::assertCharacter(archiveName, len = 1, add = collection, null.ok = TRUE)
   checkmate::reportAssertions(collection)
   
@@ -143,7 +145,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveNa
   # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
   message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
-  treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
+  treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, minFreq, censorType)
 
   nTotal <- andromeda$currentCohorts %>%
     dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
@@ -212,8 +214,8 @@ computeStatsTherapy <- function(treatmentHistory) {
       nchar(.data$eventCohortId) > 1 ~ "combination",
       .default = "monotherapy"
     )) %>%
-    group_by(.data$treatmentType) %>%
-    summarise(
+    dplyr::group_by(.data$treatmentType) %>%
+    dplyr::summarise(
       avgDuration = mean(.data$durationEra),
       medianDuration = stats::median(.data$durationEra),
       sd = stats::sd(.data$durationEra),
@@ -225,6 +227,39 @@ computeStatsTherapy <- function(treatmentHistory) {
   return(stats)
 }
 
+countYear <- function(treatmentHistory, minFreq) {
+  treatmentHistory %>%
+    dplyr::group_by(.data$indexYear) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
+      .data$n < minFreq ~ sprintf("<%s", minFreq),
+      .default = as.character(.data$n)
+    ))
+}
+
+countSex <- function(treatmentHistory, minFreq) {
+  treatmentHistory %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
+      .data$n < minFreq ~ sprintf("<%s", minFreq),
+      .default = as.character(.data$n)
+    ))
+}
+
+countAge <- function(treatmentHistory, minFreq) {
+  treatmentHistory %>%
+    dplyr::group_by(.data$age) %>%
+    dplyr::count() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(n = case_when(
+      .data$n < minFreq ~ sprintf("<%s", minFreq),
+      .default = as.character(.data$n)
+    ))
+}
+
 #' computeCounts
 #'
 #' @template param_treatmentHistory
@@ -233,38 +268,63 @@ computeStatsTherapy <- function(treatmentHistory) {
 #' @return (`list()`)
 computeCounts <- function(treatmentHistory, minFreq) {
   # n per Year
-  countYear <- treatmentHistory %>%
-    dplyr::group_by(.data$indexYear) %>%
-    dplyr::count() %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(n = case_when(
-      .data$n < minFreq ~ sprintf("<%s", minFreq),
-      .default = as.character(.data$n)
-    ))
-
-  # n per sex
-  countSex <- treatmentHistory %>%
-    dplyr::group_by(.data$sex) %>%
-    dplyr::count() %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(n = case_when(
-      .data$n < minFreq ~ sprintf("<%s", minFreq),
-      .default = as.character(.data$n)
-    ))
-
-  # n per age
-  countAge <- treatmentHistory %>%
-    group_by(.data$age) %>%
-    dplyr::count() %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(n = case_when(
-      .data$n < minFreq ~ sprintf("<%s", minFreq),
-      .default = as.character(.data$n)
-    ))
-
-  return(list(year = countYear, age = countAge, sex = countSex))
+  list(
+    year = countYear(treatmentHistory, minFreq),
+    age = countAge(treatmentHistory, minFreq),
+    sex = countSex(treatmentHistory, minFreq)
+  )
 }
 
+
+censorMinFreq <- function(treatmentPathways, minFreq) {
+  treatmentPathways %>%
+    dplyr::mutate(freq = dplyr::case_when(
+      .data$freq >= minFreq ~ .data$freq,
+      .data$freq < minFreq ~ minFreq,
+      .default = .data$freq))
+}
+
+censorRemove <- function(treatmentPathways, minFreq) {
+  treatmentPathways %>%
+    dplyr::filter(.data$freq >= minFreq)
+}
+
+censorData <- function(treatmentPathways, minFreq, censorType) {
+  nCensored <- treatmentPathways %>%
+    dplyr::filter(.data$freq < minFreq) %>%
+    nrow()
+  
+  treatmentPathways <- switch(
+    censorType,
+    "cell count" = {
+      message(sprintf("Censoring %s pathways with a frequency <%s to %s.", nCensored, minFreq, minFreq))
+      censorMinFreq(treatmentPathways, minFreq)
+    },
+    "remove" = {
+      message(sprintf("Removing %s pathways with a frequency <%s.", nCensored, minFreq))
+      censorRemove(treatmentPathways, minFreq)
+    })
+  return(treatmentPathways)
+}
+
+makeAgeWindow <- function(ageWindow) {
+  if (length(ageWindow) > 1) {
+    return(ageWindow)
+  } else {
+    return(seq(0, 150, ageWindow))
+  }
+}
+
+groupByAgeWindow <- function(treatmentHistory, ageWindow) {
+  treatmentHistory %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      ageBin = paste(
+        unlist(stringr::str_extract_all(as.character(cut(.data$age, makeAgeWindow(ageWindow))), "\\d+")),
+        collapse = "-"
+      )
+    )
+}
 
 #' computeTreatmentPathways
 #'
@@ -273,51 +333,46 @@ computeCounts <- function(treatmentHistory, minFreq) {
 #' @template param_minFreq
 #'
 #' @return (`data.frame()`)
-computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
+computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq, censorType) {
   years <- c("all", treatmentHistory$indexYear %>% unique())
+  
+  treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
 
-  if (length(ageWindow) > 1) {
-    treatmentHistory <- treatmentHistory %>%
-      rowwise() %>%
-      dplyr::mutate(
-        ageBin = paste(
-          unlist(stringr::str_extract_all(as.character(cut(.data$age, ageWindow)), "\\d+")),
-          collapse = "-"
-        )
-      )
-  } else {
-    treatmentHistory <- treatmentHistory %>%
-      rowwise() %>%
-      dplyr::mutate(
-        ageBin = paste(
-          unlist(stringr::str_extract_all(as.character(cut(.data$age, seq(0, 150, ageWindow))), "\\d+")),
-          collapse = "-"
-        )
-      )
-  }
-
-  ages <- treatmentHistory$ageBin %>% unique()
+  ages <- treatmentHistory$ageBin %>%
+    unique()
 
   # Per year
   treatmentPathways <- stratisfy(treatmentHistory, years, ages)
 
   treatmentPathways <- treatmentPathways %>%
-    mutate(indexYear = as.character(.data$indexYear))
+    dplyr::mutate(indexYear = as.character(.data$indexYear))
 
   treatmentPathways[is.na(treatmentPathways)] <- "all"
-
-  censored <- treatmentPathways %>%
-    dplyr::filter(.data$freq < minFreq) %>%
-    nrow()
   
-  treatmentPathways <- treatmentPathways %>%
-    dplyr::mutate(freq = dplyr::case_when(
-      .data$freq >= minFreq ~ .data$freq,
-      .data$freq < minFreq ~ minFreq,
-      .default = .data$freq))
-  
-  message(sprintf("Censored %s pathways with a frequency <%s to %s.", censored, minFreq, minFreq))
+  treatmentPathways <- censorData(treatmentPathways, minFreq, censorType)
   return(treatmentPathways)
+}
+
+stratisfySex <- function(treatmentHistory, y) {
+  dplyr::bind_rows(
+    treatmentHistory %>%
+      dplyr::filter(.data$sex == "MALE") %>%
+      prepData(y) %>%
+      dplyr::mutate(sex = "male"),
+    treatmentHistory %>%
+      dplyr::filter(.data$sex == "FEMALE") %>%
+      prepData(y) %>%
+      dplyr::mutate(sex = "female")
+  )
+}
+
+stratisfyAge <- function(treatmentHistory, y, ages) {
+  dplyr::bind_rows(lapply(ages, function(ageRange) {
+    treatmentHistory %>%
+      dplyr::filter(.data$ageBin == ageRange) %>%
+      prepData(y) %>%
+      dplyr::mutate(age = ageRange)
+  }))
 }
 
 #' stratisfy
@@ -328,28 +383,11 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minFreq) {
 #'
 #' @return (`data.frame()`)
 stratisfy <- function(treatmentHistory, years, ages) {
-  outDf <- dplyr::bind_rows(lapply(years, function(y) {
-    all <- prepData(treatmentHistory = treatmentHistory, year = y)
-
-    sex <- dplyr::bind_rows(
-      treatmentHistory %>%
-        filter(.data$sex == "MALE") %>%
-        prepData(y) %>%
-        mutate(sex = "male"),
-      treatmentHistory %>%
-        filter(.data$sex == "FEMALE") %>%
-        prepData(y) %>%
-        mutate(sex = "female")
+  dplyr::bind_rows(lapply(years, function(y) {
+    dplyr::bind_rows(
+      prepData(treatmentHistory, y),
+      stratisfySex(treatmentHistory, y),
+      stratisfyAge(treatmentHistory, y, ages)
     )
-
-    age <- dplyr::bind_rows(lapply(ages, function(ageRange) {
-      treatmentHistory %>%
-        filter(.data$ageBin == ageRange) %>%
-        prepData(y) %>%
-        mutate(age = ageRange)
-    }))
-
-    return(dplyr::bind_rows(all, sex, age))
   }))
-  return(outDf)
 }
