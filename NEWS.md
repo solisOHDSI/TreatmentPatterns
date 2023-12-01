@@ -1,4 +1,5 @@
 # TreatmentPatterns 2.6.1
+---------
 * Updated to use DATEDIFF
 
 # TreatmentPatterns 2.6.0
