@@ -2,6 +2,8 @@
 #'
 #' @description
 #' Abstract interface to the CDM, using CDMConnector or DatabaseConnector.
+#'
+#' @noRd
 CDMInterface <- R6::R6Class(
   classname = "CDMInterface",
   public = list(
