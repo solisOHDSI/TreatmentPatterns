@@ -3,6 +3,8 @@
 * Bumped R version to 4.2.1
 * Added additional unit-tests for `createSunburstPlot2()` and `createSankeyDiagram2()`
 * Updated to use DATEDIFF
+* Added functionality to choose how groups below the minimum cell count are censored.
+* Made some parameters ambiguous for `createSankeyDiagram2` and `createSunburstPlot2()` for more control over the figures.
 
 # TreatmentPatterns 2.6.0
 ----------
