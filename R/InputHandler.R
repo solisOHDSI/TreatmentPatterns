@@ -6,6 +6,8 @@
 #' 
 #' @field reactiveValues (`reactiveValues`)\cr
 #' reactiveValues class created by \link[shiny]{reactiveValues}.
+#' 
+#' @export
 InputHandler <- R6::R6Class(
   classname = "InputHandler",
   inherit = Module,
@@ -91,8 +93,8 @@ InputHandler <- R6::R6Class(
     setDataPath = function(tag = "uploadField", input = NULL, path = NULL) {
       if (!is.null(input)) {
         shiny::observe({
-          private$.reactiveValues$dataPath <- input[[uploadField]]$datapath
-          private$.reactiveValues$dbNames <- input[[uploadField]]$name
+          private$.reactiveValues$dataPath <- input[[tag]]$datapath
+          private$.reactiveValues$dbNames <- input[[tag]]$name
         })
       } else if (!is.null(path)) {
         shiny::observe({

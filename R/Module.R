@@ -81,10 +81,13 @@ Module <- R6::R6Class(
         require("plotly", quietly = TRUE, character.only = TRUE),
         require("dplyr", quietly = TRUE, character.only = TRUE)
       )
-      stop(sprintf(
-        "The following packages are required but not installed: %s",
-        paste0(dependencies[missing], collapse = ", ")
-      ))
+      
+      if (length(dependencies[missing]) > 0) {
+        stop(sprintf(
+          "The following packages are required but not installed: %s",
+          paste0(dependencies[missing], collapse = ", ")
+        ))
+      }
     },
 
     ## Methods ----

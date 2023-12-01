@@ -22,9 +22,9 @@ ShinyApp <- R6::R6Class(
     #' @return (`invisible(self)`)
     initialize = function(namespace) {
       private$.namespace <- namespace
-      private$.inputHandler <- InputHandler$new(private$.namespace)
-      private$.interactivePlots <- InteractivePlots$new(private$.namespace)
-      private$.characterizationPlots <- CharacterizationPlots$new(private$.namespace)
+      private$.inputHandler <- TreatmentPatterns::InputHandler$new(private$.namespace)
+      private$.interactivePlots <- TreatmentPatterns::InteractivePlots$new(private$.namespace)
+      private$.characterizationPlots <- TreatmentPatterns::CharacterizationPlots$new(private$.namespace)
       return(invisible(self))
     },
     
@@ -83,7 +83,7 @@ ShinyApp <- R6::R6Class(
     #' @return (`dashboardHeader`)
     server = function(input, output, session) {
       shiny::moduleServer(private$.namespace, function(input, output, session) {
-        private$.inputHandler$setDataPath(input)
+        private$.inputHandler$setDataPath(tag = "uploadField", input = input, path = NULL)
         private$.inputHandler$server(input, output, session)
         private$.interactivePlots$server(input, output, session, private$.inputHandler)
         private$.characterizationPlots$server(input, output, session, private$.inputHandler)
@@ -121,6 +121,6 @@ ShinyApp <- R6::R6Class(
 #'
 #' @export
 launchResultsExplorer <- function() {
-  shinyApp <- ShinyApp$new("app")
-  shiny::shinyApp(shinyApp$ui, shinyApp$server)
+  app <- ShinyApp$new("app")
+  shiny::shinyApp(app$ui, app$server)
 }

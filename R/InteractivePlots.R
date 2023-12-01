@@ -3,6 +3,8 @@
 #' @description
 #' Class to handle the interactive plots of TreatmentPatterns (Sunburst plot &
 #' Sankey diagram)
+#' 
+#' @export
 InteractivePlots <- R6::R6Class(
   classname = "InteractivePlots",
   inherit = Module,
@@ -112,9 +114,9 @@ InteractivePlots <- R6::R6Class(
       }
       
       data %>%
-        dplyr::filter(.data$age == checkInputOption(input$ageOption)) %>%
-        dplyr::filter(.data$sex == checkInputOption(input$sexOption)) %>%
-        dplyr::filter(.data$indexYear == checkInputOption(input$indexYearOption)) %>%
+        dplyr::filter(.data$age == private$checkInputOption(input$ageOption)) %>%
+        dplyr::filter(.data$sex == private$checkInputOption(input$sexOption)) %>%
+        dplyr::filter(.data$indexYear == private$checkInputOption(input$indexYearOption)) %>%
         dplyr::filter(.data$path != none) %>%
         dplyr::filter(.data$db %in% input$dbSelector)
     },
