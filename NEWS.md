@@ -1,4 +1,5 @@
 # TreatmentPatterns 2.6.1
+---------
 * Bumped R version to 4.2.1
 * Added additional unit-tests for `createSunburstPlot2()` and `createSankeyDiagram2()`
 * Updated to use DATEDIFF
