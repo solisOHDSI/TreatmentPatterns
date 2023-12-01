@@ -4,7 +4,14 @@
 \alias{export}
 \title{export}
 \usage{
-export(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveName = NULL)
+export(
+  andromeda,
+  outputPath,
+  ageWindow = 10,
+  minFreq = 5,
+  censorType = "cell count",
+  archiveName = NULL
+)
 }
 \arguments{
 \item{andromeda}{(\code{Andromeda::andromeda()})
@@ -18,6 +25,12 @@ Number of years to bin age groups into.}
 \item{minFreq}{(\code{integer(1)}: \code{5})\cr
 Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
+
+\item{censorType}{(\code{character(1)})\cr
+\describe{
+\item{\code{"cell count"}}{Censors pathways <\code{minFreq} to \code{minFreq}.}
+\item{\code{"remove"}}{Censors pathways <\code{minFreq} by removing them completely.}
+}}
 
 \item{archiveName}{(\code{character(1)}: \code{NULL})\cr
 If not \code{NULL} adds the exported files to a ZIP-file with the specified archive name.}

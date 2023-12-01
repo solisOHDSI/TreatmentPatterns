@@ -4,7 +4,7 @@
 \alias{computeTreatmentPathways}
 \title{computeTreatmentPathways}
 \usage{
-computeTreatmentPathways(treatmentHistory, ageWindow, minFreq)
+computeTreatmentPathways(treatmentHistory, ageWindow, minFreq, censorType)
 }
 \arguments{
 \item{treatmentHistory}{(\code{data.frame()})
