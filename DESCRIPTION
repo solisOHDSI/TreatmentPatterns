@@ -28,7 +28,9 @@ Imports:
     R6,
     sunburstR,
     networkD3,
-    htmlwidgets
+    htmlwidgets,
+    shiny,
+    shinydashboard
 Suggests:
     knitr,
     rmarkdown,
@@ -45,8 +47,6 @@ Suggests:
     duckdb,
     DBI,
     withr,
-    shiny,
-    shinydashboard,
     plotly,
     ggplot2
 License: Apache License 2.0
