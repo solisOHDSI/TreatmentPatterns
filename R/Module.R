@@ -75,11 +75,11 @@ Module <- R6::R6Class(
     assertDependencies = function() {
       dependencies <- c("shiny", "shinydashboard", "ggplot2", "plotly", "dplyr")
       missing <- !c(
-        require("shiny", quietly = TRUE, character.only = TRUE),
-        require("shinydashboard", quietly = TRUE, character.only = TRUE),
-        require("ggplot2", quietly = TRUE, character.only = TRUE),
-        require("plotly", quietly = TRUE, character.only = TRUE),
-        require("dplyr", quietly = TRUE, character.only = TRUE)
+        require("shiny", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
+        require("shinydashboard", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
+        require("ggplot2", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
+        require("plotly", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
+        require("dplyr", quietly = TRUE, mask.ok = TRUE, character.only = TRUE)
       )
       
       if (length(dependencies[missing]) > 0) {

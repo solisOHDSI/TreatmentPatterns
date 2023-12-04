@@ -97,10 +97,8 @@ InputHandler <- R6::R6Class(
           private$.reactiveValues$dbNames <- input[[tag]]$name
         })
       } else if (!is.null(path)) {
-        shiny::observe({
-          private$.reactiveValues$dataPath <- path
-          private$.reactiveValues$dataPath <- basename(path)
-        })
+        private$.reactiveValues$dataPath <- path
+        private$.reactiveValues$dbNames <- basename(path)
       } else {
         stop("Cannot assert where data is comming from.")
       }
@@ -119,9 +117,7 @@ InputHandler <- R6::R6Class(
       countsSex = NULL,
       countsYear = NULL,
       summaryStatsTherapyDuration = NULL,
-      metadata = NULL,
-      selectedDbs = NULL,
-      fileMetaInfo = NULL
+      metadata = NULL
     ),
     
     ## Methods ----
@@ -206,7 +202,7 @@ InputHandler <- R6::R6Class(
     fetchSummaryStatsTherapyDuration = function() {
       shiny::observeEvent(private$.reactiveValues$dataPath, {
         if (!is.null(private$.reactiveValues$dataPath)) {
-          private$.reactiveValues$summaryStatsTherapyDuraion <- private$fetchFile("summaryStatsTherapyDuraion.csv")
+          private$.reactiveValues$summaryStatsTherapyDuration <- private$fetchFile("summaryStatsTherapyDuraion.csv")
         }
       })
     }
