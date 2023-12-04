@@ -32,6 +32,11 @@ test_that("InputHandler: uiDatabaseSelector()", {
   expect_s3_class(inputHandler$uiDatabaseSelector(), "shiny.tag")
 })
 
+test_that("InputHandler: setDataPath()", {
+  inputHandler <- InputHandler$new("app")
+  expect_true(is.R6(inputHandler$setDataPath(path = "some/data/path/to/a/file.zip")))
+})
+
 test_that("InputHandler: server()", {
   moduleInputHandler <- function(id, inputHandler) {
     shiny::moduleServer(id, function(input, output, session) {
@@ -64,8 +69,4 @@ test_that("InputHandler: server()", {
       expect_identical(inputHandler$reactiveValues$dataPath, path)
       expect_identical(inputHandler$reactiveValues$dbNames, basename(path))
   })
-})
-
-test_that("InputHandler: setDataPath()", {
-  expect_true(is.R6(inputHandler$setDataPath(path = "some/data/path/to/a/file.zip")))
 })
