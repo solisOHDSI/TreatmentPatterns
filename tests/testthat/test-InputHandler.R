@@ -10,25 +10,15 @@ test_that("InputHandler", {
   ## validate() ----
   expect_true(is.R6(inputHandler$validate()))
   
-  ## namespace ----
+  ## Fields ----
   expect_identical(inputHandler$namespace, "app")
-  
-  ## reactiveValues ----
   expect_s3_class(inputHandler$reactiveValues, "reactivevalues")
 })
 
-test_that("InputHandler: uiMenu()", {
+test_that("UI", {
   inputHandler <- InputHandler$new("app")
   expect_s3_class(inputHandler$uiMenu(), "shiny.tag")
-})
-
-test_that("InputHandler: uiBody()", {
-  inputHandler <- InputHandler$new("app")
   expect_s3_class(inputHandler$uiBody(), "shiny.tag")
-})
-
-test_that("InputHandler: uiDatabaseSelector()", {
-  inputHandler <- InputHandler$new("app")
   expect_s3_class(inputHandler$uiDatabaseSelector(), "shiny.tag")
 })
 

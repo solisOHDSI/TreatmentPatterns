@@ -19,4 +19,3 @@ test_that("ShinyApp", {
     expect_true(is.character(session$token))
   })
 })
-  

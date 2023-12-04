@@ -86,6 +86,7 @@ InteractivePlots <- R6::R6Class(
   
   # Private ----
   private = list(
+    ## Methods ----
     plotSankey = function() {
       shiny::tagList(
         shiny::htmlOutput(shiny::NS(private$.namespace, "sankey"))
