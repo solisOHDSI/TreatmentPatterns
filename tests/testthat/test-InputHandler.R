@@ -33,14 +33,44 @@ test_that("InputHandler: uiDatabaseSelector()", {
 })
 
 test_that("InputHandler: setDataPath()", {
-  inputHandler <- InputHandler$new("app")
-  expect_true(is.R6(inputHandler$setDataPath(path = "some/data/path/to/a/file.zip")))
+  moduleInputHandler <- function(id, inputHandler) {
+    shiny::moduleServer(id, function(input, output, session) {})
+  }
+  
+  shiny::testServer(
+    app = moduleInputHandler,
+    args = list(inputHandler = InputHandler$new("app")), {
+      # input = NULL, path = NULL
+      expect_error(
+        inputHandler$setDataPath(input = NULL, path = NULL),
+        "Cannot assert where data is comming from."
+      )
+      
+      # input = input, path = NULL
+      inputHandler$setDataPath(input = input, path = NULL)
+      
+      path <- system.file(package = "TreatmentPatterns", "DummyOutput", "output.zip")
+      
+      session$setInputs(
+        uploadField = list(
+          datapath = path,
+          name = "output.zip"
+        )
+      )
+      
+      expect_identical(inputHandler$reactiveValues$dataPath, path)
+      
+      # input = NULL, path = path
+      inputHandler$setDataPath(input = NULL, path = path)
+      expect_identical(inputHandler$reactiveValues$dataPath, path)
+    }
+  )
 })
 
 test_that("InputHandler: server()", {
   moduleInputHandler <- function(id, inputHandler) {
     shiny::moduleServer(id, function(input, output, session) {
-      inputHandler$setDataPath(tag = "uploadField", input = input, path = NULL)
+      inputHandler$setDataPath(input = input, path = NULL)
       inputHandler$server(input, output, session)
     })
   }
@@ -68,5 +98,6 @@ test_that("InputHandler: server()", {
       # Fields
       expect_identical(inputHandler$reactiveValues$dataPath, path)
       expect_identical(inputHandler$reactiveValues$dbNames, basename(path))
-  })
+    }
+  )
 })
