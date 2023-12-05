@@ -10,8 +10,8 @@ test_that("InteracivePlots", {
 test_that("UI", {
   interactivePlots <- InteractivePlots$new("app")
 
-  expect_s3_class(interacivePlots$uiBody(), "shiny.tag")
-  expect_s3_class(interacivePlots$uiMenu(), "shiny.tag")
+  expect_s3_class(interactivePlots$uiBody(), "shiny.tag")
+  expect_s3_class(interactivePlots$uiMenu(), "shiny.tag")
 })
 
 
