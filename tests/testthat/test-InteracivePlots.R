@@ -1,6 +1,7 @@
 library(testthat)
 library(R6)
 library(shiny)
+library(dplyr)
 library(TreatmentPatterns)
 
 test_that("InteracivePlots", {
@@ -16,7 +17,7 @@ test_that("UI", {
 })
 
 
-test_that("server", {
+test_that("server: inputs", {
   moduleInteractivePlots <- function(id, inputHandler, interactivePlots) {
     moduleServer(id, function(input, output, session) {
       inputHandler$setDataPath(input = input, path = NULL)

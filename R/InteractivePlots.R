@@ -169,7 +169,7 @@ InteractivePlots <- R6::R6Class(
                 input = input
               )
               sankeyList <- lapply(input$dbSelector, function(name) {
-                tryCatch({
+                try({
                   shiny::tagList(
                     shiny::h3(name),
                     TreatmentPatterns::createSankeyDiagram2(
@@ -177,8 +177,6 @@ InteractivePlots <- R6::R6Class(
                         dplyr::filter(.data$db == name)
                     )
                   )
-                }, error = function(e) {
-                  NULL
                 })
               })
               output$sankey <- shiny::renderUI(shiny::tagList(sankeyList))
@@ -203,7 +201,7 @@ InteractivePlots <- R6::R6Class(
               input = input
             )
             sunburstList <- lapply(input$dbSelector, function(name) {
-              tryCatch({
+              try({
                 shiny::tagList(
                   shiny::h3(name),
                   TreatmentPatterns::createSunburstPlot2(
@@ -212,8 +210,6 @@ InteractivePlots <- R6::R6Class(
                     colors = data$labels
                   )
                 )
-              }, error = function(e) {
-                NULL
               })
             })
             output$sunburst <- shiny::renderUI(shiny::tagList(sunburstList))
