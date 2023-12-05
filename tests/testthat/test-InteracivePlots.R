@@ -1,6 +1,7 @@
 library(testthat)
 library(R6)
 library(shiny)
+library(TreatmentPatterns)
 
 test_that("InteracivePlots", {
   interactivePlots <- InteractivePlots$new("app")
