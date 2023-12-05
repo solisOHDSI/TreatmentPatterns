@@ -305,6 +305,52 @@ test_that("filterTreatments", {
     ),
     "Must be a subset of"
   )
+  
+  first <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    filterTreatments = "First"
+  )
+  
+  changes <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    filterTreatments = "Changes"
+  )
+  
+  all <- computePathways(
+    cohorts = globals$cohorts,
+    cohortTableName = globals$cohortTableName,
+    connectionDetails = globals$connectionDetails,
+    cdmSchema = globals$cdmSchema,
+    resultSchema = globals$resultSchema,
+    filterTreatments = "All"
+  )
+  
+  expect_false(identical(
+    first$treatmentHistory,
+    changes$treatmentHistory
+  ))
+
+  expect_false(identical(
+    changes$treatmentHistory,
+    all$treatmentHistory
+  ))
+  
+  expect_false(identical(
+    all$treatmentHistory,
+    first$treatmentHistory
+  ))
+  
+  Andromeda::close(first)
+  Andromeda::close(changes)
+  Andromeda::close(all)
 })
 
 
