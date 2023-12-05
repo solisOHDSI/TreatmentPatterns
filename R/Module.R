@@ -73,21 +73,13 @@ Module <- R6::R6Class(
     .namespace = "",
     
     assertDependencies = function() {
-      dependencies <- c("shiny", "shinydashboard", "ggplot2", "plotly", "dplyr")
-      missing <- !c(
-        require("shiny", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
-        require("shinydashboard", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
-        require("ggplot2", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
-        require("plotly", quietly = TRUE, mask.ok = TRUE, character.only = TRUE),
-        require("dplyr", quietly = TRUE, mask.ok = TRUE, character.only = TRUE)
-      )
-      
-      if (length(dependencies[missing]) > 0) {
-        stop(sprintf(
-          "The following packages are required but not installed: %s",
-          paste0(dependencies[missing], collapse = ", ")
-        ))
-      }
+      assertions <- checkmate::makeAssertCollection()
+      checkmate::assertTRUE(require("shiny", quietly = TRUE, mask.ok = TRUE, character.only = TRUE))
+      checkmate::assertTRUE(require("shinydashboard", quietly = TRUE, mask.ok = TRUE, character.only = TRUE))
+      checkmate::assertTRUE(require("ggplot2", quietly = TRUE, mask.ok = TRUE, character.only = TRUE))
+      checkmate::assertTRUE(require("plotly", quietly = TRUE, mask.ok = TRUE, character.only = TRUE))
+      checkmate::assertTRUE(require("dplyr", quietly = TRUE, mask.ok = TRUE, character.only = TRUE))
+      checkmate::reportAssertions(assertions)
     },
 
     ## Methods ----
