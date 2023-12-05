@@ -122,8 +122,10 @@ CDMInterface <- R6::R6Class(
     #' Destroys instance
     #' 
     #' @return (NULL)
-    destroy = function() {
-      private$finalize()
+    disconnect = function() {
+      if (!is.null(private$connection)) {
+        DatabaseConnector::disconnect(private$connection)
+      }
     }
   ),
   private = list(
@@ -139,9 +141,7 @@ CDMInterface <- R6::R6Class(
 
     ### Methods ----
     finalize = function() {
-      if (!is.null(private$connection)) {
-        DatabaseConnector::disconnect(private$connection)
-      }
+      self$disconnect()
     },
     
     #### DatabaseConnector ----
