@@ -146,6 +146,8 @@ computePathways <- function(
     cdm = cdm
   )
   
+  on.exit(cdmInterface$disconnect())
+  
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,
     cohortTableName = cohortTableName,
