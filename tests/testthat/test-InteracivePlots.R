@@ -43,6 +43,7 @@ test_that("server", {
     args = list(
       inputHandler = InputHandler$new("app"),
       interactivePlots = InteractivePlots$new("app")), {
+        # Regular inputs
         session$setInputs(
           dbSelector = "output.zip",
           sexOption = "all",
@@ -50,6 +51,18 @@ test_that("server", {
           indexYearOption = "all",
           noneOption = TRUE
         )
+        expect_s3_class(output$sunburst$html, "html")
+        expect_s3_class(output$sankey$html, "html")
+        
+        # Sex / Age / IndexYear = NULL
+        session$setInputs(
+          dbSelector = "output.zip",
+          sexOption = NULL,
+          ageOption = NULL,
+          indexYearOption = NULL,
+          noneOption = TRUE
+        )
+        
         expect_s3_class(output$sunburst$html, "html")
         expect_s3_class(output$sankey$html, "html")
     }
