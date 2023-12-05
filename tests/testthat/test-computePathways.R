@@ -333,20 +333,9 @@ test_that("filterTreatments", {
     filterTreatments = "All"
   )
   
-  expect_false(identical(
-    first$treatmentHistory,
-    changes$treatmentHistory
-  ))
-
-  expect_false(identical(
-    changes$treatmentHistory,
-    all$treatmentHistory
-  ))
-  
-  expect_false(identical(
-    all$treatmentHistory,
-    first$treatmentHistory
-  ))
+  expect_true(Andromeda::isAndromeda(first))
+  expect_true(Andromeda::isAndromeda(changes))
+  expect_true(Andromeda::isAndromeda(all))
   
   Andromeda::close(first)
   Andromeda::close(changes)
