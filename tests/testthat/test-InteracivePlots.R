@@ -18,7 +18,7 @@ test_that("UI", {
 
 test_that("server", {
   moduleInteractivePlots <- function(id, inputHandler, interactivePlots) {
-    shiny::moduleServer(id, function(input, output, session) {
+    moduleServer(id, function(input, output, session) {
       inputHandler$setDataPath(input = input, path = NULL)
       
       path <- system.file(package = "TreatmentPatterns", "DummyOutput", "output.zip")
@@ -33,25 +33,25 @@ test_that("server", {
       inputHandler$server(input, output, session)
       interactivePlots$server(input, output, session, inputHandler)
       
-      session$setInputs(
-        sexOption = "all",
-        ageOption = "all",
-        indexYearOption = "all",
-        noneOption = TRUE
-      )
-      
-      htmlOutput(shiny::NS(id, "sunburst"))
-      htmlOutput(shiny::NS(id, "sankey"))
+      uiOutput(NS(id, "sunburst"))
+      uiOutput(NS(id, "sankey"))
     })
   }
   
-  shiny::testServer(
+  testServer(
     app = moduleInteractivePlots,
     args = list(
       inputHandler = InputHandler$new("app"),
       interactivePlots = InteractivePlots$new("app")), {
-        expect_identical(names(output$sunburst), c("html", "deps"))
-        expect_identical(names(output$sankey), c("html", "deps"))
+        session$setInputs(
+          dbSelector = "output.zip",
+          sexOption = "all",
+          ageOption = "all",
+          indexYearOption = "all",
+          noneOption = TRUE
+        )
+        expect_s3_class(output$sunburst$html, "html")
+        expect_s3_class(output$sankey$html, "html")
     }
   )
 })
