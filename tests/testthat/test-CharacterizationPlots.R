@@ -18,7 +18,7 @@ test_that("UI", {
 
 test_that("server", {
   moduleInteractivePlots <- function(id, inputHandler, characterizationPlots) {
-    shiny::moduleServer(id, function(input, output, session) {
+    moduleServer(id, function(input, output, session) {
       inputHandler$setDataPath(input = input, path = NULL)
       
       path <- system.file(package = "TreatmentPatterns", "DummyOutput", "output.zip")
@@ -33,13 +33,13 @@ test_that("server", {
       inputHandler$server(input, output, session)
       characterizationPlots$server(input, output, session, inputHandler)
       
-      shiny::uiOutput(shiny::NS(id, "charAgePlot"))
-      shiny::uiOutput(shiny::NS(id, "charSexPlot"))
-      shiny::uiOutput(shiny::NS(id, "charIndexYearPlot"))
+      uiOutput(NS(id, "charAgePlot"))
+      uiOutput(NS(id, "charSexPlot"))
+      uiOutput(NS(id, "charIndexYearPlot"))
     })
   }
   
-  shiny::testServer(
+  testServer(
     app = moduleInteractivePlots,
     args = list(
       inputHandler = InputHandler$new("app"),
