@@ -125,7 +125,7 @@ test_that("fetchCohortTable: empty", {
   expect_identical(nrow(res), 0L)
 })
 
-test_that("Method: destroy", {
+test_that("Method: disconnect", {
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
@@ -136,7 +136,7 @@ test_that("Method: destroy", {
   
   andromeda <- Andromeda::andromeda()
 
-  cdmInterface$destroy()
+  cdmInterface$disconnect()
   
   expect_error(cdmInterface$fetchMetadata(andromeda))
 })
