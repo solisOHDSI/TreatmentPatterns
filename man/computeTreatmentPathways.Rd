@@ -4,24 +4,16 @@
 \alias{computeTreatmentPathways}
 \title{computeTreatmentPathways}
 \usage{
-computeTreatmentPathways(treatmentHistory, ageWindow, minFreq, censorType)
+computeTreatmentPathways(treatmentHistory, ageWindow, minCellCount, censorType)
 }
 \arguments{
-\item{treatmentHistory}{(\code{data.frame()})
-Patient level Treatment History data.frame}
+\item{treatmentHistory}{data.frame()}
 
-\item{ageWindow}{(\code{integer(1)}: \code{10})\cr
-Number of years to bin age groups into.}
+\item{ageWindow}{numeric(n)}
 
-\item{minFreq}{(\code{integer(1)}: \code{5})\cr
-Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
-minimum value will carry over to the sankey diagram and sunburst plot.}
+\item{minCellCount}{numeric(1)}
 
-\item{censorType}{(\code{character(1)})\cr
-\describe{
-\item{\code{"cell count"}}{Censors pathways <\code{minFreq} to \code{minFreq}.}
-\item{\code{"remove"}}{Censors pathways <\code{minFreq} by removing them completely.}
-}}
+\item{censorType}{character(1)}
 }
 \value{
 (\code{data.frame()})

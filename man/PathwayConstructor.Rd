@@ -105,8 +105,7 @@ Edit settings
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5,
-  addNoPaths = TRUE
+  maxPathLength = 5
 )}\if{html}{\out{</div>}}
 }
 
@@ -147,10 +146,6 @@ event cohorts (‘All’).}
 
 \item{\code{maxPathLength}}{(\code{integer(1)}: \code{5})\cr
 Maximum number of steps included in treatment pathway}
-
-\item{\code{addNoPaths}}{(\code{logical(1)}: \code{TRUE})\cr
-Select to include untreated persons without treatment pathway in the
-sunburst plot}
 }
 \if{html}{\out{</div>}}
 }

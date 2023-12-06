@@ -23,8 +23,7 @@ executeTreatmentPatterns(
   minPostCombinationDuration = 30,
   filterTreatments = "First",
   maxPathLength = 5,
-  minFreq = 5,
-  addNoPaths = TRUE
+  minCellCount = 5
 )
 }
 \arguments{
@@ -90,13 +89,9 @@ event cohorts (‘All’).}
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
 Maximum number of steps included in treatment pathway}
 
-\item{minFreq}{(\code{integer(1)}: \code{5})\cr
-Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+\item{minCellCount}{(\code{integer(1)}: \code{5})\cr
+Minimum count required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
-
-\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr
-Select to include untreated persons without treatment pathway in the
-sunburst plot}
 }
 \value{
 (\code{invisible(NULL)})

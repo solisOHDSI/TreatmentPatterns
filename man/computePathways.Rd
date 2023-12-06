@@ -21,8 +21,7 @@ computePathways(
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5,
-  addNoPaths = TRUE
+  maxPathLength = 5
 )
 }
 \arguments{
@@ -85,10 +84,6 @@ event cohorts (‘All’).}
 
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
 Maximum number of steps included in treatment pathway}
-
-\item{addNoPaths}{(\code{logical(1)}: \code{TRUE})\cr
-Select to include untreated persons without treatment pathway in the
-sunburst plot}
 }
 \value{
 (\code{Andromeda::andromeda()})

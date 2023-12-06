@@ -8,8 +8,8 @@ export(
   andromeda,
   outputPath,
   ageWindow = 10,
-  minFreq = 5,
-  censorType = "cell count",
+  minCellCount = 5,
+  censorType = "minCellCount",
   archiveName = NULL
 )
 }
@@ -22,14 +22,15 @@ Andromeda object.}
 \item{ageWindow}{(\code{integer(1)}: \code{10})\cr
 Number of years to bin age groups into.}
 
-\item{minFreq}{(\code{integer(1)}: \code{5})\cr
-Minimum frequency required per pathway. Censors data below \code{x} as \verb{<x}. This
+\item{minCellCount}{(\code{integer(1)}: \code{5})\cr
+Minimum count required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
 
 \item{censorType}{(\code{character(1)})\cr
 \describe{
-\item{\code{"cell count"}}{Censors pathways <\code{minFreq} to \code{minFreq}.}
-\item{\code{"remove"}}{Censors pathways <\code{minFreq} by removing them completely.}
+\item{\code{"cellCount"}}{Censors pathways <\code{cellCount} to \code{cellCount}.}
+\item{\code{"remove"}}{Censors pathways <\code{cellCount} by removing them completely.}
+\item{\code{"mean"}}{Censors pathways <\code{cellCount} to the mean of all frequencies below \code{cellCount}}
 }}
 
 \item{archiveName}{(\code{character(1)}: \code{NULL})\cr
@@ -136,7 +137,7 @@ object to sharable csv-files and/or a zip archive.
         andromeda = andromeda,
         outputPath = tempdir(),
         ageWindow = 2,
-        minFreq = 5,
+        minCellCount = 5,
         archiveName = "output.zip"
       )
     )
