@@ -120,7 +120,7 @@ test_that("ageWindow", {
   Andromeda::close(andromeda)
 })
 
-test_that("cellCount", {
+test_that("minCellCount", {
   skip_on_ci()
   skip_on_cran()
   
@@ -141,7 +141,7 @@ test_that("cellCount", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "remove"
     ),
     "Removing \\d+ pathways with a frequency <10."
@@ -156,7 +156,7 @@ test_that("cellCount", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = "10"
+      minCellCount = "10"
     )
   )
   
@@ -225,7 +225,7 @@ test_that("censorType", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "remove"
     ),
     "Removing \\d+ pathways with a frequency <10."
@@ -235,13 +235,13 @@ test_that("censorType", {
 
   expect_equal(min(treatmentPathways$freq), 10)
 
-  ## "cellCount" ----
+  ## "minCellCount" ----
   expect_message(
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
-      censorType = "cellCount"
+      minCellCount = 10,
+      censorType = "minCellCount"
     ),
     "Censoring \\d+ pathways with a frequency <10 to 10."
   )
@@ -255,15 +255,15 @@ test_that("censorType", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "mean"
     ),
-    "Censoring \\d+ pathways with a frequency <10 to 10."
+    "Censoring \\d+ pathways with a frequency <10 to mean."
   )
   
   treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
-  expect_equal(min(treatmentPathways$freq), 10)
+  expect_equal(min(treatmentPathways$freq), 2)
   
   ## "stuff" ----
   expect_error(
@@ -369,7 +369,7 @@ test_that("ageWindow", {
   DBI::dbDisconnect(globals$con, shutdown = TRUE)
 })
 
-test_that("cellCount", {
+test_that("minCellCount", {
   skip_on_cran()
   
   globals <- generateCohortTableCDMC()
@@ -387,7 +387,7 @@ test_that("cellCount", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "remove"
     ),
     "Removing \\d+ pathways with a frequency <10."
@@ -402,7 +402,7 @@ test_that("cellCount", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = "10"
+      minCellCount = "10"
     )
   )
   
@@ -454,12 +454,10 @@ test_that("censorType", {
   
   globals <- generateCohortTableCDMC()
   
-    andromeda <- TreatmentPatterns::computePathways(
+  andromeda <- TreatmentPatterns::computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
-    connectionDetails = globals$connectionDetails,
-    cdmSchema = globals$cdmSchema,
-    resultSchema = globals$resultSchema
+    cdm = globals$cdm
   )
   
   tempDirLocal <- file.path(tempdir(), "output")
@@ -469,7 +467,7 @@ test_that("censorType", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "remove"
     ),
     "Removing \\d+ pathways with a frequency <10."
@@ -479,13 +477,13 @@ test_that("censorType", {
   
   expect_equal(min(treatmentPathways$freq), 10)
   
-  ## "cellCount" ----
+  ## "minCellCount" ----
   expect_message(
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
-      censorType = "cellCount"
+      minCellCount = 10,
+      censorType = "minCellCount"
     ),
     "Censoring \\d+ pathways with a frequency <10 to 10."
   )
@@ -499,15 +497,15 @@ test_that("censorType", {
     export(
       andromeda = andromeda,
       outputPath = tempDirLocal,
-      cellCount = 10,
+      minCellCount = 10,
       censorType = "mean"
     ),
-    "Censoring \\d+ pathways with a frequency <10 to 10."
+    "Censoring \\d+ pathways with a frequency <10 to mean."
   )
   
   treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
-  expect_equal(min(treatmentPathways$freq), 10)
+  expect_equal(min(treatmentPathways$freq), 2)
   
   ## "stuff" ----
   expect_error(

@@ -84,7 +84,7 @@ test_that("default depth: 3", {
   )
 })
 
-test_that("minFreq", {
+test_that("minCellCount", {
   data <- dummyData %>%
     filter(.data$index_year == "all")
 
@@ -92,7 +92,7 @@ test_that("minFreq", {
     createSankeyDiagram(
       treatmentPathways = data,
       outputFile = tempFile,
-      minFreq = 20
+      minCellCount = 20
     )
   )
 
