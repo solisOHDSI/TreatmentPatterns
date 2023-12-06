@@ -1,3 +1,3 @@
 #' @param minCellCount (`integer(1)`: `5`)\cr
-#' Minimum number of persons with a specific treatment pathway for the pathway
-#' to be included in analysis
+#' Minimum count required per pathway. Censors data below `x` as `<x`. This
+#' minimum value will carry over to the sankey diagram and sunburst plot.
