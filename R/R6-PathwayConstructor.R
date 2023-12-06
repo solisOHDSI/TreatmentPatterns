@@ -145,13 +145,6 @@ PathwayConstructor <- R6::R6Class(
         add = errorMessages
       )
       
-      checkmate::assertLogical(
-        x = private$settings$addNoPaths,
-        any.missing = FALSE,
-        len = 1,
-        add = errorMessages
-      )
-      
       checkmate::assertDataFrame(
         x = private$cohorts,
         types = c("integerish", "character", "character"),
@@ -238,7 +231,6 @@ PathwayConstructor <- R6::R6Class(
     #' @template param_minPostCombinationDuration
     #' @template param_filterTreatments
     #' @template param_maxPathLength
-    #' @template param_addNoPaths
     #'
     #' @return (`data.frame()`)
     editSettings = function(
@@ -251,8 +243,7 @@ PathwayConstructor <- R6::R6Class(
         combinationWindow = 30,
         minPostCombinationDuration = 30,
         filterTreatments = "First",
-        maxPathLength = 5,
-        addNoPaths = TRUE) {
+        maxPathLength = 5) {
       settings <- mget(
         x = names(formals()),
         envir = sys.frame(
@@ -291,8 +282,7 @@ PathwayConstructor <- R6::R6Class(
       combinationWindow = 30,
       minPostCombinationDuration = 30,
       filterTreatments = "First",
-      maxPathLength = 5,
-      addNoPaths = TRUE
+      maxPathLength = 5
     )
   )
 )

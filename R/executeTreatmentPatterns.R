@@ -23,8 +23,7 @@
 #' @template param_minPostCombinationDuration
 #' @template param_filterTreatments
 #' @template param_maxPathLength
-#' @template param_minFreq
-#' @template param_addNoPaths
+#' @template param_minCellCount
 #'
 #' @return (`invisible(NULL)`)
 #' @export
@@ -246,10 +245,9 @@ executeTreatmentPatterns <- function(
     minPostCombinationDuration = 30,
     filterTreatments = "First",
     maxPathLength = 5,
-    minFreq = 5,
-    addNoPaths = TRUE) {
+    minCellCount = 5) {
   checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
-  checkmate::assert_integerish(minFreq, len = 1, null.ok = FALSE, lower = 0)
+  checkmate::assert_integerish(minCellCount, len = 1, null.ok = FALSE, lower = 0)
 
   # Compute pathways on patient level
   andromeda <- TreatmentPatterns::computePathways(
@@ -269,12 +267,11 @@ executeTreatmentPatterns <- function(
     combinationWindow = combinationWindow,
     minPostCombinationDuration = minPostCombinationDuration,
     filterTreatments = filterTreatments,
-    maxPathLength = maxPathLength,
-    addNoPaths = addNoPaths
+    maxPathLength = maxPathLength
   )
 
   # Export csv-files
-  TreatmentPatterns::export(andromeda, outputPath = outputPath, minFreq = minFreq)
+  TreatmentPatterns::export(andromeda, outputPath = outputPath, minCellCount = minCellCount)
 
   Andromeda::close(andromeda)
   return(invisible(NULL))

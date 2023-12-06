@@ -20,7 +20,6 @@
 #' @template param_minPostCombinationDuration
 #' @template param_filterTreatments
 #' @template param_maxPathLength
-#' @template param_addNoPaths
 #'
 #' @return (`Andromeda::andromeda()`)
 #' \link[Andromeda]{andromeda} object containing non-sharable patient level
@@ -135,8 +134,7 @@ computePathways <- function(
     combinationWindow = 30,
     minPostCombinationDuration = 30,
     filterTreatments = "First",
-    maxPathLength = 5,
-    addNoPaths = TRUE) {
+    maxPathLength = 5) {
   
   cdmInterface <- CDMInterface$new(
     connectionDetails = connectionDetails,
@@ -164,8 +162,7 @@ computePathways <- function(
     combinationWindow = combinationWindow,
     minPostCombinationDuration = minPostCombinationDuration,
     filterTreatments = filterTreatments,
-    maxPathLength = maxPathLength,
-    addNoPaths = addNoPaths
+    maxPathLength = maxPathLength
   )
   pathwayConstructor$construct()
   andromeda <- pathwayConstructor$getAndromeda()

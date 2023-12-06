@@ -6,7 +6,7 @@
 #' @template param_outputFile
 #' @template param_returnHTML
 #' @template param_groupCombinations
-#' @template param_minFreq
+#' @template param_minCellCount
 #'
 #' @export
 #'
@@ -31,14 +31,14 @@
 #'   treatmentPathways,
 #'   outputFile,
 #'   groupCombinations = FALSE,
-#'   minFreq = 5
+#'   minCellCount = 5
 #' )
 createSankeyDiagram <- function(
     treatmentPathways,
     outputFile,
     returnHTML = FALSE,
     groupCombinations = FALSE,
-    minFreq = 5) {
+    minCellCount = 5) {
   
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
@@ -82,7 +82,7 @@ createSankeyDiagram <- function(
   }
 
   links <- links %>%
-    dplyr::filter(.data$freq >= minFreq) %>%
+    dplyr::filter(.data$freq >= minCellCount) %>%
     dplyr::mutate(`%` = round(freq / sum(freq) * 100, 2)) %>%
     dplyr::select(-"freq")
   

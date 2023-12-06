@@ -8,7 +8,7 @@
 #' @template param_andromeda
 #' @template param_outputPath
 #' @template param_ageWindow
-#' @template param_cellCount
+#' @template param_minCellCount
 #' @template param_censorType
 #' @template param_archiveName
 #'
@@ -108,19 +108,19 @@
 #'         andromeda = andromeda,
 #'         outputPath = tempdir(),
 #'         ageWindow = 2,
-#'         cellCount = 5,
+#'         minCellCount = 5,
 #'         archiveName = "output.zip"
 #'       )
 #'     )
 #'   }
 #' }
-export <- function(andromeda, outputPath, ageWindow = 10, cellCount = 5, censorType = "cellCount", archiveName = NULL) {
+export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, censorType = "minCellCount", archiveName = NULL) {
   collection <- checkmate::makeAssertCollection()
   checkmate::assertTRUE(Andromeda::isAndromeda(andromeda), add = collection)
   checkmate::assertPathForOutput(outputPath, overwrite = TRUE, add = collection)
   checkmate::assertIntegerish(ageWindow, min.len = 1, any.missing = FALSE, unique = TRUE, add = collection)
-  checkmate::assertIntegerish(cellCount, len = 1, lower = 1, add = collection)
-  checkmate::assertChoice(censorType, choices = c("cellCount", "remove", "mean"))
+  checkmate::assertIntegerish(minCellCount, len = 1, lower = 1, add = collection)
+  checkmate::assertChoice(censorType, choices = c("minCellCount", "remove", "mean"))
   checkmate::assertCharacter(archiveName, len = 1, add = collection, null.ok = TRUE)
   checkmate::reportAssertions(collection)
   
@@ -145,7 +145,12 @@ export <- function(andromeda, outputPath, ageWindow = 10, cellCount = 5, censorT
   # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
   message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
-  treatmentPathways <- computeTreatmentPathways(treatmentHistory, ageWindow, cellCount, censorType)
+  treatmentPathways <- computeTreatmentPathways(
+    treatmentHistory,
+    ageWindow,
+    minCellCount,
+    censorType
+  )
 
   nTotal <- andromeda$currentCohorts %>%
     dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
@@ -173,7 +178,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, cellCount = 5, censorT
   write.csv(statsTherapy, file = statsTherapyPath, row.names = FALSE)
 
   # Counts
-  counts <- computeCounts(treatmentHistory, cellCount)
+  counts <- computeCounts(treatmentHistory, minCellCount)
 
   countsYearPath <- file.path(outputPath, "countsYear.csv")
   message(sprintf("Writing countsYearPath to %s", countsYearPath))
@@ -227,35 +232,35 @@ computeStatsTherapy <- function(treatmentHistory) {
   return(stats)
 }
 
-countYear <- function(treatmentHistory, cellCount) {
+countYear <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
     dplyr::group_by(.data$indexYear) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
     dplyr::mutate(n = case_when(
-      .data$n < cellCount ~ sprintf("<%s", cellCount),
+      .data$n < minCellCount ~ sprintf("<%s", minCellCount),
       .default = as.character(.data$n)
     ))
 }
 
-countSex <- function(treatmentHistory, cellCount) {
+countSex <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
     dplyr::group_by(.data$sex) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
     dplyr::mutate(n = case_when(
-      .data$n < cellCount ~ sprintf("<%s", cellCount),
+      .data$n < minCellCount ~ sprintf("<%s", minCellCount),
       .default = as.character(.data$n)
     ))
 }
 
-countAge <- function(treatmentHistory, cellCount) {
+countAge <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
     dplyr::group_by(.data$age) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
     dplyr::mutate(n = case_when(
-      .data$n < cellCount ~ sprintf("<%s", cellCount),
+      .data$n < minCellCount ~ sprintf("<%s", minCellCount),
       .default = as.character(.data$n)
     ))
 }
@@ -263,84 +268,85 @@ countAge <- function(treatmentHistory, cellCount) {
 #' computeCounts
 #'
 #' @template param_treatmentHistory
-#' @template param_cellCount
+#' @template param_minCellCount
 #'
 #' @return (`list()`)
-computeCounts <- function(treatmentHistory, cellCount) {
+computeCounts <- function(treatmentHistory, minCellCount) {
   # n per Year
   list(
-    year = countYear(treatmentHistory, cellCount),
-    age = countAge(treatmentHistory, cellCount),
-    sex = countSex(treatmentHistory, cellCount)
+    year = countYear(treatmentHistory, minCellCount),
+    age = countAge(treatmentHistory, minCellCount),
+    sex = countSex(treatmentHistory, minCellCount)
   )
 }
 
-#' censorCellCount
+#' censorminCellCount
 #' @param treatmentPathways data.frame()
-#' @param cellCount numeric(1)
+#' @param minCellCount numeric(1)
 #' 
 #' @noRd
-censorCellCount <- function(treatmentPathways, cellCount) {
+censorminCellCount <- function(treatmentPathways, minCellCount) {
   treatmentPathways %>%
     dplyr::mutate(freq = dplyr::case_when(
-      .data$freq >= cellCount ~ .data$freq,
-      .data$freq < cellCount ~ cellCount,
+      .data$freq >= minCellCount ~ .data$freq,
+      .data$freq < minCellCount ~ minCellCount,
       .default = .data$freq))
 }
 
 #' censorRemove
 #' @param treatmentPathways data.frame()
-#' @param cellCount numeric(1)
+#' @param minCellCount numeric(1)
 #' 
 #' @noRd
-censorRemove <- function(treatmentPathways, cellCount) {
+censorRemove <- function(treatmentPathways, minCellCount) {
   treatmentPathways %>%
-    dplyr::filter(.data$freq >= cellCount)
+    dplyr::filter(.data$freq >= minCellCount)
 }
 
 #' censorRemove
 #' @param treatmentPathways data.frame()
-#' @param cellCount numeric(1)
+#' @param minCellCount numeric(1)
 #' @param meanCount numeric(1)
 #' 
 #' @noRd
-censorMean <- function(treatmentPathways, cellCount) {
+censorMean <- function(treatmentPathways, minCellCount) {
   meanFreq <- treatmentPathways %>%
     dplyr::filter(.data$freq < minCellCount) %>%
     dplyr::pull(.data$freq) %>%
-    mean()
+    mean() %>%
+    round()
   
   treatmentPathways %>%
     dplyr::mutate(freq = dplyr::case_when(
-      .data$freq >= cellCount ~ .data$freq,
-      .data$freq < cellCount ~ meanFreq,
+      .data$freq >= minCellCount ~ .data$freq,
+      .data$freq < minCellCount ~ meanFreq,
       .default = .data$freq))
 }
 
 #' censorData
 #' @param treatmentPathways data.frame()
-#' @param cellCount numeric(1)
+#' @param minCellCount numeric(1)
 #' @param censorType character(1)
 #' 
 #' @noRd
-censorData <- function(treatmentPathways, cellCount, censorType) {
+censorData <- function(treatmentPathways, minCellCount, censorType) {
   nCensored <- treatmentPathways %>%
-    dplyr::filter(.data$freq < cellCount) %>%
+    dplyr::filter(.data$freq < minCellCount) %>%
     nrow()
   
   treatmentPathways <- switch(
     censorType,
-    "cell count" = {
-      message(sprintf("Censoring %s pathways with a frequency <%s to %s.", nCensored, cellCount, cellCount))
-      censorCellCount(treatmentPathways, cellCount)
+    "minCellCount" = {
+      message(sprintf("Censoring %s pathways with a frequency <%s to %s.", nCensored, minCellCount, minCellCount))
+      censorminCellCount(treatmentPathways, minCellCount)
     },
     "remove" = {
-      message(sprintf("Removing %s pathways with a frequency <%s.", nCensored, cellCount))
-      censorRemove(treatmentPathways, cellCount)
+      message(sprintf("Removing %s pathways with a frequency <%s.", nCensored, minCellCount))
+      censorRemove(treatmentPathways, minCellCount)
     },
     "mean" = {
-      message(sprintf("Censoring %s pathways with a frequency <%s to mean.", nCensored, cellCount))
-      censorMean(treatmentPathways, cellCount)
+      message(sprintf("Censoring %s pathways with a frequency <%s to mean.", nCensored, minCellCount))
+      censorMean(treatmentPathways, minCellCount)
     })
   return(treatmentPathways)
 }
@@ -379,11 +385,11 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #'
 #' @param treatmentHistory data.frame()
 #' @param ageWindow numeric(n)
-#' @param cellCount numeric(1)
+#' @param minCellCount numeric(1)
 #' @param censorType character(1)
 #'
 #' @return (`data.frame()`)
-computeTreatmentPathways <- function(treatmentHistory, ageWindow, cellCount, censorType) {
+computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, censorType) {
   years <- c("all", treatmentHistory$indexYear %>% unique())
   
   treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
@@ -399,7 +405,7 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, cellCount, cen
 
   treatmentPathways[is.na(treatmentPathways)] <- "all"
   
-  treatmentPathways <- censorData(treatmentPathways, cellCount, censorType)
+  treatmentPathways <- censorData(treatmentPathways, minCellCount, censorType)
   return(treatmentPathways)
 }
 
