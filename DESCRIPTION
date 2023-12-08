@@ -48,7 +48,8 @@ Suggests:
     DBI,
     withr,
     plotly,
-    ggplot2
+    ggplot2,
+    Capr
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
