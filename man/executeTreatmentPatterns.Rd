@@ -16,14 +16,17 @@ executeTreatmentPatterns(
   includeTreatments = "startDate",
   periodPriorToIndex = 0,
   minEraDuration = 0,
-  splitEventCohorts = "",
-  splitTime = 30,
+  splitEventCohorts = NULL,
+  splitTime = NULL,
   eraCollapseSize = 30,
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
   maxPathLength = 5,
-  minCellCount = 5
+  minCellCount = 5,
+  censorType = "mean",
+  ageWindow = 10,
+  archiveName = NULL
 )
 }
 \arguments{
@@ -92,6 +95,19 @@ Maximum number of steps included in treatment pathway}
 \item{minCellCount}{(\code{integer(1)}: \code{5})\cr
 Minimum count required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
+
+\item{censorType}{(\code{character(1)})\cr
+\describe{
+\item{\code{"cellCount"}}{Censors pathways <\code{cellCount} to \code{cellCount}.}
+\item{\code{"remove"}}{Censors pathways <\code{cellCount} by removing them completely.}
+\item{\code{"mean"}}{Censors pathways <\code{cellCount} to the mean of all frequencies below \code{cellCount}}
+}}
+
+\item{ageWindow}{(\code{integer(1)}: \code{10})\cr
+Number of years to bin age groups into.}
+
+\item{archiveName}{(\code{character(1)}: \code{NULL})\cr
+If not \code{NULL} adds the exported files to a ZIP-file with the specified archive name.}
 }
 \value{
 (\code{invisible(NULL)})
