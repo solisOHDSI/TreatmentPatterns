@@ -133,13 +133,13 @@ InputHandler <- R6::R6Class(
     },
     
     dbSelector = function(input, output, session) {
-      shiny::observeEvent(input$uploadField, {
+      shiny::observeEvent(self$reactiveValues$dataPath, {
         output$dbSelector <- renderUI({
           shiny::checkboxGroupInput(
             inputId = session$ns("dbSelector"),
             label = "Databases",
-            choices = unlist(input$uploadField$name),
-            selected = unlist(input$uploadField$name)
+            choices = unlist(self$reactiveValues$dbNames),
+            selected = unlist(self$reactiveValues$dbNames)
           )
         })
       })
