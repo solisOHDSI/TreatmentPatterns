@@ -19,6 +19,11 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+withr::local_envvar(
+  R_USER_CACHE_DIR = tempfile(),
+  EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+)
 ```
 
 In **1. Defining Cohorts** we discussed how to define and generate cohorts for `TreatmentPatterns`. In this section we assume you are able to generate a cohort table using either `CohortGenerator` or `CDMConnector`.
