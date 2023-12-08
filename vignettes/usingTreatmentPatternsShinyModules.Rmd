@@ -1,20 +1,20 @@
 ---
-  title: "Using TreatmentPatterns' Shiny Modules"
+title: "Using TreatmentPatterns' Shiny Modules"
 always_allow_html: yes
 output:
   html_document:
-  toc: yes
-toc_depth: '3'
-df_print: paged
-html_vignette:
-  toc: yes
-toc_depth: 3
-vignette: >
-  %\VignetteIndexEntry{CreatingCohorts}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
-pdf_document:
-  toc: yes
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+  html_vignette:
+    toc: yes
+    toc_depth: 3
+    vignette: >
+      %\VignetteIndexEntry{CreatingCohorts}
+      %\VignetteEngine{knitr::rmarkdown}
+      %\VignetteEncoding{UTF-8}
+  pdf_document:
+    toc: yes
 ---
 
 `TreatmentPatterns` provides several [shiny modules](https://mastering-shiny.org/scaling-modules.html). Shiny modules allow to quickly build a shiny app, based on pre-written code. In `TreatmentPatterns` there are 3 modules availible: **1**) InputHandler, **2**) InteractivePlots, and **3**) CharacterizationPlots.
