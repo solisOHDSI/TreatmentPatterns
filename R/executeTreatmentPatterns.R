@@ -24,6 +24,9 @@
 #' @template param_filterTreatments
 #' @template param_maxPathLength
 #' @template param_minCellCount
+#' @template param_censorType
+#' @template param_ageWindow
+#' @template param_archiveName
 #'
 #' @return (`invisible(NULL)`)
 #' @export
@@ -238,14 +241,17 @@ executeTreatmentPatterns <- function(
     includeTreatments = "startDate",
     periodPriorToIndex = 0,
     minEraDuration = 0,
-    splitEventCohorts = "",
-    splitTime = 30,
+    splitEventCohorts = NULL,
+    splitTime = NULL,
     eraCollapseSize = 30,
     combinationWindow = 30,
     minPostCombinationDuration = 30,
     filterTreatments = "First",
     maxPathLength = 5,
-    minCellCount = 5) {
+    minCellCount = 5,
+    censorType = "mean",
+    ageWindow = 10,
+    archiveName = NULL) {
   checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
   checkmate::assert_integerish(minCellCount, len = 1, null.ok = FALSE, lower = 0)
 
@@ -271,7 +277,14 @@ executeTreatmentPatterns <- function(
   )
 
   # Export csv-files
-  TreatmentPatterns::export(andromeda, outputPath = outputPath, minCellCount = minCellCount)
+  TreatmentPatterns::export(
+    andromeda = andromeda,
+    outputPath = outputPath,
+    ageWindow = ageWindow,
+    minCellCount = minCellCount,
+    censorType = censorType,
+    archiveName = archiveName
+  )
 
   Andromeda::close(andromeda)
   return(invisible(NULL))

@@ -81,18 +81,16 @@ PathwayConstructor <- R6::R6Class(
         add = errorMessages
       )
       
-      checkmate::assertCharacter(
+      checkmate::assertIntegerish(
         x = private$settings$splitEventCohorts,
-        len = 1,
+        null.ok = TRUE,
         add = errorMessages
       )
       
-      checkmate::assertNumeric(
+      checkmate::assertIntegerish(
         x = private$settings$splitTime,
         lower = 0,
-        finite = TRUE,
-        len = 1,
-        null.ok = FALSE,
+        null.ok = TRUE,
         add = errorMessages
       )
       
@@ -237,8 +235,8 @@ PathwayConstructor <- R6::R6Class(
         includeTreatments = "startDate",
         periodPriorToIndex = 0,
         minEraDuration = 0,
-        splitEventCohorts = "",
-        splitTime = 30,
+        splitEventCohorts = NULL,
+        splitTime = NULL,
         eraCollapseSize = 30,
         combinationWindow = 30,
         minPostCombinationDuration = 30,
@@ -276,8 +274,8 @@ PathwayConstructor <- R6::R6Class(
       includeTreatments = "startDate",
       periodPriorToIndex = 0,
       minEraDuration = 0,
-      splitEventCohorts = "",
-      splitTime = 30,
+      splitEventCohorts = NULL,
+      splitTime = NULL,
       eraCollapseSize = 30,
       combinationWindow = 30,
       minPostCombinationDuration = 30,

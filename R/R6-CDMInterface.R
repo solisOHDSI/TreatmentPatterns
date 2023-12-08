@@ -234,6 +234,7 @@ CDMInterface <- R6::R6Class(
         dplyr::inner_join(
           private$cdm$concept,
           by = dplyr::join_by(gender_concept_id == concept_id)) %>%
+        dplyr::filter(!!CDMConnector::datediff("cohort_start_date", "cohort_end_date") >= minEraDuration) %>%
         dplyr::mutate(date_of_birth = as.Date(paste0(as.integer(year_of_birth), "-01-01"))) %>%
         dplyr::mutate(age = !!CDMConnector::datediff("date_of_birth", "cohort_start_date", interval = "year")) %>%
         dplyr::rename(sex = "concept_name") %>%
