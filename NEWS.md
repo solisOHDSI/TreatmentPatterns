@@ -8,7 +8,9 @@
 * Removed `addNoPath` parameter.
 * Renamed `minFreq` parameter to `minCellCount`.
 * Added Shiny app with exported module classes.
-* Added censoring options of persons falling below the `minCellCount`.
+* Added censoring options of treatment pathways falling below the `minCellCount`.
+* Simplified part of `computePathways()`
+* Significantly improved performance of `export()`
 
 
 # TreatmentPatterns 2.6.0
