@@ -139,6 +139,10 @@ constructPathways <- function(
           indexYear = floor(.data$indexYear / 365.25) + 1970)
     }
   }
+  
+  andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
+    dplyr::filter(!is.na(.data$personId))
+  
   message("constructPathways done.")
   return(andromeda)
 }
@@ -249,7 +253,8 @@ doSplitEventCohorts <- function(
     andromeda,
     splitEventCohorts,
     splitTime) {
-  if (all(!splitEventCohorts == "")) {
+
+  if (!is.null(splitEventCohorts) & !is.null(splitTime)) {
     # Load in labels cohorts
     labels <- andromeda$cohorts %>%
       dplyr::collect()
@@ -258,41 +263,32 @@ doSplitEventCohorts <- function(
     checkmate::assertTRUE(length(splitEventCohorts) == length(splitTime))
 
     for (c in seq_len(length(splitEventCohorts))) {
-      cohort <- splitEventCohorts[c]
+      cohort <- as.character(as.integer(splitEventCohorts[c]))
       cutoff <- splitTime[c]
 
       andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::union_all(
-          andromeda$treatmentHistory %>%
-            dplyr::filter(.data$eventCohortId == cohort) %>%
-            dplyr::filter(.data$durationEra < cutoff) %>%
-            dplyr::mutate(eventCohortId = as.integer(paste0(cohort, 1)))
-        )
-
-      andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-        dplyr::union_all(
-          andromeda$treatmentHistory %>%
-            dplyr::filter(.data$eventCohortId == cohort) %>%
-            dplyr::filter(.data$durationEra >= cutoff) %>%
-            dplyr::mutate(eventCohortId = as.integer(paste0(cohort, 2)))
-        )
-
+        dplyr::mutate(eventCohortId = dplyr::case_when(
+          .data$eventCohortId == cohort & .data$durationEra < cutoff ~ paste0(cohort, 1L),
+          .data$eventCohortId == cohort & .data$durationEra >= cutoff ~ paste0(cohort, 2L),
+          .default = .data$eventCohortId
+        ))
+    
       # Add new labels
       original <- labels %>%
         dplyr::filter(.data$cohortId == as.integer(cohort))
 
       acute <- original
       acute$cohortId <- as.integer(paste0(cohort, 1))
-      acute$cohortName <- paste0(acute$cohortName, " (acute)")
+      acute$cohortName <- sprintf("%s (acute)", acute$cohortName)
 
       therapy <- original
       therapy$cohortId <- as.integer(paste0(cohort, 2))
-      therapy$cohortName <- paste0(therapy$cohortName, " (therapy)")
+      therapy$cohortName <- sprintf("%ss (therapy)", therapy$cohortName)
 
       labels <- labels %>%
         dplyr::filter(.data$cohortId != as.integer(cohort))
 
-      labels <- rbind(labels, acute, therapy)
+      andromeda$labels <- rbind(labels, acute, therapy)
     }
   }
   return(invisible(NULL))
@@ -735,18 +731,25 @@ doFilterTreatments <- function(andromeda, filterTreatments) {
 #' @return (invisible(NULL))
 addLabels <- function(andromeda) {
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-    mutate(eventCohortId = as.character(.data$eventCohortId))
+    dplyr::mutate(eventCohortId = as.character(.data$eventCohortId))
 
-  labels <- andromeda$cohorts %>%
-    dplyr::collect() %>%
-    dplyr::filter(.data$type != "target") %>%
-    dplyr::select("cohortId", "cohortName")
+  labels <- if (is.null(andromeda$labels)) {
+    andromeda$cohorts %>%
+      dplyr::collect() %>%
+      dplyr::filter(.data$type != "target") %>%
+      dplyr::select("cohortId", "cohortName")
+  } else {
+    andromeda$labels %>%
+      dplyr::collect() %>%
+      dplyr::filter(.data$type != "target") %>%
+      select("cohortId", "cohortName")
+  }
 
   # labels <- labels[labels$cohortType == "event" | labels$cohortType == "exit", c("cohortId", "cohortName")]
   colnames(labels) <- c("eventCohortId", "eventCohortName")
 
   andromeda$labels <- labels %>%
-    mutate(eventCohortId = as.character(.data$eventCohortId))
+    dplyr::mutate(eventCohortId = as.character(.data$eventCohortId))
 
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
     merge(andromeda$labels, all.x = TRUE, by = "eventCohortId")
@@ -757,9 +760,8 @@ addLabels <- function(andromeda) {
   mem$eventCohortName[is.na(mem$eventCohortName)] <- sapply(
     X = mem$eventCohortId[is.na(mem$eventCohortName)],
     FUN = function(x) {
-      # Revert search to look for longest concept_ids first
-
-      for (l in seq_len(nrow(labels))) {
+      # Reverse search to look for longest concept_ids first
+      for (l in rev(seq_len(nrow(labels)))) {
         # If treatment occurs twice in a combination (as monotherapy and as part
         # of fixed-combination) -> remove monotherapy occurrence
         if (any(grep(labels$eventCohortName[l], x))) {
