@@ -124,17 +124,28 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
   checkmate::assertCharacter(archiveName, len = 1, add = collection, null.ok = TRUE)
   checkmate::reportAssertions(collection)
   
+  nrows <- andromeda$treatmentHistory %>%
+    dplyr::summarize(n()) %>%
+    dplyr::pull()
+  
+  if (nrows == 0) {
+    message("Treatment History table is empty. Nothing to export.")
+    return(invisible(NULL))
+  }
+  
   if (!dir.exists(outputPath)) {
     dir.create(outputPath)
   }
   
   treatmentHistory <- andromeda$treatmentHistory %>%
-    dplyr::collect()
-  
-  if (nrow(treatmentHistory) == 0) {
-    message("Treatment History table is empty. Nothing to export.")
-    return(invisible(NULL))
-  }
+    dplyr::collect() %>%
+    dplyr::select(
+      "personId", "indexYear", "age", "sex", "eventCohortName", "eventCohortId", "eventSeq", "durationEra")
+   
+  treatmentHistory <- dplyr::bind_rows(
+    treatmentHistory,
+    getFilteredSubjects(andromeda)
+  )
 
   # metadata
   metadataPath <- file.path(outputPath, "metadata.csv")
@@ -152,22 +163,22 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     censorType
   )
 
-  nTotal <- andromeda$currentCohorts %>%
-    dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
-    dplyr::pull()
+  # nTotal <- andromeda$currentCohorts %>%
+  #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
+  #   dplyr::pull()
+  # 
+  # nTreated <- treatmentHistory %>%
+  #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
+  #   dplyr::pull()
 
-  nTreated <- treatmentHistory %>%
-    dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
-    dplyr::pull()
-
-  treatmentPathways <- data.frame(treatmentPathways) %>%
-    dplyr::add_row(data.frame(
-      path = "None",
-      freq = nTotal - nTreated,
-      sex = "all",
-      age = "all",
-      indexYear = "all"
-    ))
+  # treatmentPathways <- data.frame(treatmentPathways) %>%
+  #   dplyr::add_row(data.frame(
+  #     path = "None",
+  #     freq = nTotal - nTreated,
+  #     sex = "all",
+  #     age = "all",
+  #     indexYear = "all"
+  #   ))
 
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
 
@@ -221,11 +232,11 @@ computeStatsTherapy <- function(treatmentHistory) {
     )) %>%
     dplyr::group_by(.data$treatmentType) %>%
     dplyr::summarise(
-      avgDuration = mean(.data$durationEra),
-      medianDuration = stats::median(.data$durationEra),
-      sd = stats::sd(.data$durationEra),
-      min = min(.data$durationEra),
-      max = max(.data$durationEra),
+      avgDuration = mean(.data$durationEra, na.rm = TRUE),
+      medianDuration = stats::median(.data$durationEra, na.rm = TRUE),
+      sd = stats::sd(.data$durationEra, na.rm = TRUE),
+      min = min(.data$durationEra, na.rm = TRUE),
+      max = max(.data$durationEra, na.rm = TRUE),
       count = n()
     )
 
@@ -390,15 +401,9 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #'
 #' @return (`data.frame()`)
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, censorType) {
-  years <- c("all", treatmentHistory$indexYear %>% unique())
-  
   treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
 
-  ages <- treatmentHistory$ageBin %>%
-    unique()
-
-  # Per year
-  treatmentPathways <- stratisfy(treatmentHistory, years, ages)
+  treatmentPathways <- stratisfy(treatmentHistory)
 
   treatmentPathways <- treatmentPathways %>%
     dplyr::mutate(indexYear = as.character(.data$indexYear))
@@ -406,59 +411,127 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, 
   treatmentPathways[is.na(treatmentPathways)] <- "all"
   
   treatmentPathways <- censorData(treatmentPathways, minCellCount, censorType)
+  
+  treatmentPathways$path[treatmentPathways$path == "NA"] <- "None"
+  
   return(treatmentPathways)
 }
 
-#' stratisfySex
-#' 
-#' @param treatmentHistory data.frame()
-#' @param y numeric(1)
-#' 
-#' @noRd
-stratisfySex <- function(treatmentHistory, y) {
+stratisfyAgeSexYear <- function(treatmentHistory) {
+  treatmentHistory %>%
+    dplyr::group_by(.data$personId, .data$indexYear) %>%
+    dplyr::mutate(
+      pathway = list(.data$eventCohortName[.data$eventSeq]),
+      .groups = "drop"
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(.data$indexYear, .data$pathway) %>%
+    dplyr::mutate(freq = length(.data$personId), .groups = "drop") %>%
+    ungroup() %>%
+    rowwise() %>%
+    mutate(path = paste(.data$pathway, collapse = "-")) %>%
+    group_by(.data$path, .data$ageBin, .data$sex, .data$indexYear) %>%
+    summarise(freq = n(), .groups = "drop") %>%
+    mutate(
+      indexYear = as.character(.data$indexYear)
+    )
+}
+
+# All
+stratAll <- function(treatmentPathways) {
+  treatmentPathways %>%
+    group_by(path) %>%
+    summarize(freq = sum(freq)) %>%
+    mutate(indexYear = "all", sex = "all", ageBin = "all")
+}
+
+# sex
+stratSex <- function(treatmentPathways) {
   dplyr::bind_rows(
-    treatmentHistory %>%
-      dplyr::filter(.data$sex == "MALE") %>%
-      prepData(y) %>%
-      dplyr::mutate(sex = "male"),
-    treatmentHistory %>%
-      dplyr::filter(.data$sex == "FEMALE") %>%
-      prepData(y) %>%
-      dplyr::mutate(sex = "female")
+    treatmentPathways %>%
+      group_by(.data$path, .data$indexYear, .data$ageBin) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(sex = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$ageBin) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(sex = "all", indexYear = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$indexYear) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(sex = "all", ageBin = "all")
   )
 }
 
-#' stratisfyAge
-#' 
-#' @param treatmentHistory data.frame()
-#' @param y numeric(1)
-#' @param ages numeric(n)
-#' 
-#' @noRd
-stratisfyAge <- function(treatmentHistory, y, ages) {
-  dplyr::bind_rows(lapply(ages, function(ageRange) {
-    treatmentHistory %>%
-      dplyr::filter(.data$ageBin == ageRange) %>%
-      prepData(y) %>%
-      dplyr::mutate(age = ageRange)
-  }))
+stratAgeBin <- function(treatmentPathways) {
+  dplyr::bind_rows(
+    treatmentPathways %>%
+      group_by(.data$path, .data$indexYear, .data$sex) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(ageBin = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$sex) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(ageBin = "all", indexYear = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$indexYear) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(ageBin = "all", sex = "all")
+  )
 }
 
-#' stratisfy
-#'
+stratIndexYear <- function(treatmentPathways) {
+  dplyr::bind_rows(
+    treatmentPathways %>%
+      group_by(.data$path, .data$sex, .data$ageBin) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(indexYear = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$ageBin) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(sex = "all", indexYear = "all"),
+    treatmentPathways %>%
+      group_by(.data$path, .data$sex) %>%
+      summarize(freq = sum(.data$freq), .groups = "drop") %>%
+      mutate(indexYear = "all", ageBin = "all")
+  )
+}
+
+stratisfy <- function(treatmentHistory) {
+  treatmentPathways <- stratisfyAgeSexYear(treatmentHistory)
+  dplyr::bind_rows(
+    treatmentPathways,
+    stratAll(treatmentPathways),
+    stratAgeBin(treatmentPathways),
+    stratSex(treatmentPathways),
+    stratIndexYear(treatmentPathways)
+  ) %>%
+    mutate(sex = tolower(.data$sex)) %>%
+    rename(age = "ageBin") %>%
+    relocate("path", "freq", "age", "sex", "indexYear")
+}
+
+#' getFilteredSubjects
+#' 
 #' @noRd
-#'
-#' @param treatmentHistory data.frame()
-#' @param years character(n)
-#' @param ages character(n)
-#'
-#' @return (`data.frame()`)
-stratisfy <- function(treatmentHistory, years, ages) {
-  dplyr::bind_rows(lapply(years, function(y) {
-    dplyr::bind_rows(
-      prepData(treatmentHistory, y),
-      stratisfySex(treatmentHistory, y),
-      stratisfyAge(treatmentHistory, y, ages)
-    )
-  }))
+#' 
+#' @param andromeda andromeda
+#' 
+#' @return data.frame()
+getFilteredSubjects <- function(andromeda) {
+  targetCohortId <- andromeda$cohorts %>%
+    dplyr::filter(.data$type == "target") %>%
+    dplyr::pull(.data$cohortId)
+  
+  andromeda$currentCohorts %>%
+    dplyr::anti_join(andromeda$treatmentHistory, join_by(personId == personId)) %>%
+    dplyr::filter(.data$cohortId == targetCohortId) %>%
+    dplyr::mutate(
+      indexYear = floor(.data$startDate / 365.25) + 1970,
+      eventCohortName = "None",
+      eventCohortId = "-1",
+      durationEra = 0,
+      eventSeq = 1) %>%
+    dplyr::select("personId", "indexYear", "age", "sex", "eventCohortName", "eventCohortId", "eventSeq") %>%
+    dplyr::collect()
 }
