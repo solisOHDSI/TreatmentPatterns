@@ -163,7 +163,7 @@ test_that("splitEventCohorts", {
     connectionDetails = globals$connectionDetails,
     cdmSchema = globals$cdmSchema,
     resultSchema = globals$resultSchema,
-    splitEventCohorts = ""
+    splitEventCohorts = NULL
   )
   
   andromeda_Clavulanate <- computePathways(
@@ -172,7 +172,8 @@ test_that("splitEventCohorts", {
     connectionDetails = globals$connectionDetails,
     cdmSchema = globals$cdmSchema,
     resultSchema = globals$resultSchema,
-    splitEventCohorts = "4"
+    splitEventCohorts = 4,
+    splitTime = 30
   )
 
   empty <- andromeda_empty[["treatmentHistory"]] %>% collect()
@@ -187,9 +188,9 @@ test_that("splitEventCohorts", {
       connectionDetails = globals$connectionDetails,
       cdmSchema = globals$cdmSchema,
       resultSchema = globals$resultSchema,
-      splitEventCohorts = 1
+      splitEventCohorts = "1"
     ),
-    "Must be of type.+'character'"
+    "Must be of type.+'integerish'"
   )
   
   Andromeda::close(andromeda_Clavulanate)
@@ -210,7 +211,7 @@ test_that("splitTime", {
       resultSchema = globals$resultSchema,
       splitTime = "1"
     ),
-    "Must be of type.+'numeric'"
+    "Must be of type.+'integerish'"
   )
 })
 
