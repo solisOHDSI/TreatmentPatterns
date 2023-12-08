@@ -207,7 +207,8 @@ InteractivePlots <- R6::R6Class(
                   TreatmentPatterns::createSunburstPlot2(
                     treatmentPathways = data$treatmentPathways %>%
                       dplyr::filter(.data$db == name),
-                    colors = data$labels
+                    colors = data$labels,
+                    legend = list(w = 400)
                   )
                 )
               })
