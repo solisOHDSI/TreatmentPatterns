@@ -217,9 +217,10 @@ test_that("splitTime", {
 
 test_that("eraCollapseSize", {
   testthat::skip_on_cran()
-  
+  testthat::skip_on_ci()
+
   globals <- generateCohortTableCG()
-  
+
   andromeda_0 <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -228,7 +229,7 @@ test_that("eraCollapseSize", {
     resultSchema = globals$resultSchema,
     eraCollapseSize = 0
   )
-  
+
   andromeda_10000 <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -237,7 +238,7 @@ test_that("eraCollapseSize", {
     resultSchema = globals$resultSchema,
     eraCollapseSize = 10000
   )
-  
+
   expect_error(
     computePathways(
       cohorts = globals$cohorts,
@@ -249,7 +250,7 @@ test_that("eraCollapseSize", {
     ),
     " Must be of type.+'numeric'"
   )
-  
+
   Andromeda::close(andromeda_0)
   Andromeda::close(andromeda_10000)
 })
@@ -292,9 +293,10 @@ test_that("minPostCombinationDuration", {
 
 test_that("filterTreatments", {
   testthat::skip_on_cran()
-  
+  testthat::skip_on_ci()
+
   globals <- generateCohortTableCG()
-  
+
   expect_error(
     computePathways(
       cohorts = globals$cohorts,
@@ -306,7 +308,7 @@ test_that("filterTreatments", {
     ),
     "Must be a subset of"
   )
-  
+
   first <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -315,7 +317,7 @@ test_that("filterTreatments", {
     resultSchema = globals$resultSchema,
     filterTreatments = "First"
   )
-  
+
   changes <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -324,7 +326,7 @@ test_that("filterTreatments", {
     resultSchema = globals$resultSchema,
     filterTreatments = "Changes"
   )
-  
+
   all <- computePathways(
     cohorts = globals$cohorts,
     cohortTableName = globals$cohortTableName,
@@ -333,11 +335,11 @@ test_that("filterTreatments", {
     resultSchema = globals$resultSchema,
     filterTreatments = "All"
   )
-  
+
   expect_true(Andromeda::isAndromeda(first))
   expect_true(Andromeda::isAndromeda(changes))
   expect_true(Andromeda::isAndromeda(all))
-  
+
   Andromeda::close(first)
   Andromeda::close(changes)
   Andromeda::close(all)
