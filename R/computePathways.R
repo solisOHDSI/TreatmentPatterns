@@ -29,93 +29,46 @@
 #'
 #' @examples
 #' \donttest{
-#'   ableToRun <- invisible(all(
-#'     require("Eunomia", character.only = TRUE),
-#'     require("CirceR", character.only = TRUE),
-#'     require("CohortGenerator", character.only = TRUE),
-#'     require("dplyr", character.only = TRUE)
-#'   ))
-#'   
-#'   if (ableToRun) {
-#'     # CohortGenerator example
-#'     connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-#'     cdmDatabaseSchema <- "main"
-#'     resultSchema <- "main"
-#'     cohortTable <- "CohortTable"
-#' 
-#'     cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
-#'   
-#'     cohortJsonFiles <- list.files(
-#'       system.file(
-#'         package = "TreatmentPatterns",
-#'         "exampleCohorts"),
-#'         full.names = TRUE)
-#' 
-#'     for (i in seq_len(length(cohortJsonFiles))) {
-#'       cohortJsonFileName <- cohortJsonFiles[i]
-#'       cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-#'       cohortJson <- readChar(cohortJsonFileName, file.info(
-#'         cohortJsonFileName)$size)
+#' library(TreatmentPatterns)
+#' library(CDMConnector)
+#' library(dplyr)
 #'
-#'       cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
-#' 
-#'       cohortSql <- CirceR::buildCohortQuery(
-#'         cohortExpression,
-#'         options = CirceR::createGenerateOptions(generateStats = FALSE))
-#'     
-#'       cohortsToCreate <- rbind(
-#'         cohortsToCreate,
-#'         data.frame(
-#'           cohortId = i,
-#'           cohortName = cohortName,
-#'           sql = cohortSql,
-#'           stringsAsFactors = FALSE))
-#'     }
+#' withr::local_envvar(
+#'   EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+#' )
 #'
-#'     cohortTableNames <- CohortGenerator::getCohortTableNames(
-#'       cohortTable = cohortTable)
+#' downloadEunomiaData(overwrite = TRUE)
 #'
-#'     CohortGenerator::createCohortTables(
-#'       connectionDetails = connectionDetails,
-#'       cohortDatabaseSchema = resultSchema,
-#'       cohortTableNames = cohortTableNames)
+#' con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+#' cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 #'
-#'     # Generate the cohorts
-#'     cohortsGenerated <- CohortGenerator::generateCohortSet(
-#'       connectionDetails = connectionDetails,
-#'       cdmDatabaseSchema = cdmDatabaseSchema,
-#'       cohortDatabaseSchema = resultSchema,
-#'       cohortTableNames = cohortTableNames,
-#'       cohortDefinitionSet = cohortsToCreate)
-#'     
-#'     # Select Viral Sinusitis
-#'     targetCohorts <- cohortsGenerated %>%
-#'       filter(cohortName == "ViralSinusitis") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     # Select everything BUT Viral Sinusitis cohorts
-#'     eventCohorts <- cohortsGenerated %>%
-#'       filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     exitCohorts <- cohortsGenerated %>%
-#'       filter(cohortName == "Death") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     cohorts <- dplyr::bind_rows(
-#'       targetCohorts %>% mutate(type = "target"),
-#'       eventCohorts %>% mutate(type = "event"),
-#'       exitCohorts %>% mutate(type = "exit")
-#'     )
+#' cohortSet <- readCohortSet(
+#'   path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+#' )
 #'
-#'     computePathways(
-#'       cohorts = cohorts,
-#'       cohortTableName = cohortTable,
-#'       connectionDetails = connectionDetails,
-#'       cdmSchema = cdmDatabaseSchema,
-#'       resultSchema = resultSchema
-#'     )
-#'   }
+#' cdm <- generateCohortSet(
+#'   cdm = cdm,
+#'   cohortSet = cohortSet,
+#'   name = "cohort_table"
+#' )
+#'
+#' cohorts <- cohortSet %>%
+#'   # Remove 'cohort' and 'json' columns
+#'   select(-"cohort", -"json") %>%
+#'   mutate(type = c("event", "event", "event", "event", "exit", "event", "event", "target")) %>%
+#'   rename(
+#'     cohortId = "cohort_definition_id",
+#'     cohortName = "cohort_name",
+#'   )
+#'
+#' outputEnv <- computePathways(
+#'   cohorts = cohorts,
+#'   cohortTableName = "cohort_table",
+#'   cdm = cdm
+#' )
+#'
+#' Andromeda::close(outputEnv)
+#' DBI::dbDisconnect(con, shutdown = TRUE)
 #' }
 computePathways <- function(
     cohorts,
@@ -144,7 +97,9 @@ computePathways <- function(
     cdm = cdm
   )
   
-  on.exit(cdmInterface$disconnect())
+  withr::defer({
+    cdmInterface$disconnect()
+  })
   
   pathwayConstructor <- PathwayConstructor$new(
     cohorts = cohorts,

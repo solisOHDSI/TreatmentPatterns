@@ -16,103 +16,51 @@
 #'
 #' @examples
 #' \donttest{
-#'   ableToRun <- invisible(all(
-#'     require("Eunomia", character.only = TRUE),
-#'     require("CirceR", character.only = TRUE),
-#'     require("CohortGenerator", character.only = TRUE),
-#'     require("dplyr", character.only = TRUE)
-#'   ))
-#'   
-#'   if (ableToRun) {
-#'     # CohortGenerator example
-#'     connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-#'     cdmDatabaseSchema <- "main"
-#'     resultSchema <- "main"
-#'     cohortTable <- "CohortTable"
-#' 
-#'     cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
-#'   
-#'     cohortJsonFiles <- list.files(
-#'       system.file(
-#'         package = "TreatmentPatterns",
-#'         "exampleCohorts"),
-#'         full.names = TRUE)
-#' 
-#'     for (i in seq_len(length(cohortJsonFiles))) {
-#'       cohortJsonFileName <- cohortJsonFiles[i]
-#'       cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-#'       cohortJson <- readChar(cohortJsonFileName, file.info(
-#'         cohortJsonFileName)$size)
+#' library(TreatmentPatterns)
+#' library(CDMConnector)
+#' library(dplyr)
 #'
-#'       cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
-#' 
-#'       cohortSql <- CirceR::buildCohortQuery(
-#'         cohortExpression,
-#'         options = CirceR::createGenerateOptions(generateStats = FALSE))
-#'     
-#'       cohortsToCreate <- rbind(
-#'         cohortsToCreate,
-#'         data.frame(
-#'           cohortId = i,
-#'           cohortName = cohortName,
-#'           sql = cohortSql,
-#'           stringsAsFactors = FALSE))
-#'     }
+#' withr::local_envvar(
+#'   EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+#' )
 #'
-#'     cohortTableNames <- CohortGenerator::getCohortTableNames(
-#'       cohortTable = cohortTable)
+#' downloadEunomiaData(overwrite = TRUE)
 #'
-#'     CohortGenerator::createCohortTables(
-#'       connectionDetails = connectionDetails,
-#'       cohortDatabaseSchema = resultSchema,
-#'       cohortTableNames = cohortTableNames)
+#' con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+#' cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 #'
-#'     # Generate the cohorts
-#'     cohortsGenerated <- CohortGenerator::generateCohortSet(
-#'       connectionDetails = connectionDetails,
-#'       cdmDatabaseSchema = cdmDatabaseSchema,
-#'       cohortDatabaseSchema = resultSchema,
-#'       cohortTableNames = cohortTableNames,
-#'       cohortDefinitionSet = cohortsToCreate)
-#'     
-#'     # Select Viral Sinusitis
-#'     targetCohorts <- cohortsGenerated %>%
-#'       filter(cohortName == "ViralSinusitis") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     # Select everything BUT Viral Sinusitis cohorts
-#'     eventCohorts <- cohortsGenerated %>%
-#'       filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     exitCohorts <- cohortsGenerated %>%
-#'       filter(cohortName == "Death") %>%
-#'       select(cohortId, cohortName)
-#' 
-#'     cohorts <- dplyr::bind_rows(
-#'       targetCohorts %>% mutate(type = "target"),
-#'       eventCohorts %>% mutate(type = "event"),
-#'       exitCohorts %>% mutate(type = "exit")
-#'     )
+#' cohortSet <- readCohortSet(
+#'   path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+#' )
 #'
-#'     andromeda <- computePathways(
-#'       cohorts = cohorts,
-#'       cohortTableName = cohortTable,
-#'       connectionDetails = connectionDetails,
-#'       cdmSchema = cdmDatabaseSchema,
-#'       resultSchema = resultSchema
-#'     )
-#'     
-#'     try(
-#'       TreatmentPatterns::export(
-#'         andromeda = andromeda,
-#'         outputPath = tempdir(),
-#'         ageWindow = 2,
-#'         minCellCount = 5,
-#'         archiveName = "output.zip"
-#'       )
-#'     )
-#'   }
+#' cdm <- generateCohortSet(
+#'   cdm = cdm,
+#'   cohortSet = cohortSet,
+#'   name = "cohort_table"
+#' )
+#'
+#' cohorts <- cohortSet %>%
+#'   # Remove 'cohort' and 'json' columns
+#'   select(-"cohort", -"json") %>%
+#'   mutate(type = c("event", "event", "event", "event", "exit", "event", "event", "target")) %>%
+#'   rename(
+#'     cohortId = "cohort_definition_id",
+#'     cohortName = "cohort_name",
+#'   )
+#'
+#' outputEnv <- computePathways(
+#'   cohorts = cohorts,
+#'   cohortTableName = "cohort_table",
+#'   cdm = cdm
+#' )
+#'
+#' export(
+#'   andromeda = outputEnv,
+#'   outputPath = tempdir()
+#' )
+#'
+#' Andromeda::close(outputEnv)
+#' DBI::dbDisconnect(con, shutdown = TRUE)
 #' }
 export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, censorType = "minCellCount", archiveName = NULL) {
   collection <- checkmate::makeAssertCollection()
@@ -141,18 +89,18 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     dplyr::collect() %>%
     dplyr::select(
       "personId", "indexYear", "age", "sex", "eventCohortName", "eventCohortId", "eventSeq", "durationEra")
-   
+  
   treatmentHistory <- dplyr::bind_rows(
     treatmentHistory,
     getFilteredSubjects(andromeda)
   )
-
+  
   # metadata
   metadataPath <- file.path(outputPath, "metadata.csv")
   message(sprintf("Writing metadata to %s", metadataPath))
   metadata <- andromeda$metadata %>% dplyr::collect()
   write.csv(metadata, file = metadataPath, row.names = FALSE)
-
+  
   # Treatment Pathways
   treatmentPathwaysPath <- file.path(outputPath, "treatmentPathways.csv")
   message(sprintf("Writing treatmentPathways to %s", treatmentPathwaysPath))
@@ -162,7 +110,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     minCellCount,
     censorType
   )
-
+  
   # nTotal <- andromeda$currentCohorts %>%
   #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
   #   dplyr::pull()
@@ -170,7 +118,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
   # nTreated <- treatmentHistory %>%
   #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
   #   dplyr::pull()
-
+  
   # treatmentPathways <- data.frame(treatmentPathways) %>%
   #   dplyr::add_row(data.frame(
   #     path = "None",
@@ -179,35 +127,35 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
   #     age = "all",
   #     indexYear = "all"
   #   ))
-
+  
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
-
+  
   # Summary statistics duration
   statsTherapyPath <- file.path(outputPath, "summaryStatsTherapyDuraion.csv")
   message(sprintf("Writing summaryStatsTherapyDuraion to %s", statsTherapyPath))
   statsTherapy <- computeStatsTherapy(treatmentHistory)
   write.csv(statsTherapy, file = statsTherapyPath, row.names = FALSE)
-
+  
   # Counts
   counts <- computeCounts(treatmentHistory, minCellCount)
-
+  
   countsYearPath <- file.path(outputPath, "countsYear.csv")
   message(sprintf("Writing countsYearPath to %s", countsYearPath))
   write.csv(counts$year, file = countsYearPath, row.names = FALSE)
-
+  
   countsAgePath <- file.path(outputPath, "countsAge.csv")
   message(sprintf("Writing countsAgePath to %s", countsAgePath))
   write.csv(counts$age, file = countsAgePath, row.names = FALSE)
-
+  
   countsSexPath <- file.path(outputPath, "countsSex.csv")
   message(sprintf("Writing countsSexPath to %s", countsSexPath))
   write.csv(counts$sex, file = countsSexPath, row.names = FALSE)
-
+  
   if (!is.null(archiveName)) {
     zipPath <- file.path(outputPath, archiveName)
-
+    
     message(sprintf("Zipping files to %s", zipPath))
-
+    
     utils::zip(
       zipfile = zipPath,
       files = c(
@@ -239,7 +187,7 @@ computeStatsTherapy <- function(treatmentHistory) {
       max = max(.data$durationEra, na.rm = TRUE),
       count = n()
     )
-
+  
   return(stats)
 }
 
@@ -402,12 +350,12 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #' @return (`data.frame()`)
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, censorType) {
   treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
-
+  
   treatmentPathways <- stratisfy(treatmentHistory)
-
+  
   treatmentPathways <- treatmentPathways %>%
     dplyr::mutate(indexYear = as.character(.data$indexYear))
-
+  
   treatmentPathways[is.na(treatmentPathways)] <- "all"
   
   treatmentPathways <- censorData(treatmentPathways, minCellCount, censorType)
