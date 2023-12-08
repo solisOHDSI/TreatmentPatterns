@@ -1,5 +1,5 @@
 ---
-title: "Running TreatmentPatterns"
+title: "2. Computing Treatment Pathways"
 always_allow_html: yes
 output:
   html_document:
@@ -21,79 +21,225 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Pathway settings
-The settings belowallow the user to influence how the events of interest should be processed to form treatment pathways. For the example in this vignette we used the default settings
+In **1. Defining Cohorts** we discussed how to define and generate cohorts for `TreatmentPatterns`. In this section we assume you are able to generate a cohort table using either `CohortGenerator` or `CDMConnector`.
 
-| param | values | description |
+Lets generate our Viral Sinusitis dummy cohorts provided in `TreatmentPatterns` using `CDMConnector`.
+
+## Generating Cohorts
+First we need to read in our cohorts.
+```{r readCohortSet}
+library(CDMConnector)
+
+cohortSet <- readCohortSet(
+  path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+)
+
+cohortSet
+```
+
+Then we can open a connection to our database, in this case Eunomia.
+```{r setLocalEnvar, echo=FALSE}
+# withr::local_envvar(
+#   R_USER_CACHE_DIR = tempfile(),
+#   .local_envir = testthat::teardown_env(),
+#   EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
+# )
+
+if (require("Eunomia", character.only = TRUE, quietly = TRUE)) {
+  CDMConnector::downloadEunomiaData(overwrite = TRUE)
+}
+```
+
+```{r connectToCDM}
+con <- DBI::dbConnect(
+  drv = duckdb::duckdb(),
+  dbdir = eunomia_dir()
+)
+
+cdm <- cdmFromCon(
+  con = con,
+  cdmSchema = "main",
+  writeSchema = "main"
+)
+cdm
+```
+
+Finally we can generate our cohort set as a cohort table into the database
+```{r generateCohortSet}
+cdm <- generateCohortSet(
+  cdm = cdm,
+  cohortSet = cohortSet,
+  name = "cohort_table",
+  overwrite = TRUE
+)
+
+cohortCount(cdm$cohort_table)
+```
+
+We can see that all our cohorts are generated in the cohort table. The cohort with _cohort_definition_id_ 5 has a count of 0, this is the _Death_ cohort. This is not detrimental, as exit cohorts are optional, but good to know that Death will not show up in our results.
+
+## Computing pathways
+The `computePathways` function of `TreatmentPatterns` allows us to compute treatment pathways in our cohort table. In order to do this we need to pre-specify some parameters.
+
+According to the documentation we need a `data.frame` that specifies what cohort is of which type.
+
+>Data frame containing the following columns and data types:
+>
+>cohortId numeric(1)
+>Cohort ID's of the cohorts to be used in the cohort table.
+>
+>cohortName character(1)
+>Cohort names of the cohorts to be used in the cohort table.
+>
+>type character(1) ["target", "event', "exit"]
+>Cohort type, describing if the cohort is a target, event, or exit cohort
+
+We are able to re-use our `cohortSet` for this. As it already contains the cohort ID's and cohort names. We only have to remove the `cohort` and `json` columns, add a `type` column, and rename `cohort_definition_id` to `cohortId` and `cohort_name` to `cohortName`.
+```{r, message=FALSE}
+library(dplyr)
+
+cohorts <- cohortSet %>%
+  # Remove 'cohort' and 'json' columns
+  select(-"cohort", -"json") %>%
+  mutate(type = c("event", "event", "event", "event", "exit", "event", "event", "target")) %>%
+  rename(
+    cohortId = "cohort_definition_id",
+    cohortName = "cohort_name",
+  )
+
+cohorts
+```
+
+With our `data.frame` of cohort types, CDM reference, and the cohort table name in our database we can compute the treatment pathways, with all of the other settings as their defaults.
+```{r computeWithDefaults}
+library(TreatmentPatterns)
+
+defaultSettings <- computePathways(
+  cohorts = cohorts,
+  cohortTableName = "cohort_table",
+  cdm = cdm
+)
+
+defaultSettings
+```
+The output of `computePathways` is an [Andromeda](https://ohdsi.github.io/Andromeda/) environment, which allows us to investigate intermediate results and patient-level data. **This data is not sharable.**
+
+```{r outputTables}
+# treatmentHistory table
+head(defaultSettings$treatmentHistory)
+
+# metadata table
+defaultSettings$metadata
+
+# First Recieved First Stopped
+head(defaultSettings$addRowsFRFS_1)
+
+# Last Recieved Last Stopped
+head(defaultSettings$addRowsLRFS_1)
+```
+`DatabaseConnector` is also supported. The following parameters are required **instead** of `cdm`:
+
+1. `connectionDetails`: ConnectionDetails object form [DatabaseConnector](https://ohdsi.github.io/DatabaseConnector/).
+2. `cdmSchema`: Schema where the CDM exists.
+3. `resultSchema`: Schema to write the cohort table to.
+4. `tempEmulationSchema`: Some database platforms like Oracle and Impala do not truly support temp tables. To emulate temp tables, provide a schema with write privileges where temp tables can be created.
+
+The following code snippet works with `Eunomia`, a cohort table (cohort_table) exists in the database, and a `cohorts` data frame has been created.
+```{r DatabaseConnector, eval=FALSE}
+library(Eunomia)
+
+cohortTableName <- "cohort_table"
+connectionDetails <- getEunomiaConnectionDetails()
+cdmSchema <- "main"
+resultSchema <- "main"
+tempEmulationSchema <- NULL
+
+computePathways(
+  cohorts = cohorts,
+  cohortTableName = cohortTableName,
+  connectionDetails = connectionDetails,
+  cdmSchema = cdmSchema,
+  resultSchema = resultSchema,
+  tempEmulationSchema = tempEmulationSchema
+)
+```
+
+
+## Pathway settings
+Even though the default settings work well for most use cases, it might not work for all situations. The settings below allow us to influence how the events of interest should be processed to form treatment pathways.
+
+| Parameter | Value | Description |
 | ----- | ------ | ----------- |
-| periodPriorToIndex | 0 | Number of days prior to the index date of the target cohort | that event cohorts are allowed to start |
+| periodPriorToIndex | 0 | Number of days prior to the index date of the target cohort that event cohorts are allowed to start |
 | minEraDuration | 0 | Minimum time an event era should last to be included in analysis |
-| splitEventCohorts |  | Specify event cohort to split in acute (< X days) and therapy (>= X days) |
-| splitTime | 30 | Specify number of days (X) at which each of the split event cohorts should be split in acute and therapy |
 | eraCollapseSize | 30 | Window of time between which two eras of the same event cohort are collapsed into one era |
 | combinationWindow | 30 | Window of time two event cohorts need to overlap to be considered a combination treatment |
 | minPostCombinationDuration | 30 | Minimum time an event era before or after a generated combination treatment should last to be included in analysis |
 | filterTreatments | First | Select first occurrence of (‘First’); changes between (‘Changes’); or all event cohorts (‘All’). |
 | maxPathLength | 5 | Maximum number of steps included in treatment pathway |
-| minFreq | 5 | Minimum frequency required per pathway. Censors data below `x` as `<x`. This minimum value will carry over to the sankey diagram and sunburst plot. |
-| addNoPaths | FALSE | Select to include untreated persons without treatment pathway in the sunburst plot |
+
+The following figure shows how each of these parameters affect the computation of the treatment pathway.
 
 ![pathwaySettings](../man/figures/pathwaysettings.png)
-```{r prep, echo=FALSE, results='hide', message=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
-connectionDetails <- Eunomia::getEunomiaConnectionDetails()
-cdmDatabaseSchema <- "main"
-resultSchema <- "main"
-cohortTable <- "CohortTable"
+The following parameters affect the pathways on a broader level.
 
-cohortsToCreate <- CohortGenerator::createEmptyCohortDefinitionSet()
-
-cohortJsonFiles <- list.files(
-  system.file(
-    package = "TreatmentPatterns",
-    "exampleCohorts"),
-  full.names = TRUE)
-
-for (i in seq_len(length(cohortJsonFiles))) {
-  cohortJsonFileName <- cohortJsonFiles[i]
-  cohortName <- tools::file_path_sans_ext(basename(cohortJsonFileName))
-  cohortJson <- readChar(cohortJsonFileName, file.info(
-    cohortJsonFileName)$size)
-  
-  cohortExpression <- CirceR::cohortExpressionFromJson(cohortJson)
-  
-  cohortSql <- CirceR::buildCohortQuery(
-    cohortExpression,
-    options = CirceR::createGenerateOptions(generateStats = FALSE))
-  cohortsToCreate <- rbind(
-    cohortsToCreate,
-    data.frame(
-      cohortId = i,
-      cohortName = cohortName,
-      sql = cohortSql,
-      stringsAsFactors = FALSE))
-}
-
-cohortTableNames <- CohortGenerator::getCohortTableNames(
-  cohortTable = cohortTable)
-
-CohortGenerator::createCohortTables(
-  connectionDetails = connectionDetails,
-  cohortDatabaseSchema = resultSchema,
-  cohortTableNames = cohortTableNames)
-
-# Generate the cohorts
-cohortsGenerated <- CohortGenerator::generateCohortSet(
-  connectionDetails = connectionDetails,
-  cdmDatabaseSchema = cdmDatabaseSchema,
-  cohortDatabaseSchema = resultSchema,
-  cohortTableNames = cohortTableNames,
-  cohortDefinitionSet = cohortsToCreate)
-
+You can add these settings to the `computePathways` function call. Lets see what happens when we set our `minEraDuration` to **60**, but keep the rest of the settings mentioned as their default values.
+```{r pathwaySettings}
+minEra60 <- computePathways(
+  cohorts = cohorts,
+  cohortTableName = "cohort_table",
+  cdm = cdm,
+  # Pathway settings
+  periodPriorToIndex = 0,
+  minEraDuration = 60,
+  eraCollapseSize = 30,
+  combinationWindow = 30,
+  minPostCombinationDuration = 30,
+  filterTreatments = "First",
+  maxPathLength = 5
+)
+```
+Number of treatments with a minimum duration of greater or equal to 0 days.
+```{r nDefault}
+defaultSettings$treatmentHistory %>%
+  collect() %>%
+  nrow()
+```
+Number of treatments with a minimum duration of greater or equal to 60 days.
+```{r nMinEra60}
+minEra60$treatmentHistory %>%
+  collect() %>%
+  nrow()
 ```
 
-```{r library}
-library(dplyr)
+### Acute and Therapy splits
+We can also split our defined event cohorts into **acute** and **therapy** cohorts.
+
+| Parameter | Description |
+| --- | --- |
+| splitEventCohorts | "" | Specify event cohort ID's (i.e. _"1,2,3"_) to split in acute (< splitTime days) and therapy (>= splitTime days).
+
+As an example treatment **Drug A** could be split into **Drug A (therapy)** and **Drug A (acute)**. And we could set our splitTime to _30_. **Drug A (acute)** would be the time before day 0-29 and **Drug A (therapy)** would be the day 30 or later. |
+| splitTime | 30 | Specify number of days at which each of the split event cohorts should be split in acute and therapy. |
+
+Let's say we want to assume that the first 7 days of our treatment is acute, and beyond that therapy.
+```{r warning=FALSE}
+splitAcuteTherapy <- computePathways(
+  cohorts = cohorts,
+  cohortTableName = "cohort_table",
+  cdm = cdm,
+  splitEventCohorts = 1,
+  splitTime = 30
+)
+
+splitAcuteTherapy$treatmentHistory %>%
+  pull(.data$eventCohortName) %>% unique()
 ```
+
+```{r}
+splitAcuteTherapy$treatmentHistory
+```
+
 
 ```{r setupCohorts, eval=FALSE}
 # Select Viral Sinusitis Cohort
