@@ -332,7 +332,7 @@ export(
   archiveName = "output.zip"
 )
 ```
-## executeTreatmentPatterns
+## All-in-one
 Instead of using `computePathways` and `export`, instead we could use `executeTreatmentPatterns`. Which is an all-in-one function that trades full control for convenience.
 ```{r executeTreatmentPatternsCDMConnector}
 executeTreatmentPatterns(
@@ -364,6 +364,64 @@ executeTreatmentPatterns(
 )
 ```
 
+## Evaluating output
+Now that we have exported our output, in various ways, we can evaluate the output. As you may have noticed the `export` function exports 6 csv-files: **1**) treatmentPathways.csv, **2**) countsAge.csv, **3**) countsSex.csv, **4**) countsYear.csv, **5**) summaryStatsTherapyDuraion.csv, and **6**) metadata.csv
+
+### treatmentPathways
+The treatmentPathways file contains all the pathways found, with a frequency, pairwise stratified by age group, sex and index year.
+```{r readTreatmentPathways}
+treatmentPathways <- read.csv(file.path(tempDir, "default", "treatmentPathways.csv"))
+head(treatmentPathways)
+```
+
+We are able to filter based on the strata.
+```{r treatmentPathwaysAll}
+all <- treatmentPathways %>%
+  filter(
+    age == "all",
+    sex == "all",
+    indexYear == "all")
+
+all
+```
+We can see the pathways contain the treatment names we provided in our event cohorts. Besides that we also see the paths are annoted with a `+` or `-`. The `+` indicates two treatments are a combination therapy, i.e. `Acetaminophen+Amoxicillin` is a combination of _Acetaminophen_ and _Amoxicillin_. The `-` indicates a switch between treatments, i.e. `Aspirin-Acetaminophen` is a switch from _Aspirin_ to _Acetaminophen_. Note that these combinations and switches can occur in the same pathway, i.e. `Amoxicillin+Clavulanate-Aspirin`. The first treatment is a combination of _Amoxicillin_ and _Clavulanate_ that switches to _Aspirin_.
+
+### countsAge, countsSex, and countsYear
+The countsAge, countsSex, and countsYear contain counts per age, sex, and index year.
+```{r counts}
+age <- read.csv(file.path(tempDir, "default", "countsAge.csv"))
+sex <- read.csv(file.path(tempDir, "default", "countsSex.csv"))
+year <- read.csv(file.path(tempDir, "default", "countsYear.csv"))
+
+head(age)
+head(sex)
+head(year)
+```
+### summaryStatsTherapyDuraion
+The summaryStatsTherapyDuraion file contains some statistics pertaining combination and mono-therapies. Like the mean, median, minimum, and maximum durations. The standard deviation of durations, and the count of each treatment type.
+```{r summaryStatsTherapyDuraion}
+read.csv(file.path(tempDir, "default", "summaryStatsTherapyDuraion.csv"))
+```
+
+
+### metadata
+The metadata file is a file that contains information about the circumstances the analysis was performed in, and information about R, and the CDM.
+```{r metadata}
+read.csv(file.path(tempDir, "default", "metadata.csv"))
+```
+
+### Sunburst Plot & Sankey Diagram
+From the filtered treatmentPathways file we are able to create a sunburst plot.
+```{r sunburstPlot}
+createSunburstPlot2(treatmentPathways = all, legend = list(w = 400))
+```
+
+Or a Sankey Diagram.
+```{r sankeyDiagram, eval=FALSE}
+createSankeyDiagram2(all)
+```
+
+Both plots are interactive in an HTML-environment, and are easy to include in shiny applications.
 
 ```{r cleanup, include=FALSE}
 # Remove temp files
