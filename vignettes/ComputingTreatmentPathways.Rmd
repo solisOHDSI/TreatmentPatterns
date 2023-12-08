@@ -151,21 +151,13 @@ head(defaultSettings$addRowsLRFS_1)
 
 The following code snippet works with `Eunomia`, a cohort table (cohort_table) exists in the database, and a `cohorts` data frame has been created.
 ```{r DatabaseConnector, eval=FALSE}
-library(Eunomia)
-
-cohortTableName <- "cohort_table"
-connectionDetails <- getEunomiaConnectionDetails()
-cdmSchema <- "main"
-resultSchema <- "main"
-tempEmulationSchema <- NULL
-
 computePathways(
   cohorts = cohorts,
   cohortTableName = cohortTableName,
-  connectionDetails = connectionDetails,
-  cdmSchema = cdmSchema,
-  resultSchema = resultSchema,
-  tempEmulationSchema = tempEmulationSchema
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
+  cdmSchema = "main",
+  resultSchema = "main",
+  tempEmulationSchema = NULL
 )
 ```
 
@@ -186,8 +178,6 @@ Even though the default settings work well for most use cases, it might not work
 The following figure shows how each of these parameters affect the computation of the treatment pathway.
 
 ![pathwaySettings](../man/figures/pathwaysettings.png)
-The following parameters affect the pathways on a broader level.
-
 You can add these settings to the `computePathways` function call. Lets see what happens when we set our `minEraDuration` to **60**, but keep the rest of the settings mentioned as their default values.
 ```{r pathwaySettings}
 minEra60 <- computePathways(
@@ -222,143 +212,170 @@ We can also split our defined event cohorts into **acute** and **therapy** cohor
 
 | Parameter | Description |
 | --- | --- |
-| splitEventCohorts | "" | Specify event cohort ID's (i.e. _"1,2,3"_) to split in acute (< splitTime days) and therapy (>= splitTime days).
+| splitEventCohorts | Specify event cohort ID's (i.e. `c(1, 2, 3)` to split in acute (< splitTime days) and therapy (>= splitTime days). As an example treatment **Drug A** could be split into **Drug A (therapy)** and **Drug A (acute)**. And we could set our splitTime to _30_. **Drug A (acute)** would be the time before day 0-29 and **Drug A (therapy)** would be the day 30 or later. |
+| splitTime | Specify number of days at which each of the split event cohorts should be split in acute and therapy (i.e. `c(20, 30, 10)`). The length of `splitTime` must equal the length of `splitEventCohorts` |
 
-As an example treatment **Drug A** could be split into **Drug A (therapy)** and **Drug A (acute)**. And we could set our splitTime to _30_. **Drug A (acute)** would be the time before day 0-29 and **Drug A (therapy)** would be the day 30 or later. |
-| splitTime | 30 | Specify number of days at which each of the split event cohorts should be split in acute and therapy. |
-
-Let's say we want to assume that the first 7 days of our treatment is acute, and beyond that therapy.
-```{r warning=FALSE}
+Let's say we want to assume that the first 60 days of our treatment is acute, and beyond that therapy.
+```{r splitEventCohorts, warning=FALSE}
 splitAcuteTherapy <- computePathways(
   cohorts = cohorts,
   cohortTableName = "cohort_table",
   cdm = cdm,
+  # Split settings
   splitEventCohorts = 1,
-  splitTime = 30
+  splitTime = 60
 )
 
 splitAcuteTherapy$treatmentHistory %>%
   pull(.data$eventCohortName) %>% unique()
 ```
+We can see that our Acetaminophen cohorts are split into Acetaminophen **(acute)** and **(therapy)**. _Acute_ labels all the Acetaminophen cohorts lasting less than our defined `splitTime`, in this case 60 days. _Therapy_ labels all the Acetaminophen cohorts lasting 60 days or more.
 
-```{r}
-splitAcuteTherapy$treatmentHistory
+### Include treatments in a time frame
+We can dictate in what time frame we want to look. We can look from the start date of our target cohort and on wards, or we can look before the end date of our target cohort. By default `TreatmentPatterns` looks from the start date and onwards.
+
+```{r includeTreatments}
+includeEndDate <- computePathways(
+  cohorts = cohorts,
+  cohortTableName = "cohort_table",
+  cdm = cdm,
+  # Split settings
+  includeTreatments = "endDate"
+)
+
+identical(
+  includeEndDate$treatmentHistory %>% pull(personId),
+  defaultSettings$treatmentHistory %>% pull(personId)
+)
 ```
+In our example case for Viral Sinusitis it does not appear to matter, as the same people are included.
 
+## Exporting result objects
+The `export` function allows us to export the generated result objects from `computePathways`. There are several arguments that we can change to alter the behavior, depending on what we are allowed to share.
 
-```{r setupCohorts, eval=FALSE}
-# Select Viral Sinusitis Cohort
-targetCohorts <- cohortsGenerated %>%
-  filter(cohortName == "ViralSinusitis") %>%
-  select(cohortId, cohortName)
+### minCellCount and censorType
+Let's say we are only able to share results of groups of subjects that have at least 5 subjects in them.
+```{r minCellCount}
+tempDir <- tempdir()
 
-# Select everything BUT Viral Sinusitis cohorts
-eventCohorts <- cohortsGenerated %>%
-  filter(cohortName != "ViralSinusitis" & cohortName != "Death") %>%
-  select(cohortId, cohortName)
-
-exitCohorts <- cohortsGenerated %>%
-  filter(cohortName == "Death") %>%
-  select(cohortId, cohortName)
-
-cohorts <- dplyr::bind_rows(
-  targetCohorts %>% mutate(type = "target"),
-  eventCohorts %>% mutate(type = "event"),
-  exitCohorts %>% mutate(type = "exit")
+export(
+  andromeda = defaultSettings,
+  outputPath = file.path(tempDir, "default"),
+  minCellCount = 5
 )
 ```
 
-## DatabaseConnector
-### All-in-one
-```{r executeTreatmentPatterns, eval=FALSE}
-tempDir <- tempdir()
-allDir <- file.path(tempDir, "all_in_one")
+We can also choose between different methods how to handle pathways that fall below are specified `minCellCount`. These types are **1**) `"cellCount"`, **2**) `"remove"`, and **3**) `"mean"`.
 
-TreatmentPatterns::executeTreatmentPatterns(
+We could say we want to censor all pathways that fall below the `minCellCount` to be censored _to_ the `minCellCount`.
+```{r censorType_cellCount}
+export(
+  andromeda = minEra60,
+  outputPath = file.path(tempDir, "minEra60_cellCount"),
+  minCellCount = 5,
+  censorType = "minCellCount"
+)
+```
+
+Or we could completely remove them
+```{r censorType_remove}
+export(
+  andromeda = minEra60,
+  outputPath = file.path(tempDir, "minEra60_remove"),
+  minCellCount = 5,
+  censorType = "remove"
+)
+```
+
+Or finally we can censor them as the mean of all the groups that fall below the `minCellCount`.
+```{r censorType_mean}
+export(
+  andromeda = minEra60,
+  outputPath = file.path(tempDir, "minEra60_mean"),
+  minCellCount = 5,
+  censorType = "mean"
+)
+```
+
+### ageWindow
+We can also specify an age window.
+```{r ageWindow3}
+export(
+  andromeda = splitAcuteTherapy,
+  outputPath = file.path(tempDir, "splitAcuteTherapy_ageWindow3"),
+  minCellCount = 5,
+  censorType = "mean",
+  ageWindow = 3
+)
+```
+
+Or a collection of ages.
+```{r ageWindowMultiple}
+export(
+  andromeda = splitAcuteTherapy,
+  outputPath = file.path(tempDir, "splitAcuteTherapy_ageWindowMultiple"),
+  minCellCount = 5,
+  censorType = "mean",
+  ageWindow = c(0, 18, 25, 30, 40, 50, 60, 150)
+)
+```
+
+### archiveName
+Finally we can also specify an `archiveName` which is the name of a zip-file to zip all our output csv-files to.
+```{r archiveName}
+export(
+  andromeda = includeEndDate,
+  outputPath = file.path(tempDir, "includeEndDate"),
+  minCellCount = 5,
+  censorType = "mean",
+  ageWindow = 3,
+  archiveName = "output.zip"
+)
+```
+## executeTreatmentPatterns
+Instead of using `computePathways` and `export`, instead we could use `executeTreatmentPatterns`. Which is an all-in-one function that trades full control for convenience.
+```{r executeTreatmentPatternsCDMConnector}
+executeTreatmentPatterns(
   cohorts = cohorts,
-  cohortTableName = "CohortTable",
-  outputPath = allDir,
-  connectionDetails = connectionDetails,
-  cdmSchema = "main",
-  resultSchema = "main",
-  # Optional settings
-  includeTreatments = "startDate",
-  periodPriorToIndex = 0,
+  cohortTableName = "cohort_table",
+  outputPath = file.path(tempDir, "all-in-one"),
+  cdm = cdm,
   minEraDuration = 0,
-  splitEventCohorts = "",
-  splitTime = 30,
   eraCollapseSize = 30,
   combinationWindow = 30,
-  minPostCombinationDuration = 30,
-  filterTreatments = "First",
-  maxPathLength = 5,
-  minFreq = 5,
-  addNoPaths = TRUE
+  minCellCount = 5
 )
 ```
 
-### Segmented
-The segmented approach allows you to investigate the patient-level intermediate files by querying the andromeda environment.
-```{r eval=FALSE}
-andromeda <- TreatmentPatterns::computePathways(
+When using `DatabaseConnector` we can substitute the `cdm` object with `connectionDetails`, `cdmSchema`, `resultSchema`, and `tempEmulationSchema`.
+```{r executeTreatmentPatternsDatabaseConnector, eval=FALSE}
+executeTreatmentPatterns(
   cohorts = cohorts,
-  cohortTableName = "CohortTable",
-  connectionDetails = connectionDetails,
+  cohortTableName = "cohort_table",
+  outputPath = file.path(tempDir, "all-in-one"),
+  connectionDetails = Eunomia::getEunomiaConnectionDetails(),
   cdmSchema = "main",
-  resultSchema = "main"
-)
-
-export(andromeda = andromeda, outputPath = file.path(tempDir, "segmented"))
-```
-
-```{r intermediateResults, eval=FALSE}
-names(andromeda)
-```
-
-```{r treatmentHistory, eval=FALSE}
-andromeda$treatmentHistory
-```
-
-The files inside the andromeda environment can be exported using the export function.
-```{r eval=FALSE}
-segDir <- file.path(tempDir, "segmented")
-TreatmentPatterns::export(andromeda, outputPath = segDir)
-```
-
-## CDMConnector
-```{r eval=FALSE}
-cdmDir <- file.path(tempDir, "CDMCon")
-
-con <- DBI::dbConnect(duckdb::duckdb(), eunomia_dir())
-cdm <- CDMConnector::cdm_from_con(
-  con = con,
-  cdm_schema = "main",
-  write_schema = "main"
-)
-
-TreatmentPatterns::executeTreatmentPatterns(
-  cohorts = cohorts,
-  cohortTableName = "CohortTable",
-  outputPath = cdmDir,
-  cdm = cdm
+  resultSchema = "main",
+  tempEmulationSchema = NULL,
+  minEraDuration = 0,
+  eraCollapseSize = 30,
+  combinationWindow = 30,
+  minCellCount = 5
 )
 ```
 
-## Evaluating results
-```{r, eval=FALSE}
-treatmentPathways <- read.csv(file.path(allDir, "treatmentPathways.csv"))
 
-data <- treatmentPathways %>%
-  filter(sex == "all") %>%
-  filter(age == "all") %>%
-  filter(indexYear == "all") %>%
-  filter(path != "None")
-```
+```{r cleanup, include=FALSE}
+# Remove temp files
+unlink(tempDir, recursive = TRUE)
 
-```{r sunburst, eval=FALSE}
-TreatmentPatterns::createSunburstPlot2(data)
-```
+# Close Andromeda objects
+Andromeda::close(defaultSettings)
+Andromeda::close(minEra60)
+Andromeda::close(splitAcuteTherapy)
+Andromeda::close(includeEndDate)
 
-```{r sankey, eval=FALSE}
-TreatmentPatterns::createSankeyDiagram2(data)
+# Close connection to CDM Reference
+DBI::dbDisconnect(conn = con)
+rm(defaultSettings, minEra60, splitAcuteTherapy, includeEndDate, con, cdm)
 ```
