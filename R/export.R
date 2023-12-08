@@ -159,9 +159,13 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     utils::zip(
       zipfile = zipPath,
       files = c(
-        treatmentPathwaysPath, countsYearPath, countsAgePath, countsSexPath,
+        treatmentPathwaysPath,
+        countsYearPath,
+        countsAgePath,
+        countsSexPath,
         statsTherapyPath
-      )
+      ),
+      flags = "-j"
     )
   }
   return(invisible(NULL))

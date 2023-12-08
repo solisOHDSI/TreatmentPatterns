@@ -13,20 +13,10 @@
 #' @template param_cdmSchema
 #' @template param_resultSchema
 #' @param tempEmulationSchema (`character(1)`) Schema to emulate temp tables.
-#' @template param_includeTreatments
-#' @template param_periodPriorToIndex
 #' @template param_minEraDuration
-#' @template param_splitEventCohorts
-#' @template param_splitTime
 #' @template param_eraCollapseSize
 #' @template param_combinationWindow
-#' @template param_minPostCombinationDuration
-#' @template param_filterTreatments
-#' @template param_maxPathLength
 #' @template param_minCellCount
-#' @template param_censorType
-#' @template param_ageWindow
-#' @template param_archiveName
 #'
 #' @return (`invisible(NULL)`)
 #' @export
@@ -83,20 +73,10 @@ executeTreatmentPatterns <- function(
     cdmSchema = NULL,
     resultSchema = NULL,
     tempEmulationSchema = NULL,
-    includeTreatments = "startDate",
-    periodPriorToIndex = 0,
     minEraDuration = 0,
-    splitEventCohorts = NULL,
-    splitTime = NULL,
     eraCollapseSize = 30,
     combinationWindow = 30,
-    minPostCombinationDuration = 30,
-    filterTreatments = "First",
-    maxPathLength = 5,
-    minCellCount = 5,
-    censorType = "mean",
-    ageWindow = 10,
-    archiveName = NULL) {
+    minCellCount = 5) {
   checkmate::assert_character(outputPath, len = 1, null.ok = FALSE)
   checkmate::assert_integerish(minCellCount, len = 1, null.ok = FALSE, lower = 0)
 
@@ -109,16 +89,16 @@ executeTreatmentPatterns <- function(
     cdmSchema = cdmSchema,
     resultSchema = resultSchema,
     tempEmulationSchema = tempEmulationSchema,
-    includeTreatments = includeTreatments,
-    periodPriorToIndex = periodPriorToIndex,
+    includeTreatments = "startDate",
+    periodPriorToIndex = 0,
     minEraDuration = minEraDuration,
-    splitEventCohorts = splitEventCohorts,
-    splitTime = splitTime,
+    splitEventCohorts = NULL,
+    splitTime = NULL,
     eraCollapseSize = eraCollapseSize,
     combinationWindow = combinationWindow,
-    minPostCombinationDuration = minPostCombinationDuration,
-    filterTreatments = filterTreatments,
-    maxPathLength = maxPathLength
+    minPostCombinationDuration = 30,
+    filterTreatments = "First",
+    maxPathLength = 5
   )
   
   withr::defer({
@@ -135,10 +115,10 @@ executeTreatmentPatterns <- function(
   TreatmentPatterns::export(
     andromeda = andromeda,
     outputPath = outputPath,
-    ageWindow = ageWindow,
+    ageWindow = 5,
     minCellCount = minCellCount,
-    censorType = censorType,
-    archiveName = archiveName
+    censorType = "mean",
+    archiveName = "TreatmentPatterns-Output.zip"
   )
   return(invisible(NULL))
 }
