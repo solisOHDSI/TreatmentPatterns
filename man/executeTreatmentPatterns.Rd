@@ -13,20 +13,10 @@ executeTreatmentPatterns(
   cdmSchema = NULL,
   resultSchema = NULL,
   tempEmulationSchema = NULL,
-  includeTreatments = "startDate",
-  periodPriorToIndex = 0,
   minEraDuration = 0,
-  splitEventCohorts = NULL,
-  splitTime = NULL,
   eraCollapseSize = 30,
   combinationWindow = 30,
-  minPostCombinationDuration = 30,
-  filterTreatments = "First",
-  maxPathLength = 5,
-  minCellCount = 5,
-  censorType = "mean",
-  ageWindow = 10,
-  archiveName = NULL
+  minCellCount = 5
 )
 }
 \arguments{
@@ -57,21 +47,8 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 
 \item{tempEmulationSchema}{(\code{character(1)}) Schema to emulate temp tables.}
 
-\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
-
-\item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr
-Number of days prior to the index date of the target cohort | that event
-cohorts are allowed to start}
-
 \item{minEraDuration}{(\code{integer(1)}: \code{0})\cr
 Minimum time an event era should last to be included in analysis}
-
-\item{splitEventCohorts}{(\code{character(n)}: \code{""})\cr
-Specify event cohort to split in acute (< X days) and therapy (>= X days)}
-
-\item{splitTime}{(\code{integer(1)}: \code{30})\cr
-Specify number of days (X) at which each of the split event cohorts should
-be split in acute and therapy}
 
 \item{eraCollapseSize}{(\code{integer(1)}: \code{30})\cr
 Window of time between which two eras of the same event cohort are collapsed
@@ -81,33 +58,9 @@ into one era}
 Window of time two event cohorts need to overlap to be considered a
 combination treatment}
 
-\item{minPostCombinationDuration}{(\code{integer(1)}: \code{30})\cr
-Minimum time an event era before or after a generated combination treatment
-should last to be included in analysis}
-
-\item{filterTreatments}{(\code{character(1)}: \code{"First"} ["first", "Changes", "all"])\cr
-Select first occurrence of (‘First’); changes between (‘Changes’); or all
-event cohorts (‘All’).}
-
-\item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
-Maximum number of steps included in treatment pathway}
-
 \item{minCellCount}{(\code{integer(1)}: \code{5})\cr
 Minimum count required per pathway. Censors data below \code{x} as \verb{<x}. This
 minimum value will carry over to the sankey diagram and sunburst plot.}
-
-\item{censorType}{(\code{character(1)})\cr
-\describe{
-\item{\code{"cellCount"}}{Censors pathways <\code{cellCount} to \code{cellCount}.}
-\item{\code{"remove"}}{Censors pathways <\code{cellCount} by removing them completely.}
-\item{\code{"mean"}}{Censors pathways <\code{cellCount} to the mean of all frequencies below \code{cellCount}}
-}}
-
-\item{ageWindow}{(\code{integer(1)}: \code{10})\cr
-Number of years to bin age groups into.}
-
-\item{archiveName}{(\code{character(1)}: \code{NULL})\cr
-If not \code{NULL} adds the exported files to a ZIP-file with the specified archive name.}
 }
 \value{
 (\code{invisible(NULL)})
@@ -119,6 +72,7 @@ outcomes, you can run \link[TreatmentPatterns]{computePathways} and
 \link[TreatmentPatterns]{export} separately.
 }
 \examples{
+\donttest{
 library(TreatmentPatterns)
 library(CDMConnector)
 library(dplyr)
@@ -159,4 +113,5 @@ executeTreatmentPatterns(
 )
     
 DBI::dbDisconnect(con, shutdown = TRUE)
+}
 }

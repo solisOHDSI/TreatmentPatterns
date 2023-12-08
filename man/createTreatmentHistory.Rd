@@ -27,7 +27,11 @@ Andromeda object.}
 Number of days prior to the index date of the target cohort | that event
 cohorts are allowed to start}
 
-\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
+\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr
+\describe{
+\item{\code{"startDate"}}{Include treatments after the target cohort start date and onwards.}
+\item{\code{"endDate"}}{Include treatments before target cohort end date and before.}
+}}
 }
 \value{
 (\code{data.frame()})\cr

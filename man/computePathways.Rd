@@ -50,7 +50,11 @@ Optional; In congruence with \code{connectionDetails} and \code{cdmSchema}. Igno
 
 \item{tempEmulationSchema}{Schema used to emulate temp tables}
 
-\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr}
+\item{includeTreatments}{(\code{character(1)}: \code{"startDate"})\cr
+\describe{
+\item{\code{"startDate"}}{Include treatments after the target cohort start date and onwards.}
+\item{\code{"endDate"}}{Include treatments before target cohort end date and before.}
+}}
 
 \item{periodPriorToIndex}{(\code{integer(1)}: \code{0})\cr
 Number of days prior to the index date of the target cohort | that event
@@ -95,6 +99,7 @@ Compute treatment patterns according to the specified parameters within
 specified cohorts.
 }
 \examples{
+\donttest{
 library(TreatmentPatterns)
 library(CDMConnector)
 library(dplyr)
@@ -135,4 +140,5 @@ outputEnv <- computePathways(
 
 Andromeda::close(outputEnv)
 DBI::dbDisconnect(con, shutdown = TRUE)
+}
 }

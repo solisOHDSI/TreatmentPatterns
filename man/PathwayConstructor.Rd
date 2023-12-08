@@ -112,7 +112,11 @@ Edit settings
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{includeTreatments}}{(\code{character(1)}: \code{"startDate"})\cr}
+\item{\code{includeTreatments}}{(\code{character(1)}: \code{"startDate"})\cr
+\describe{
+\item{\code{"startDate"}}{Include treatments after the target cohort start date and onwards.}
+\item{\code{"endDate"}}{Include treatments before target cohort end date and before.}
+}}
 
 \item{\code{periodPriorToIndex}}{(\code{integer(1)}: \code{0})\cr
 Number of days prior to the index date of the target cohort | that event
