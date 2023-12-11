@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
       </span>
     </div>
 
@@ -32,13 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.6.1]</a>
     </li>
     <li>
-      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+      <a href="../articles/usingTreatmentPatternsShinyModules.html">Using TreatmentPatterns' Shiny Modules</a>
     </li>
     <li>
-      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
+      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
+    </li>
+    <li>
+      <a href="../articles/DefiningCohorts.html">1. Defining Cohorts</a>
     </li>
   </ul></li>
 <li>
@@ -142,23 +145,9 @@ A cdmInterface object created internally</p></dd>
 <p>Construct the pathways. Generates <code><a href="https://rdrr.io/pkg/Andromeda/man/andromeda_constructor.html" class="external-link">Andromeda::andromeda()</a></code> objects,
 which can be fetched using <code>self$getAndromeda()</code>.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PathwayConstructor</span><span class="op">$</span><span class="fu">construct</span><span class="op">(</span><span class="va">minEraDuration</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">PathwayConstructor</span><span class="op">$</span><span class="fu">construct</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
-<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>minEraDuration</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
-Minimum time an event era should last to be included in analysis</p></dd>
-
-
-<dt><code>minEraDuration</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
-Minimum time an event era should last to be included in analysis</p></dd>
-
-
-</dl><p></p></div>
-</div>
 
 </div><p></p><hr><a id="method-PathwayConstructor-getAndromeda"></a><div class="section">
 <h3 id="method-getandromeda-">Method <code>getAndromeda()</code><a class="anchor" aria-label="anchor" href="#method-getandromeda-"></a></h3>
@@ -180,32 +169,33 @@ Minimum time an event era should last to be included in analysis</p></dd>
 <span>  includeTreatments <span class="op">=</span> <span class="st">"startDate"</span>,</span>
 <span>  periodPriorToIndex <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  minEraDuration <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  splitEventCohorts <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  splitTime <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  splitEventCohorts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  splitTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  eraCollapseSize <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  combinationWindow <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  minPostCombinationDuration <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  filterTreatments <span class="op">=</span> <span class="st">"First"</span>,</span>
-<span>  maxPathLength <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  addNoPaths <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  maxPathLength <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>includeTreatments</code></dt>
-<dd><p>(<code>character(1)</code>: <code>"startDate"</code>)<br></p></dd>
+<dd><p>(<code>character(1)</code>: <code>"startDate"</code>)<br></p><dl><dt><code>"startDate"</code></dt>
+<dd><p>Include treatments after the target cohort start date and onwards.</p></dd>
+
+<dt><code>"endDate"</code></dt>
+<dd><p>Include treatments before target cohort end date and before.</p></dd>
+
+
+</dl></dd>
 
 
 <dt><code>periodPriorToIndex</code></dt>
 <dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
 Number of days prior to the index date of the target cohort | that event
 cohorts are allowed to start</p></dd>
-
-
-<dt><code>minEraDuration</code></dt>
-<dd><p>(<code>integer(1)</code>: <code>0</code>)<br>
-Minimum time an event era should last to be included in analysis</p></dd>
 
 
 <dt><code>minEraDuration</code></dt>
@@ -253,12 +243,6 @@ event cohorts (‘All’).</p></dd>
 Maximum number of steps included in treatment pathway</p></dd>
 
 
-<dt><code>addNoPaths</code></dt>
-<dd><p>(<code>logical(1)</code>: <code>TRUE</code>)<br>
-Select to include untreated persons without treatment pathway in the
-sunburst plot</p></dd>
-
-
 </dl><p></p></div>
 </div>
 <div class="section">
@@ -286,7 +270,7 @@ sunburst plot</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 

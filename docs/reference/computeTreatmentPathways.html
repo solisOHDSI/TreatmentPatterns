@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
       </span>
     </div>
 
@@ -32,13 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.6.1]</a>
     </li>
     <li>
-      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+      <a href="../articles/usingTreatmentPatternsShinyModules.html">Using TreatmentPatterns' Shiny Modules</a>
     </li>
     <li>
-      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
+      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
+    </li>
+    <li>
+      <a href="../articles/DefiningCohorts.html">1. Defining Cohorts</a>
     </li>
   </ul></li>
 <li>
@@ -69,25 +72,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">computeTreatmentPathways</span><span class="op">(</span><span class="va">treatmentHistory</span>, <span class="va">ageWindow</span>, <span class="va">minFreq</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">computeTreatmentPathways</span><span class="op">(</span><span class="va">treatmentHistory</span>, <span class="va">ageWindow</span>, <span class="va">minCellCount</span>, <span class="va">censorType</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>treatmentHistory</dt>
-<dd><p>(<code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code>)
-Patient level Treatment History data.frame</p></dd>
+<dd><p>data.frame()</p></dd>
 
 
 <dt>ageWindow</dt>
-<dd><p>(<code>integer(1)</code>: <code>10</code>)<br>
-Number of years to bin age groups into.</p></dd>
+<dd><p>numeric(n)</p></dd>
 
 
-<dt>minFreq</dt>
-<dd><p>(<code>integer(1)</code>: <code>5</code>)<br>
-Minimum frequency required per pathway. Censors data below <code>x</code> as <code>&lt;x</code>. This
-minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
+<dt>minCellCount</dt>
+<dd><p>numeric(1)</p></dd>
+
+
+<dt>censorType</dt>
+<dd><p>character(1)</p></dd>
 
 </dl></div>
     <div id="value">
