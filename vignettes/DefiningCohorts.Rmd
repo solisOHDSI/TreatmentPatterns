@@ -66,7 +66,7 @@ Cohorts specified as JSON may be generated using [CohortGenerator](https://ohdsi
 
 Specifying a cohort for Viral Sinusitis with CapR may look like this:
 
-```{r}
+```{r Capr, eval=FALSE}
 library(Capr)
 
 viralSinusitis <- cs(
