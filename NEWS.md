@@ -9,8 +9,8 @@
 * Renamed `minFreq` parameter to `minCellCount`.
 * Added Shiny app with exported module classes.
 * Added censoring options of treatment pathways falling below the `minCellCount`.
-* Simplified part of `computePathways()`
-* Significantly improved performance of `export()`
+* Simplified part of `computePathways()`.
+* Significantly improved performance of `export()`.
 
 
 # TreatmentPatterns 2.6.0
