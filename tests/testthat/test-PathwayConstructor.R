@@ -1,12 +1,11 @@
 library(testthat)
 library(TreatmentPatterns)
 
-
-cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
-
 test_that("new", {
   skip_on_cran()
+  
   globals <- generateCohortTableCDMC()
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
   
   pathwayConstructor <- TreatmentPatterns:::PathwayConstructor$new(
     cohorts = globals$cohorts,
@@ -19,7 +18,9 @@ test_that("new", {
 
 test_that("getSettings", {
   skip_on_cran()
+  
   globals <- generateCohortTableCDMC()
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
   
   pathwayConstructor <- TreatmentPatterns:::PathwayConstructor$new(
     cohorts = globals$cohorts,
@@ -35,7 +36,9 @@ test_that("getSettings", {
 
 test_that("editSettings", {
   skip_on_cran()
+  
   globals <- generateCohortTableCDMC()
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
   
   pathwayConstructor <- TreatmentPatterns:::PathwayConstructor$new(
     cohorts = globals$cohorts,
@@ -54,7 +57,9 @@ test_that("editSettings", {
 
 test_that("getAndromeda", {
   skip_on_cran()
+  
   globals <- generateCohortTableCDMC()
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
   
   pathwayConstructor <- TreatmentPatterns:::PathwayConstructor$new(
     cohorts = globals$cohorts,
@@ -69,7 +74,9 @@ test_that("getAndromeda", {
 
 test_that("construct", {
   skip_on_cran()
+  
   globals <- generateCohortTableCDMC()
+  cdmInterface <- TreatmentPatterns:::CDMInterface$new(cdm = globals$cdm)
   
   pathwayConstructor <- TreatmentPatterns:::PathwayConstructor$new(
     cohorts = globals$cohorts,
