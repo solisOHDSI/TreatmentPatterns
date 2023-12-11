@@ -2,6 +2,8 @@
 #'
 #' Constructs the pathways.
 #'
+#' @noRd
+#'
 #' @param settings (`data.frame`)
 #' @param cohorts (`data.frame`)
 #' @param andromeda (`Andromeda::andromeda()`)
@@ -149,6 +151,8 @@ constructPathways <- function(
 
 #' createTreatmentHistory
 #'
+#' @noRd
+#'
 #' @template param_andromeda
 #' @param targetCohortIds (`numeric(n)`)
 #' @param eventCohortIds (`numeric(n)`)
@@ -242,6 +246,8 @@ createTreatmentHistory <- function(
 #' Splits the treatmentHistory data.frame based on event cohorts into ‘acute’
 #' and ‘therapy’ cohorts.
 #'
+#' @noRd
+#'
 #' @param splitEventCohorts (`character(n)`)
 #'
 #' @param splitTime (`integer(1)`)
@@ -299,6 +305,8 @@ doSplitEventCohorts <- function(
 #'
 #' Updates the treatmentHistory data.frame where if gapSame is smaller than the
 #' specified era collapse size (eraCollapseSize) are collapsed
+#'
+#' @noRd
 #'
 #' @param andromeda (`Andromeda::andromeda()`)
 #' @param eraCollapseSize (`integer(1)`)
@@ -370,6 +378,8 @@ doEraCollapse <- function(andromeda, eraCollapseSize) {
 #' a modified treatmentHistory dataframe. The returned treatmentHistory
 #' dataframe always has the property that a person is only in one event cohort,
 #' which might be a combination event cohort, at any point time.
+#'
+#' @noRd
 #'
 #' @param combinationWindow (`integer(1)`)
 #' @param minPostCombinationDuration (`integer(1)`)
@@ -597,6 +607,8 @@ doCombinationWindow <- function(
 #' Help function for doCombinationWindow that selects one overlapping drug era
 #' per person to modify in next iteration of the combination window.
 #'
+#' @noRd
+#'
 #' @param andromeda (`Andromeda::andromeda()`)
 #'
 #' @return (`invisible(NULL)`)
@@ -650,6 +662,8 @@ selectRowsCombinationWindow <- function(andromeda) {
 #'
 #' Updates the treatmentHistory data.frame where the desired event cohorts are
 #' maintained for the visualizations
+#'
+#' @noRd
 #'
 #' @param andromeda (`Andromeda::andromeda()`)
 #' @param filterTreatments (`character(1)`)
@@ -725,6 +739,8 @@ doFilterTreatments <- function(andromeda, filterTreatments) {
 #' addLabels
 #'
 #' Adds back cohort names to concept ids.
+#'
+#' @noRd
 #'
 #' @param andromeda (`Andromeda::andromeda()`)
 #'

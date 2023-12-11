@@ -2,6 +2,8 @@
 #'
 #' @description
 #' PathwayConstructor R6 object.
+#'
+#' @noRd
 PathwayConstructor <- R6::R6Class(
   classname = "PathwayConstructor",
   public = list(

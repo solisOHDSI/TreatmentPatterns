@@ -111,23 +111,6 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     censorType
   )
   
-  # nTotal <- andromeda$currentCohorts %>%
-  #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
-  #   dplyr::pull()
-  # 
-  # nTreated <- treatmentHistory %>%
-  #   dplyr::summarise(n = dplyr::n_distinct(.data$personId)) %>%
-  #   dplyr::pull()
-  
-  # treatmentPathways <- data.frame(treatmentPathways) %>%
-  #   dplyr::add_row(data.frame(
-  #     path = "None",
-  #     freq = nTotal - nTreated,
-  #     sex = "all",
-  #     age = "all",
-  #     indexYear = "all"
-  #   ))
-  
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
   
   # Summary statistics duration
@@ -172,6 +155,8 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
 }
 
 #' computeStatsTherapy
+#' 
+#' @noRd
 #'
 #' @template param_treatmentHistory
 #'
@@ -229,6 +214,8 @@ countAge <- function(treatmentHistory, minCellCount) {
 }
 
 #' computeCounts
+#'
+#' @noRd
 #'
 #' @template param_treatmentHistory
 #' @template param_minCellCount
@@ -352,6 +339,8 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #' @param censorType character(1)
 #'
 #' @return (`data.frame()`)
+#' 
+#' @noRd
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, censorType) {
   treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
   

@@ -120,6 +120,11 @@ ShinyApp <- R6::R6Class(
 #' @return (`shinyApp`)
 #'
 #' @export
+#' 
+#' @examples
+#' if (interactive()) {
+#'   launchResultsExplorer()
+#' }
 launchResultsExplorer <- function() {
   app <- ShinyApp$new("app")
   shiny::shinyApp(app$ui, app$server)

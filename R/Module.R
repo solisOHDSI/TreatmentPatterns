@@ -4,6 +4,8 @@
 #' Module super class
 #' 
 #' @field namespace Namespace of the module.
+#' 
+#' @export
 Module <- R6::R6Class(
   classname = "Module",
   

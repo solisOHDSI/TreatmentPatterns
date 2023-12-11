@@ -12,3 +12,8 @@ launchResultsExplorer()
 \description{
 Launches the ResultExplorer shinyApp.
 }
+\examples{
+if (interactive()) {
+  launchResultsExplorer()
+}
+}
