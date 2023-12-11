@@ -3,6 +3,7 @@
 export(CharacterizationPlots)
 export(InputHandler)
 export(InteractivePlots)
+export(Module)
 export(computePathways)
 export(createSankeyDiagram)
 export(createSankeyDiagram2)
