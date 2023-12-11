@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
       </span>
     </div>
 
@@ -32,13 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.6.1]</a>
     </li>
     <li>
-      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+      <a href="../articles/usingTreatmentPatternsShinyModules.html">Using TreatmentPatterns' Shiny Modules</a>
     </li>
     <li>
-      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
+      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
+    </li>
+    <li>
+      <a href="../articles/DefiningCohorts.html">1. Defining Cohorts</a>
     </li>
   </ul></li>
 <li>
@@ -74,7 +77,7 @@
 <span>  <span class="va">outputFile</span>,</span>
 <span>  returnHTML <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  minFreq <span class="op">=</span> <span class="fl">5</span></span>
+<span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -113,9 +116,9 @@ Logical to return HTML or not.</p><dl><dt><code>TRUE</code></dt>
 </dl></dd>
 
 
-<dt>minFreq</dt>
+<dt>minCellCount</dt>
 <dd><p>(<code>integer(1)</code>: <code>5</code>)<br>
-Minimum frequency required per pathway. Censors data below <code>x</code> as <code>&lt;x</code>. This
+Minimum count required per pathway. Censors data below <code>x</code> as <code>&lt;x</code>. This
 minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
 
 </dl></div>
@@ -146,9 +149,9 @@ minimum value will carry over to the sankey diagram and sunburst plot.</p></dd>
 <span class="r-in"><span>  <span class="va">treatmentPathways</span>,</span></span>
 <span class="r-in"><span>  <span class="va">outputFile</span>,</span></span>
 <span class="r-in"><span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  minFreq <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing Sankey diagram to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpMno2kV\mySankeyDiagram2f144fc23043html</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing Sankey diagram to C:\Users\MVANKE~1\AppData\Local\Temp\RtmpqmVXIm\mySankeyDiagram40cc1e6367d5html</span>
 </code></pre></div>
     </div>
   </div>
