@@ -126,6 +126,7 @@ test_that("fetchCohortTable: empty", {
 })
 
 test_that("Method: disconnect", {
+  skip_on_cran()
   connectionDetails <- Eunomia::getEunomiaConnectionDetails()
   
   cdmInterface <- TreatmentPatterns:::CDMInterface$new(
