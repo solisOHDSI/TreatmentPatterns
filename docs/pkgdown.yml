@@ -3,7 +3,8 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   PareReport: PareReport.html
-  CreatingCohorts: CreatingCohorts.html
-  RunningTreatmentPatterns: RunningTreatmentPatterns.html
-last_built: 2023-10-25T09:12Z
+  usingTreatmentPatternsShinyModules: usingTreatmentPatternsShinyModules.html
+  ComputingTreatmentPathways: ComputingTreatmentPathways.html
+  DefiningCohorts: DefiningCohorts.html
+last_built: 2023-12-11T10:59Z
 

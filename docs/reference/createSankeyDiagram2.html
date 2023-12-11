@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
       </span>
     </div>
 
@@ -32,13 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.5.0]</a>
+      <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.6.1]</a>
     </li>
     <li>
-      <a href="../articles/CreatingCohorts.html">Creating Cohorts</a>
+      <a href="../articles/usingTreatmentPatternsShinyModules.html">Using TreatmentPatterns' Shiny Modules</a>
     </li>
     <li>
-      <a href="../articles/RunningTreatmentPatterns.html">Running TreatmentPatterns</a>
+      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
+    </li>
+    <li>
+      <a href="../articles/DefiningCohorts.html">1. Defining Cohorts</a>
     </li>
   </ul></li>
 <li>
@@ -69,7 +72,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createSankeyDiagram2</span><span class="op">(</span><span class="va">treatmentPathways</span>, groupCombinations <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createSankeyDiagram2</span><span class="op">(</span></span>
+<span>  <span class="va">treatmentPathways</span>,</span>
+<span>  groupCombinations <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,6 +96,14 @@ The contents of the treatmentPathways.csv-file as a data.frame().</p></dd>
 
 
 </dl></dd>
+
+
+<dt>colors</dt>
+<dd><p>(<code>character(n)</code>) Vector of hex color codes.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Paramaters for <a href="https://rdrr.io/pkg/networkD3/man/sankeyNetwork.html" class="external-link">sankeyNetwork</a>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -110,8 +126,8 @@ The contents of the treatmentPathways.csv-file as a data.frame().</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">createSankeyDiagram2</span><span class="op">(</span><span class="va">treatmentPathways</span><span class="op">)</span></span></span>
-<div id="htmlwidget-aa8438f48e883d11e838" style="width:700px;height:432.632880098888px;" class="sankeyNetwork html-widget "></div>
-<script type="application/json" data-for="htmlwidget-aa8438f48e883d11e838">{"x":{"links":{"source":[0,0,0,1,2],"target":[3,4,5,5,5],"value":[1.21,2.83,41.62,9.699999999999999,44.65]},"nodes":{"name":["1. Acetaminophen","1. Amoxicillin+Clavulanate","1. Aspirin","2. Amoxicillin+Clavulanate","2. Aspirin","2. Stopped"],"group":["1. Acetaminophen","1. Amoxicillin+Clavulanate","1. Aspirin","2. Amoxicillin+Clavulanate","2. Aspirin","2. Stopped"]},"options":{"NodeID":"names","NodeGroup":"names","LinkGroup":null,"colourScale":"d3.scaleOrdinal(d3.schemeCategory20);","fontSize":12,"fontFamily":null,"nodeWidth":30,"nodePadding":10,"units":"%","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32,"sinksRight":true}},"evals":[],"jsHooks":[]}</script></code></pre></div>
+<div id="htmlwidget-f951685bea18484562c5" style="width:700px;height:432.632880098888px;" class="sankeyNetwork html-widget "></div>
+<script type="application/json" data-for="htmlwidget-f951685bea18484562c5">{"x":{"links":{"source":[0,0,0,1,2],"target":[3,4,5,5,5],"value":[1.21,2.83,41.62,9.699999999999999,44.65]},"nodes":{"name":["1.Acetaminophen","1.Amoxicillin+Clavulanate","1.Aspirin","2.Amoxicillin+Clavulanate","2.Aspirin","2.Stopped"],"group":["1.Acetaminophen","1.Amoxicillin+Clavulanate","1.Aspirin","2.Amoxicillin+Clavulanate","2.Aspirin","2.Stopped"]},"options":{"NodeID":"names","NodeGroup":"names","LinkGroup":null,"colourScale":"d3.scaleOrdinal([\"#1f77b4\", \"#ff7f0e\", \"#2ca02c\"])","fontSize":7,"fontFamily":null,"nodeWidth":15,"nodePadding":10,"units":"%","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32,"sinksRight":true}},"evals":[],"jsHooks":[]}</script></code></pre></div>
     </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
