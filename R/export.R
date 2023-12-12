@@ -182,6 +182,8 @@ computeStatsTherapy <- function(treatmentHistory) {
 
 countYear <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
+    dplyr::group_by(.data$personId) %>%
+    dplyr::slice(which.min(.data$indexYear)) %>%
     dplyr::group_by(.data$indexYear) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
@@ -193,6 +195,8 @@ countYear <- function(treatmentHistory, minCellCount) {
 
 countSex <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
+    dplyr::group_by(.data$personId) %>%
+    dplyr::slice(which.min(.data$indexYear)) %>%
     dplyr::group_by(.data$sex) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
@@ -204,6 +208,8 @@ countSex <- function(treatmentHistory, minCellCount) {
 
 countAge <- function(treatmentHistory, minCellCount) {
   treatmentHistory %>%
+    dplyr::group_by(.data$personId) %>%
+    dplyr::slice(which.min(.data$indexYear)) %>%
     dplyr::group_by(.data$age) %>%
     dplyr::count() %>%
     dplyr::ungroup() %>%
@@ -342,12 +348,12 @@ groupByAgeWindow <- function(treatmentHistory, ageWindow) {
 #' 
 #' @noRd
 computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, censorType) {
-  treatmentHistory <- groupByAgeWindow(treatmentHistory, ageWindow)
-  
-  treatmentPathways <- stratisfy(treatmentHistory)
+  treatmentPathways <- groupByAgeWindow(treatmentHistory, ageWindow)
   
   treatmentPathways <- treatmentPathways %>%
     dplyr::mutate(indexYear = as.character(.data$indexYear))
+  
+  treatmentPathways <- stratisfy(treatmentPathways)
   
   treatmentPathways[is.na(treatmentPathways)] <- "all"
   
@@ -358,7 +364,7 @@ computeTreatmentPathways <- function(treatmentHistory, ageWindow, minCellCount, 
   return(treatmentPathways)
 }
 
-stratisfyAgeSexYear <- function(treatmentHistory) {
+collapsePaths <- function(treatmentHistory) {
   treatmentHistory %>%
     dplyr::group_by(.data$personId, .data$indexYear) %>%
     dplyr::mutate(
@@ -371,6 +377,12 @@ stratisfyAgeSexYear <- function(treatmentHistory) {
     ungroup() %>%
     rowwise() %>%
     mutate(path = paste(.data$pathway, collapse = "-")) %>%
+    dplyr::group_by(.data$personId) %>%
+    dplyr::slice(which.min(.data$indexYear))
+}
+
+stratisfyAgeSexYear <- function(treatmentHistory) {
+  collapsePaths(treatmentHistory) %>%
     group_by(.data$path, .data$ageBin, .data$sex, .data$indexYear) %>%
     summarise(freq = n(), .groups = "drop") %>%
     mutate(
