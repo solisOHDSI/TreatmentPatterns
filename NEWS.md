@@ -1,3 +1,7 @@
+# TreatmentPatterns 2.6.2
+---------
+* Fixed spelling mistake 'summaryStatsTherapyDuraion' to 'summaryStatsTherapyDuration'
+
 # TreatmentPatterns 2.6.1
 ---------
 * Bumped R version to 4.2.1
