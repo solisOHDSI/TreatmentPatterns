@@ -1,117 +1,3 @@
-#' createSankeyDiagram
-#'
-#' Writes the Sankey diagram to a HTML-file, to a specified file path.
-#'
-#' @template param_treatmentPathways
-#' @template param_outputFile
-#' @template param_returnHTML
-#' @template param_groupCombinations
-#' @template param_minCellCount
-#'
-#' @export
-#'
-#' @returns invisible(NULL)
-#'
-#' @examples
-#' # treatmentPathways <- read.csv(treatmentPathways.csv)
-#' 
-#' # Dummy data, typically read from treatmentPathways.csv
-#' treatmentPathways <- data.frame(
-#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
-#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
-#'   freq = c(206, 6, 14, 48, 221),
-#'   sex = rep("all", 5),
-#'   age = rep("all", 5),
-#'   index_year = rep("all", 5)
-#' )
-#' 
-#' outputFile <- tempfile(pattern = "mySankeyDiagram", fileext = "html")
-#'
-#' createSankeyDiagram(
-#'   treatmentPathways,
-#'   outputFile,
-#'   groupCombinations = FALSE,
-#'   minCellCount = 5
-#' )
-createSankeyDiagram <- function(
-    treatmentPathways,
-    outputFile,
-    returnHTML = FALSE,
-    groupCombinations = FALSE,
-    minCellCount = 5) {
-  
-  treatmentPathways <- doGroupCombinations(
-    treatmentPathways = treatmentPathways,
-    groupCombinations = groupCombinations
-  )
-  
-  data <- treatmentPathways %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(path = stringr::str_split(.data$path, pattern = "-")) %>%
-    dplyr::mutate(freq = as.integer(.data$freq))
-
-  data <- data %>%
-    tidyr::unnest_wider(path, names_sep = "")
-
-  data <- data %>%
-    dplyr::group_by_at(grep("path", names(data))) %>%
-    dplyr::summarise(freq = sum(.data$freq), .groups = "drop")
-
-  data[is.na(data)] <- "Stopped"
-
-  result1 <- data %>%
-    mutate(
-      source = paste0("1.", .data$path1),
-      target = paste0("2.", .data$path2)
-    ) %>%
-    select("source", "target", "freq")
-
-  if (suppressWarnings(!is.null(data$path3))) {
-    result2 <- data %>%
-      mutate(
-        source = paste0("2.", .data$path2),
-        target = paste0("3.", .data$path3)
-      ) %>%
-      select("source", "target", "freq")
-
-    links <- dplyr::bind_rows(
-      result1, result2
-    )
-  } else {
-    links <- result1
-  }
-
-  links <- links %>%
-    dplyr::filter(.data$freq >= minCellCount) %>%
-    dplyr::mutate(`%` = round(freq / sum(freq) * 100, 2)) %>%
-    dplyr::select(-"freq")
-  
-  # Draw sankey network
-  plot <- googleVis::gvisSankey(
-    links,
-    from = "source",
-    to = "target",
-    weight = "%",
-    chartid = 1,
-    options = list(sankey = "{node: { colors: ['#B5482A'], width: 5}}")
-  )
-
-  if (returnHTML) {
-    return(plot)
-  } else {
-    message(sprintf("Writing Sankey diagram to %s", file.path(outputFile)))
-    
-    writeLines(
-      text = plot$html$chart,
-      con = file.path(outputFile)
-    )
-    
-    return(invisible(NULL))
-  }
-}
-utils::globalVariables(c(".", "freq", "combination"))
-
-
 splitPathItems <- function(treatmentPathways) {
   data <- treatmentPathways %>%
     rowwise() %>%
@@ -215,7 +101,7 @@ getColorPalette <- function(treatmentPathways) {
   return(palette[0:n])
 }
 
-#' createSankeyDiagram2
+#' createSankeyDiagram
 #' 
 #' Create sankey diagram, will replace `createSankeyDiagram`.
 #'
@@ -238,8 +124,8 @@ getColorPalette <- function(treatmentPathways) {
 #'   index_year = rep("all", 5)
 #' )
 #' 
-#' createSankeyDiagram2(treatmentPathways)
-createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL, ...) {
+#' createSankeyDiagram(treatmentPathways)
+createSankeyDiagram <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL, ...) {
   treatmentPathways <- doGroupCombinations(
     treatmentPathways = treatmentPathways,
     groupCombinations = groupCombinations

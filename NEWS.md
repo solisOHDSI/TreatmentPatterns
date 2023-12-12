@@ -1,7 +1,9 @@
 # TreatmentPatterns 2.6.2
 ---------
 * Fixed spelling mistake 'summaryStatsTherapyDuraion' to 'summaryStatsTherapyDuration'.
-* Added error when only one level of data is availible in the data when computing a sankey diagram.
+* Added error when only one level of data is available in the data when computing a sankey diagram.
+* Removed `createSankeyDiagram`
+* Renamed `createSankeyDiagram2` to `createSankeyDiagram`
 
 # TreatmentPatterns 2.6.1
 ---------

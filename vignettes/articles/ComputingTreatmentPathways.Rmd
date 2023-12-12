@@ -418,7 +418,7 @@ createSunburstPlot2(treatmentPathways = all, legend = list(w = 400))
 
 Or a Sankey Diagram.
 ```{r sankeyDiagram}
-createSankeyDiagram2(all)
+createSankeyDiagram(all)
 ```
 
 Both plots are interactive in an HTML-environment, and are easy to include in shiny applications.
