@@ -413,7 +413,7 @@ read.csv(file.path(tempDir, "default", "metadata.csv"))
 ### Sunburst Plot & Sankey Diagram
 From the filtered treatmentPathways file we are able to create a sunburst plot.
 ```{r sunburstPlot}
-createSunburstPlot2(treatmentPathways = all, legend = list(w = 400))
+createSunburstPlot(treatmentPathways = all, legend = list(w = 400))
 ```
 
 Or a Sankey Diagram.

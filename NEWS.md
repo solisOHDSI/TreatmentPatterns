@@ -4,6 +4,8 @@
 * Added error when only one level of data is available in the data when computing a sankey diagram.
 * Removed `createSankeyDiagram`
 * Renamed `createSankeyDiagram2` to `createSankeyDiagram`
+* Removed `createSunburstPlot`
+* Renamed `createSunburstPlot2` to `createSunburstPlot`
 
 # TreatmentPatterns 2.6.1
 ---------
