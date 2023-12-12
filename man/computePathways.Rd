@@ -83,8 +83,8 @@ Minimum time an event era before or after a generated combination treatment
 should last to be included in analysis}
 
 \item{filterTreatments}{(\code{character(1)}: \code{"First"} ["first", "Changes", "all"])\cr
-Select first occurrence of (b
-event cohorts (b}
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).}
 
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
 Maximum number of steps included in treatment pathway}
