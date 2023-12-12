@@ -254,6 +254,10 @@ createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, c
   
   data <- splitPathItems(treatmentPathways)
   
+  if (ncol(data) <= 2) {
+    stop("Cannot compute Sankey Diagram as there is only one level in the data.")
+  }
+  
   linkedData <- createLinkedData(data)
   
   networkD3::sankeyNetwork(

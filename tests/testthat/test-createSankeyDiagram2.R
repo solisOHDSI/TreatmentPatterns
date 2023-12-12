@@ -80,3 +80,18 @@ test_that("2 path levels", {
   
   expect_identical(pLabels, actualLabels)
 })
+
+test_that("1 path levels", {
+  treatmentPathways <- data.frame(
+    path = c("a", "b", "c"),
+    freq = c(55, 8, 11),
+    sex = rep("all", 3),
+    age = rep("all", 3),
+    indexYear = rep("all", 3)
+  )
+  
+  expect_error(
+    createSankeyDiagram2(treatmentPathways),
+    "Cannot compute Sankey Diagram as there is only one level in the data."
+  )
+})

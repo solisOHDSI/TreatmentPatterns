@@ -1,6 +1,7 @@
 # TreatmentPatterns 2.6.2
 ---------
-* Fixed spelling mistake 'summaryStatsTherapyDuraion' to 'summaryStatsTherapyDuration'
+* Fixed spelling mistake 'summaryStatsTherapyDuraion' to 'summaryStatsTherapyDuration'.
+* Added error when only one level of data is availible in the data when computing a sankey diagram.
 
 # TreatmentPatterns 2.6.1
 ---------
