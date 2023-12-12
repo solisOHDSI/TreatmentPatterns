@@ -476,7 +476,7 @@ getFilteredSubjects <- function(andromeda) {
     dplyr::filter(.data$type == "target") %>%
     dplyr::pull(.data$cohortId)
   
-  andromeda$currentCohorts %>%
+  out <- andromeda$currentCohorts %>%
     dplyr::anti_join(andromeda$treatmentHistory, join_by(personId == personId)) %>%
     dplyr::filter(.data$cohortId == targetCohortId) %>%
     dplyr::mutate(
@@ -487,4 +487,10 @@ getFilteredSubjects <- function(andromeda) {
       eventSeq = 1) %>%
     dplyr::select("personId", "indexYear", "age", "sex", "eventCohortName", "eventCohortId", "eventSeq") %>%
     dplyr::collect()
+  
+  if (nrow(out) == 0) {
+    return(NULL)
+  } else {
+    return(out)
+  }
 }
