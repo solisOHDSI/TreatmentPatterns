@@ -114,8 +114,8 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
   
   # Summary statistics duration
-  statsTherapyPath <- file.path(outputPath, "summaryStatsTherapyDuraion.csv")
-  message(sprintf("Writing summaryStatsTherapyDuraion to %s", statsTherapyPath))
+  statsTherapyPath <- file.path(outputPath, "summaryStatsTherapyDuration.csv")
+  message(sprintf("Writing summaryStatsTherapyDuration to %s", statsTherapyPath))
   statsTherapy <- computeStatsTherapy(treatmentHistory)
   write.csv(statsTherapy, file = statsTherapyPath, row.names = FALSE)
   
