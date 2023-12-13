@@ -20,47 +20,49 @@
 #' library(CDMConnector)
 #' library(dplyr)
 #'
-#' withr::local_envvar(
-#'   EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
-#' )
-#'
-#' downloadEunomiaData(overwrite = TRUE)
-#'
-#' con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
-#' cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
-#'
-#' cohortSet <- readCohortSet(
-#'   path = system.file(package = "TreatmentPatterns", "exampleCohorts")
-#' )
-#'
-#' cdm <- generateCohortSet(
-#'   cdm = cdm,
-#'   cohortSet = cohortSet,
-#'   name = "cohort_table"
-#' )
-#'
-#' cohorts <- cohortSet %>%
-#'   # Remove 'cohort' and 'json' columns
-#'   select(-"cohort", -"json") %>%
-#'   mutate(type = c("event", "event", "event", "event", "exit", "event", "event", "target")) %>%
-#'   rename(
-#'     cohortId = "cohort_definition_id",
-#'     cohortName = "cohort_name",
+#' if (require("CirceR", character.only = TRUE, quietly = TRUE)) {
+#'   withr::local_envvar(
+#'     EUNOMIA_DATA_FOLDER = Sys.getenv("EUNOMIA_DATA_FOLDER", unset = tempfile())
 #'   )
 #'
-#' outputEnv <- computePathways(
-#'   cohorts = cohorts,
-#'   cohortTableName = "cohort_table",
-#'   cdm = cdm
-#' )
+#'   downloadEunomiaData(overwrite = TRUE)
 #'
-#' export(
-#'   andromeda = outputEnv,
-#'   outputPath = tempdir()
-#' )
+#'   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+#'   cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 #'
-#' Andromeda::close(outputEnv)
-#' DBI::dbDisconnect(con, shutdown = TRUE)
+#'   cohortSet <- readCohortSet(
+#'     path = system.file(package = "TreatmentPatterns", "exampleCohorts")
+#'   )
+#'
+#'   cdm <- generateCohortSet(
+#'     cdm = cdm,
+#'     cohortSet = cohortSet,
+#'     name = "cohort_table"
+#'   )
+#'
+#'   cohorts <- cohortSet %>%
+#'     # Remove 'cohort' and 'json' columns
+#'     select(-"cohort", -"json") %>%
+#'     mutate(type = c("event", "event", "event", "event", "exit", "event", "event", "target")) %>%
+#'     rename(
+#'       cohortId = "cohort_definition_id",
+#'       cohortName = "cohort_name",
+#'     )
+#'
+#'   outputEnv <- computePathways(
+#'     cohorts = cohorts,
+#'     cohortTableName = "cohort_table",
+#'     cdm = cdm
+#'   )
+#'
+#'   export(
+#'     andromeda = outputEnv,
+#'     outputPath = tempdir()
+#'   )
+#'
+#'   Andromeda::close(outputEnv)
+#'   DBI::dbDisconnect(con, shutdown = TRUE)
+#' }
 #' }
 export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, censorType = "minCellCount", archiveName = NULL) {
   collection <- checkmate::makeAssertCollection()
