@@ -28,9 +28,9 @@ minimum value will carry over to the sankey diagram and sunburst plot.}
 
 \item{censorType}{(\code{character(1)})\cr
 \describe{
-\item{\code{"cellCount"}}{Censors pathways <\code{cellCount} to \code{cellCount}.}
-\item{\code{"remove"}}{Censors pathways <\code{cellCount} by removing them completely.}
-\item{\code{"mean"}}{Censors pathways <\code{cellCount} to the mean of all frequencies below \code{cellCount}}
+\item{\code{"minCellCount"}}{Censors pathways <\code{minCellCount} to \code{minCellCount}.}
+\item{\code{"remove"}}{Censors pathways <\code{minCellCount} by removing them completely.}
+\item{\code{"mean"}}{Censors pathways <\code{minCellCount} to the mean of all frequencies below \code{minCellCount}}
 }}
 
 \item{archiveName}{(\code{character(1)}: \code{NULL})\cr
