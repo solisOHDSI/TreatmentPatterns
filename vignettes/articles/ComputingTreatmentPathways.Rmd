@@ -397,10 +397,10 @@ head(age)
 head(sex)
 head(year)
 ```
-### summaryStatsTherapyDuraion
-The summaryStatsTherapyDuraion file contains some statistics pertaining combination and mono-therapies. Like the mean, median, minimum, and maximum durations. The standard deviation of durations, and the count of each treatment type.
-```{r summaryStatsTherapyDuraion}
-read.csv(file.path(tempDir, "default", "summaryStatsTherapyDuraion.csv"))
+### summaryStatsTherapyDuration
+The summaryStatsTherapyDuration file contains some statistics pertaining combination and mono-therapies. Like the mean, median, minimum, and maximum durations. The standard deviation of durations, and the count of each treatment type.
+```{r summaryStatsTherapyDuration}
+read.csv(file.path(tempDir, "default", "summaryStatsTherapyDuration.csv"))
 ```
 
 
