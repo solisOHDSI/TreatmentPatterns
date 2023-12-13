@@ -103,7 +103,7 @@ getColorPalette <- function(treatmentPathways) {
 
 #' createSankeyDiagram
 #' 
-#' Create sankey diagram, will replace `createSankeyDiagram`.
+#' Create sankey diagram.
 #'
 #' @template param_treatmentPathways
 #' @template param_groupCombinations
@@ -157,4 +157,33 @@ createSankeyDiagram <- function(treatmentPathways, groupCombinations = FALSE, co
     colourScale = colors,
     ...
   )
+}
+
+#' createSankeyDiagram2
+#' 
+#' [DEPRECATED] Create sankey diagram.
+#'
+#' @template param_treatmentPathways
+#' @template param_groupCombinations
+#' @param colors (`character(n)`) Vector of hex color codes.
+#' @param ... Paramaters for \link[networkD3]{sankeyNetwork}.
+#'
+#' @return (`htmlwidget`)
+#' @export
+#'
+#' @examples
+#' # Dummy data, typically read from treatmentPathways.csv
+#' treatmentPathways <- data.frame(
+#'   path = c("Acetaminophen", "Acetaminophen-Amoxicillin+Clavulanate",
+#'            "Acetaminophen-Aspirin", "Amoxicillin+Clavulanate", "Aspirin"),
+#'   freq = c(206, 6, 14, 48, 221),
+#'   sex = rep("all", 5),
+#'   age = rep("all", 5),
+#'   index_year = rep("all", 5)
+#' )
+#' 
+#' createSankeyDiagram(treatmentPathways)
+createSankeyDiagram2 <- function(treatmentPathways, groupCombinations = FALSE, colors = NULL, ...) {
+  warning("`createSankeyDiagram2()` is deprecated, please use `createSankeyDiagram()`")
+  createSankeyDiagram(treatmentPathways, groupCombinations, colors, ...)
 }
