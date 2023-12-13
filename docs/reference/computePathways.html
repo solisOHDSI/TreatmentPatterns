@@ -18,7 +18,7 @@ specified cohorts."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.2</span>
       </span>
     </div>
 
@@ -33,13 +33,13 @@ specified cohorts."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
+    </li>
+    <li>
       <a href="../articles/PareReport.html">PaRe Report: TreatmentPatterns [2.6.1]</a>
     </li>
     <li>
       <a href="../articles/usingTreatmentPatternsShinyModules.html">Using TreatmentPatterns' Shiny Modules</a>
-    </li>
-    <li>
-      <a href="../articles/ComputingTreatmentPathways.html">2. Computing Treatment Pathways</a>
     </li>
     <li>
       <a href="../articles/DefiningCohorts.html">1. Defining Cohorts</a>
@@ -194,8 +194,8 @@ should last to be included in analysis</p></dd>
 
 <dt>filterTreatments</dt>
 <dd><p>(<code>character(1)</code>: <code>"First"</code> ["first", "Changes", "all"])<br>
-Select first occurrence of (b
-event cohorts (b</p></dd>
+Select first occurrence of (‘First’); changes between (‘Changes’); or all
+event cohorts (‘All’).</p></dd>
 
 
 <dt>maxPathLength</dt>
@@ -227,41 +227,46 @@ data outcomes.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_envvar.html" class="external-link">local_envvar</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  EUNOMIA_DATA_FOLDER <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"EUNOMIA_DATA_FOLDER"</span>, unset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/downloadEunomiaData.html" class="external-link">downloadEunomiaData</a></span><span class="op">(</span>overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Download completed!</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdmFromCon</a></span><span class="op">(</span><span class="va">con</span>, cdmSchema <span class="op">=</span> <span class="st">"main"</span>, writeSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cohortSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/read_cohort_set.html" class="external-link">readCohortSet</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"TreatmentPatterns"</span>, <span class="st">"exampleCohorts"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateCohortSet.html" class="external-link">generateCohortSet</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
-<span class="r-in"><span>  cohortSet <span class="op">=</span> <span class="va">cohortSet</span>,</span></span>
-<span class="r-in"><span>  name <span class="op">=</span> <span class="st">"cohort_table"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cohorts</span> <span class="op">&lt;-</span> <span class="va">cohortSet</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="co"># Remove 'cohort' and 'json' columns</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="st">"cohort"</span>, <span class="op">-</span><span class="st">"json"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"exit"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    cohortId <span class="op">=</span> <span class="st">"cohort_definition_id"</span>,</span></span>
-<span class="r-in"><span>    cohortName <span class="op">=</span> <span class="st">"cohort_name"</span>,</span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://ohdsi.github.io/CirceR" class="external-link">"CirceR"</a></span>, character.only <span class="op">=</span> <span class="cn">TRUE</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_envvar.html" class="external-link">local_envvar</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    EUNOMIA_DATA_FOLDER <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"EUNOMIA_DATA_FOLDER"</span>, unset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">outputEnv</span> <span class="op">&lt;-</span> <span class="fu">computePathways</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span></span>
-<span class="r-in"><span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span></span>
-<span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/downloadEunomiaData.html" class="external-link">downloadEunomiaData</a></span><span class="op">(</span>overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdmFromCon</a></span><span class="op">(</span><span class="va">con</span>, cdmSchema <span class="op">=</span> <span class="st">"main"</span>, writeSchema <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">cohortSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/read_cohort_set.html" class="external-link">readCohortSet</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"TreatmentPatterns"</span>, <span class="st">"exampleCohorts"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateCohortSet.html" class="external-link">generateCohortSet</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
+<span class="r-in"><span>    cohortSet <span class="op">=</span> <span class="va">cohortSet</span>,</span></span>
+<span class="r-in"><span>    name <span class="op">=</span> <span class="st">"cohort_table"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">cohorts</span> <span class="op">&lt;-</span> <span class="va">cohortSet</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="co"># Remove 'cohort' and 'json' columns</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="st">"cohort"</span>, <span class="op">-</span><span class="st">"json"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"exit"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      cohortId <span class="op">=</span> <span class="st">"cohort_definition_id"</span>,</span></span>
+<span class="r-in"><span>      cohortName <span class="op">=</span> <span class="st">"cohort_name"</span>,</span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">outputEnv</span> <span class="op">&lt;-</span> <span class="fu">computePathways</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span></span>
+<span class="r-in"><span>    cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span></span>
+<span class="r-in"><span>    cdm <span class="op">=</span> <span class="va">cdm</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">Andromeda</span><span class="fu">::</span><span class="fu">close</span><span class="op">(</span><span class="va">outputEnv</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">con</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Download completed!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Construct treatment pathways, this may take a while for larger datasets.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Original number of rows: 8352</span>
@@ -279,7 +284,7 @@ data outcomes.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> FRFS Combinations: 0</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> LRFS Combinations: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> After combinationWindow: 555</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time needed to execute combination window 0.0691517194112142</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Time needed to execute combination window 0.0659989356994629</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Order the combinations.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> After filterTreatments: 554</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adding drug sequence number.</span>
@@ -287,9 +292,6 @@ data outcomes.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adding concept names.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ordering the combinations.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> constructPathways done.</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">Andromeda</span><span class="fu">::</span><span class="fu">close</span><span class="op">(</span><span class="va">outputEnv</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">con</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
