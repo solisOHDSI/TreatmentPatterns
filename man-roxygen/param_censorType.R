@@ -1,6 +1,6 @@
 #' @param censorType (`character(1)`)\cr
 #' \describe{
-#'   \item{`"cellCount"`}{Censors pathways <`cellCount` to `cellCount`.}
-#'   \item{`"remove"`}{Censors pathways <`cellCount` by removing them completely.}
-#'   \item{`"mean"`}{Censors pathways <`cellCount` to the mean of all frequencies below `cellCount`}
+#'   \item{`"minCellCount"`}{Censors pathways <`minCellCount` to `minCellCount`.}
+#'   \item{`"remove"`}{Censors pathways <`minCellCount` by removing them completely.}
+#'   \item{`"mean"`}{Censors pathways <`minCellCount` to the mean of all frequencies below `minCellCount`}
 #' }
