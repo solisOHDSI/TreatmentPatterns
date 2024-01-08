@@ -200,6 +200,25 @@ combineCombinations <- function(andromeda, iteration) {
     dplyr::mutate(durationEra = .data$eventEndDate - .data$eventStartDate)
 }
 
+fetchKnockedOutTreatments <- function(treatmentHistory, minFrac) {
+  fracTbl <- treatmentHistory %>%
+    dplyr::count(.data$eventCohortId, name = "count") %>%
+    dplyr::mutate(frac = as.double(.data$count) / as.double(sum(.data$count))) %>%
+    dplyr::collect()
+  
+  fracTbl[grepl("\\+", fracTbl$eventCohortId), ] %>%
+    dplyr::filter(.data$frac <= minFrac) %>%
+    dplyr::pull(.data$eventCohortId)
+}
+
+knockOut <- function(treatmentHistory, minFrac) {
+  knockedOut <- fetchKnockedOutTreatments(treatmentHistory, minFrac)
+  
+  treatmentHistory %>%
+    dplyr::filter(!.data$eventCohortId %in% knockedOut) %>%
+    dplyr::collect()
+}
+
 filterMinPostCombinationDuration <- function(treatmentHistory, minPostCombinationDuration) {
   treatmentHistory %>%
     dplyr::filter(.data$durationEra >= minPostCombinationDuration | is.na(.data$durationEra))
@@ -213,7 +232,7 @@ selectRelevantColumns <- function(treatmentHistory) {
     )
 }
 
-combineTreatments <- function(andromeda, combinationWindow, minPostCombinationDuration, iterations) {
+combineTreatments <- function(andromeda, combinationWindow, minPostCombinationDuration, minFrac, iterations) {
   treatmentHistory <- determineSwitch(andromeda, combinationWindow)
   treatmentHistory <- determineFRFS(treatmentHistory)
   andromeda$treatmentHistory <- determineLRFS(treatmentHistory)
@@ -230,6 +249,7 @@ combineTreatments <- function(andromeda, combinationWindow, minPostCombinationDu
   combineLRFS(andromeda, iterations)
   andromeda$treatmentHistory <- shiftLRFSStartDate(treatmentHistory)
   treatmentHistory <- combineCombinations(andromeda, iterations)
+  treatmentHistory <- knockOut(treatmentHistory, minFrac)
   
   treatmentHistory <- filterMinPostCombinationDuration(treatmentHistory, minPostCombinationDuration)
   
@@ -258,19 +278,21 @@ nSelectedRows <- function(andromeda) {
 #' @param combinationWindow (`integer(1)`)
 #' @param minPostCombinationDuration (`integer(1)`)
 #' @param andromeda (`Andromeda::andromeda()`)
+#' @param minFrac (`double(1)`)
 #'
 #' @return (`invisible(NULL)`)
 doCombinationWindow <- function(
     andromeda,
     combinationWindow,
-    minPostCombinationDuration) {
+    minPostCombinationDuration,
+    minFrac) {
   time1 <- Sys.time()
   
   selectRowsCombinationWindow(andromeda)
   
   iterations <- 1
   while (nSelectedRows(andromeda) != 0) {
-    combineTreatments(andromeda, combinationWindow, minPostCombinationDuration, iterations)
+    combineTreatments(andromeda, combinationWindow, minPostCombinationDuration, minFrac, iterations)
     iterations <- iterations + 1
   }
   
