@@ -155,7 +155,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minFreq = 5, archiveNa
       sex = "all",
       age = "all",
       indexYear = "all"
-    ))
+    )) %>% dplyr::distinct()
 
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
 
