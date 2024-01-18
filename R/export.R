@@ -111,7 +111,7 @@ export <- function(andromeda, outputPath, ageWindow = 10, minCellCount = 5, cens
     ageWindow,
     minCellCount,
     censorType
-  )
+  ) %>% dplyr::distinct()
   
   write.csv(treatmentPathways, file = treatmentPathwaysPath, row.names = FALSE)
   
