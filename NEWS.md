@@ -1,3 +1,7 @@
+# TreatmentPatterns 2.6.3
+---------
+* Fixed issue where there were duplicate rows in the exported treatmentPathways.csv file.
+
 # TreatmentPatterns 2.6.2
 ---------
 * Fixed spelling mistake 'summaryStatsTherapyDuraion' to 'summaryStatsTherapyDuration'.
