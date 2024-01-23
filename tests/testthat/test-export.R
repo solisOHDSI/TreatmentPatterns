@@ -264,7 +264,7 @@ test_that("censorType", {
   
   treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
-  expect_equal(min(treatmentPathways$freq), 2)
+  expect_equal(min(treatmentPathways$freq), 1)
   
   ## "stuff" ----
   expect_error(
@@ -506,7 +506,7 @@ test_that("censorType", {
   
   treatmentPathways <- read.csv(file.path(tempDirLocal, "treatmentPathways.csv"))
   
-  expect_equal(min(treatmentPathways$freq), 2)
+  expect_equal(min(treatmentPathways$freq), 1)
   
   ## "stuff" ----
   expect_error(

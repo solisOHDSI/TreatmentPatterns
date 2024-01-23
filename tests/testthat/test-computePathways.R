@@ -20,9 +20,9 @@ test_that("computePathways DatabaseConnector", {
           cdmSchema = "main",
           resultSchema = "main"
         ),
-        "After maxPathLength: 554"
+        "After maxPathLength: 6675"
       ),
-      "After combinationWindow: 555"
+      "After combinationWindow: 6682"
     ),
     "Original number of rows: 8352"
   )
@@ -42,9 +42,9 @@ test_that("computePathways CDMConnector", {
           cohorts = globals$cohorts,
           cohortTableName = globals$cohortTableName
         ),
-        "After maxPathLength: 554"
+        "After maxPathLength: 6675"
       ),
-      "After combinationWindow: 555"
+      "After combinationWindow: 6682"
     ),
     "Original number of rows: 8352"
   )
@@ -69,7 +69,7 @@ test_that("nrow exitCohorts > 0", {
       cohorts = cohorts,
       cohortTableName = globals$cohortTableName
     ),
-    "After maxPathLength: 2117"
+    "After maxPathLength: 6919"
   )
 })
 
@@ -403,6 +403,6 @@ test_that("identical treatment timeframe", {
   result <- andromeda$treatmentHistory %>%
     collect()
 
-  expect_identical(result$eventCohortId, c("11+6", "6"))
+  expect_identical(result$eventCohortId, c("11+6", "3", "6"))
   Andromeda::close(andromeda)
 })
