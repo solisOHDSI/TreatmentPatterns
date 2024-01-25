@@ -217,7 +217,7 @@ test_that("eraCollapseSize", {
     computePathways(
       cohorts = globals$cohorts,
       cohortTableName = globals$cohortTableName,
-      cdm = globals$cdm
+      cdm = globals$cdm,
       eraCollapseSize = ""
     ),
     " Must be of type.+'numeric'"
