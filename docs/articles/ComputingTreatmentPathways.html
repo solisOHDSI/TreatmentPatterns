@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.3</span>
       </span>
     </div>
 
@@ -109,35 +109,36 @@ we assume you are able to generate a cohort table using either
 </h2>
 <p>First we need to read in our cohorts.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cohortSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/read_cohort_set.html" class="external-link">readCohortSet</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: package 'CDMConnector' was built under R version 4.3.2</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cohortSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/read_cohort_set.html" class="external-link">readCohortSet</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"TreatmentPatterns"</span>, <span class="st">"exampleCohorts"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cohortSet</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
-<span><span class="co">##   cohort_definition_id cohort_name    cohort            json     </span></span>
-<span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>                    1 Acetaminophen  <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>                    2 Amoxicillin    <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>                    3 Aspirin        <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>                    4 Clavulanate    <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>                    5 Death          <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span>                    6 Doxylamine     <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">7</span>                    7 PenicillinV    <span style="color: #949494;">&lt;named list [10]&gt;</span> <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">8</span>                    8 ViralSinusitis <span style="color: #949494;">&lt;named list [9]&gt;</span>  <span style="color: #949494;">&lt;chr [1]&gt;</span></span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 5</span></span></span>
+<span><span class="co">##   cohort_definition_id cohort_name    cohort       json   cohort_name_snakecase</span></span>
+<span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>                    1 Acetaminophen  <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  acetaminophen        </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>                    2 Amoxicillin    <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  amoxicillin          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>                    3 Aspirin        <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  aspirin              </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>                    4 Clavulanate    <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  clavulanate          </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>                    5 Death          <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  death                </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>                    6 Doxylamine     <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  doxylamine           </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">7</span>                    7 PenicillinV    <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  penicillin_v         </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">8</span>                    8 ViralSinusitis <span style="color: #949494;">&lt;named list&gt;</span> <span style="color: #949494;">&lt;chr&gt;</span>  viral_sinusitis</span></span></code></pre>
 <p>Then we can open a connection to our database, in this case
 Eunomia.</p>
 <pre><code><span><span class="co">## Warning: package 'DatabaseConnector' was built under R version 4.3.2</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Attaching package: 'DatabaseConnector'</span></span></code></pre>
-<pre><code><span><span class="co">## The following object is masked from 'package:CDMConnector':</span></span>
+<pre><code><span><span class="co">## The following objects are masked from 'package:CDMConnector':</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##     dbms</span></span></code></pre>
+<span><span class="co">##     dbms, insertTable</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Download completed!</span></span></code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span>
 <span>  drv <span class="op">=</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  dbdir <span class="op">=</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -154,15 +155,48 @@ Eunomia.</p>
 <span><span class="co">## Tables: person, observation_period, visit_occurrence, visit_detail, condition_occurrence, drug_exposure, procedure_occurrence, device_exposure, measurement, observation, death, note, note_nlp, specimen, fact_relationship, location, care_site, provider, payer_plan_period, cost, drug_era, dose_era, condition_era, metadata, cdm_source, concept, vocabulary, domain, concept_class, concept_relationship, relationship, concept_synonym, concept_ancestor, source_to_concept_map, drug_strength</span></span></code></pre>
 <p>Finally we can generate our cohort set as a cohort table into the
 database</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateCohortSet.html" class="external-link">generateCohortSet</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  cohortSet <span class="op">=</span> <span class="va">cohortSet</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort_table</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Generating 8 cohorts</span></span></code></pre>
+<pre><code>## 
+ [36mℹ [39m Generating cohort (1/8) - Acetaminophen)
+
+ [32m✔ [39m Generating cohort (1/8) - Acetaminophen)  [38;5;249m[222ms] [39m
+## 
+ [36mℹ [39m Generating cohort (2/8) - Amoxicillin)
+
+ [32m✔ [39m Generating cohort (2/8) - Amoxicillin)  [38;5;249m[116ms] [39m
+## 
+ [36mℹ [39m Generating cohort (3/8) - Aspirin)
+
+ [32m✔ [39m Generating cohort (3/8) - Aspirin)  [38;5;249m[92ms] [39m
+## 
+ [36mℹ [39m Generating cohort (4/8) - Clavulanate)
+
+ [32m✔ [39m Generating cohort (4/8) - Clavulanate)  [38;5;249m[101ms] [39m
+## 
+ [36mℹ [39m Generating cohort (5/8) - Death)
+
+ [32m✔ [39m Generating cohort (5/8) - Death)  [38;5;249m[55ms] [39m
+## 
+ [36mℹ [39m Generating cohort (6/8) - Doxylamine)
+
+ [32m✔ [39m Generating cohort (6/8) - Doxylamine)  [38;5;249m[94ms] [39m
+## 
+ [36mℹ [39m Generating cohort (7/8) - PenicillinV)
+
+ [32m✔ [39m Generating cohort (7/8) - PenicillinV)  [38;5;249m[88ms] [39m
+## 
+ [36mℹ [39m Generating cohort (8/8) - ViralSinusitis)
+
+ [32m✔ [39m Generating cohort (8/8) - ViralSinusitis)  [38;5;249m[141ms] [39m</code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort_table</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 8 × 3</span></span></span>
 <span><span class="co">##   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">##                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -204,12 +238,12 @@ remove the <code>cohort</code> and <code>json</code> columns, add a
 <code>type</code> column, and rename <code>cohort_definition_id</code>
 to <code>cohortId</code> and <code>cohort_name</code> to
 <code>cohortName</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cohorts</span> <span class="op">&lt;-</span> <span class="va">cohortSet</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># Remove 'cohort' and 'json' columns</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="st">"cohort"</span>, <span class="op">-</span><span class="st">"json"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="st">"cohort"</span>, <span class="op">-</span><span class="st">"json"</span>, <span class="op">-</span><span class="st">"cohort_name_snakecase"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"exit"</span>, <span class="st">"event"</span>, <span class="st">"event"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span>
 <span>    cohortId <span class="op">=</span> <span class="st">"cohort_definition_id"</span>,</span>
@@ -231,7 +265,7 @@ to <code>cohortId</code> and <code>cohort_name</code> to
 <p>With our <code>data.frame</code> of cohort types, CDM reference, and
 the cohort table name in our database we can compute the treatment
 pathways, with all of the other settings as their defaults.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/darwin-eu-dev/TreatmentPatterns" class="external-link">TreatmentPatterns</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">defaultSettings</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
@@ -249,31 +283,39 @@ pathways, with all of the other settings as their defaults.</p>
 <span><span class="co">## Switches: 8352</span></span>
 <span><span class="co">## FRFS Combinations: 4</span></span>
 <span><span class="co">## LRFS Combinations: 1527</span></span></code></pre>
-<pre><code><span><span class="co">## Selected 4 </span></span>
-<span><span class="co">## out of 559 rows</span></span>
+<pre><code><span><span class="co">## Selected 139 </span></span>
+<span><span class="co">## out of 6816 rows</span></span>
 <span><span class="co">## Iteration: 2</span></span>
-<span><span class="co">## Switches: 559</span></span>
-<span><span class="co">## FRFS Combinations: 0</span></span>
-<span><span class="co">## LRFS Combinations: 4</span></span></code></pre>
-<pre><code><span><span class="co">## After combinationWindow: 555</span></span></code></pre>
-<pre><code><span><span class="co">## Time needed to execute combination window 0.0685005346934001</span></span></code></pre>
+<span><span class="co">## Switches: 6816</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 135</span></span></code></pre>
+<pre><code><span><span class="co">## Selected 1 </span></span>
+<span><span class="co">## out of 6682 rows</span></span>
+<span><span class="co">## Iteration: 3</span></span>
+<span><span class="co">## Switches: 6682</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 0</span></span></code></pre>
+<pre><code><span><span class="co">## After combinationWindow: 6682</span></span></code></pre>
+<pre><code><span><span class="co">## Time needed to execute combination window 0.101023948192596</span></span></code></pre>
 <pre><code><span><span class="co">## Order the combinations.</span></span></code></pre>
-<pre><code><span><span class="co">## After filterTreatments: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After filterTreatments: 6679</span></span></code></pre>
 <pre><code><span><span class="co">## Adding drug sequence number.</span></span></code></pre>
-<pre><code><span><span class="co">## After maxPathLength: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After maxPathLength: 6675</span></span></code></pre>
 <pre><code><span><span class="co">## Adding concept names.</span></span></code></pre>
 <pre><code><span><span class="co">## Ordering the combinations.</span></span></code></pre>
 <pre><code><span><span class="co">## constructPathways done.</span></span></code></pre>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">defaultSettings</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Andromeda object</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Physical location:  C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss\filedc805a272af.sqlite</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Physical location:  C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2\fileaac47e794599.sqlite</span></span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Tables:</span></span>
 <span><span class="co">## $addRowsFRFS_1 (personId, indexYear, eventCohortId, eventStartDate, eventEndDate, type, age, sex, durationEra, sortOrder, gapPrevious, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious)</span></span>
 <span><span class="co">## $addRowsFRFS_2 (personId, indexYear, eventCohortId, eventStartDate, age, sex, eventEndDate, durationEra, gapPrevious, sortOrder, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious)</span></span>
+<span><span class="co">## $addRowsFRFS_3 (personId, indexYear, eventCohortId, eventStartDate, age, sex, eventEndDate, durationEra, gapPrevious, sortOrder, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious)</span></span>
 <span><span class="co">## $addRowsLRFS_1 (personId, indexYear, eventCohortId, eventStartDate, eventEndDate, type, age, sex, durationEra, sortOrder, gapPrevious, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious, checkDuration)</span></span>
 <span><span class="co">## $addRowsLRFS_2 (personId, indexYear, eventCohortId, eventStartDate, age, sex, eventEndDate, durationEra, gapPrevious, sortOrder, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious, checkDuration)</span></span>
+<span><span class="co">## $addRowsLRFS_3 (personId, indexYear, eventCohortId, eventStartDate, age, sex, eventEndDate, durationEra, gapPrevious, sortOrder, selectedRows, switch, combinationFRFS, combinationLRFS, eventStartDateNext, eventEndDatePrevious, eventEndDateNext, eventCohortIdPrevious, checkDuration)</span></span>
 <span><span class="co">## $cohortTable (cohortId.x, personId, startDate.x, endDate.x, age.x, sex.x, type.x, cohortId.y, startDate.y, endDate.y, age.y, sex.y, type.y, indexYear, indexDate)</span></span>
 <span><span class="co">## $cohorts (cohortId, cohortName, type)</span></span>
 <span><span class="co">## $currentCohorts (cohortId, personId, startDate, endDate, age, sex)</span></span>
@@ -287,36 +329,36 @@ pathways, with all of the other settings as their defaults.</p>
 <p>The output of <code>computePathways</code> is an <a href="https://ohdsi.github.io/Andromeda/" class="external-link">Andromeda</a> environment,
 which allows us to investigate intermediate results and patient-level
 data. <strong>This data is not sharable.</strong></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># treatmentHistory table</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">defaultSettings</span><span class="op">$</span><span class="va">treatmentHistory</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   SQL [6 x 11]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss\filedc805a272af.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2\fileaac47e794599.sqlite]</span></span></span>
 <span><span class="co">##   eventCohortId personId indexYear eventStartDate   age sex    eventEndDate</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1                 <span style="text-decoration: underline;">3</span>615      <span style="text-decoration: underline;">1</span>960          -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">408</span>    11 FEMALE        -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">373</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1                   82      <span style="text-decoration: underline;">1</span>973           <span style="text-decoration: underline;">1</span>352    12 FEMALE         <span style="text-decoration: underline;">1</span>412</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1                  625      <span style="text-decoration: underline;">1</span>974           <span style="text-decoration: underline;">1</span>819     2 MALE           <span style="text-decoration: underline;">1</span>849</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 1                  729      <span style="text-decoration: underline;">1</span>962          -<span style="color: #BB0000; text-decoration: underline;">2</span><span style="color: #BB0000;">716</span>     1 FEMALE        -<span style="color: #BB0000; text-decoration: underline;">2</span><span style="color: #BB0000;">626</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 1                 <span style="text-decoration: underline;">4</span>801      <span style="text-decoration: underline;">1</span>972           <span style="text-decoration: underline;">4</span>829    12 FEMALE         <span style="text-decoration: underline;">4</span>919</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 1                 <span style="text-decoration: underline;">1</span>566      <span style="text-decoration: underline;">1</span>970            231     3 MALE            261</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> 1                  719      <span style="text-decoration: underline;">1</span>982           <span style="text-decoration: underline;">4</span>947     3 FEMALE         <span style="text-decoration: underline;">4</span>961</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> 1                  614      <span style="text-decoration: underline;">1</span>968           <span style="text-decoration: underline;">6</span>195    23 MALE           <span style="text-decoration: underline;">6</span>216</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> 1                 <span style="text-decoration: underline;">1</span>486      <span style="text-decoration: underline;">1</span>960          -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">639</span>     5 FEMALE        -<span style="color: #BB0000; text-decoration: underline;">3</span><span style="color: #BB0000;">625</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> 1                    6      <span style="text-decoration: underline;">1</span>965            -<span style="color: #BB0000;">12</span>     6 FEMALE            2</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> 1                 <span style="text-decoration: underline;">4</span>497      <span style="text-decoration: underline;">1</span>958           <span style="text-decoration: underline;">2</span>986    22 FEMALE         <span style="text-decoration: underline;">3</span>000</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span> 1                 <span style="text-decoration: underline;">2</span>698      <span style="text-decoration: underline;">1</span>989          <span style="text-decoration: underline;">11</span>337    18 MALE          <span style="text-decoration: underline;">11</span>351</span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 4 more variables: durationEra &lt;int&gt;, sortOrder &lt;dbl&gt;, eventSeq &lt;int&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   eventCohortName &lt;chr&gt;</span></span></span></code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># metadata table</span></span>
 <span><span class="va">defaultSettings</span><span class="op">$</span><span class="va">metadata</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   table&lt;metadata&gt; [1 x 9]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss\filedc805a272af.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2\fileaac47e794599.sqlite]</span></span></span>
 <span><span class="co">##   cdmSourceName           cdmSourceAbbreviation cdmReleaseDate vocabularyVersion</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> Synthea synthetic heal… Synthea               2019-05-25     v5.0 18-JAN-19   </span></span>
 <span><span class="co">## <span style="color: #949494;"># ℹ 5 more variables: executionStartDate &lt;chr&gt;, packageVersion &lt;chr&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   rVersion &lt;chr&gt;, platform &lt;chr&gt;, execution_end_date &lt;chr&gt;</span></span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First Recieved First Stopped</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">defaultSettings</span><span class="op">$</span><span class="va">addRowsFRFS_1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   SQL [4 x 19]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss\filedc805a272af.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2\fileaac47e794599.sqlite]</span></span></span>
 <span><span class="co">##   personId indexYear eventCohortId eventStartDate eventEndDate type    age sex  </span></span>
 <span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>     <span style="text-decoration: underline;">1</span>282      <span style="text-decoration: underline;">3</span>828 2+1                     <span style="text-decoration: underline;">3</span>904         <span style="text-decoration: underline;">3</span>918 event     4 FEMA…</span></span>
@@ -328,11 +370,11 @@ data. <strong>This data is not sharable.</strong></p>
 <span><span class="co">## <span style="color: #949494;">#   combinationLRFS &lt;dbl&gt;, eventStartDateNext &lt;int&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   eventEndDatePrevious &lt;int&gt;, eventEndDateNext &lt;int&gt;,</span></span></span>
 <span><span class="co">## <span style="color: #949494;">#   eventCohortIdPrevious &lt;chr&gt;</span></span></span></code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Last Recieved Last Stopped</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">defaultSettings</span><span class="op">$</span><span class="va">addRowsLRFS_1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># Source:   SQL [6 x 20]</span></span></span>
-<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss\filedc805a272af.sqlite]</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># Database: sqlite 3.41.2 [C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2\fileaac47e794599.sqlite]</span></span></span>
 <span><span class="co">##   personId indexYear eventCohortId eventStartDate eventEndDate type    age sex  </span></span>
 <span><span class="co">##      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>        1     -<span style="color: #BB0000; text-decoration: underline;">6</span><span style="color: #BB0000;">173</span> 4                       -<span style="color: #BB0000;">926</span>         -<span style="color: #BB0000;">926</span> event    18 MALE </span></span>
@@ -365,7 +407,7 @@ created.</li>
 <p>The following code snippet works with <code>Eunomia</code>, a cohort
 table (cohort_table) exists in the database, and a <code>cohorts</code>
 data frame has been created.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="va">cohortTableName</span>,</span>
@@ -443,7 +485,7 @@ computation of the treatment pathway.</p>
 <code>computePathways</code> function call. Lets see what happens when
 we set our <code>minEraDuration</code> to <strong>60</strong>, but keep
 the rest of the settings mentioned as their default values.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">minEra60</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
@@ -468,7 +510,7 @@ the rest of the settings mentioned as their default values.</p>
 <span><span class="co">## FRFS Combinations: 0</span></span>
 <span><span class="co">## LRFS Combinations: 45</span></span></code></pre>
 <pre><code><span><span class="co">## After combinationWindow: 291</span></span></code></pre>
-<pre><code><span><span class="co">## Time needed to execute combination window 0.0354779322942098</span></span></code></pre>
+<pre><code><span><span class="co">## Time needed to execute combination window 0.0353074153264364</span></span></code></pre>
 <pre><code><span><span class="co">## Order the combinations.</span></span></code></pre>
 <pre><code><span><span class="co">## After filterTreatments: 291</span></span></code></pre>
 <pre><code><span><span class="co">## Adding drug sequence number.</span></span></code></pre>
@@ -478,14 +520,14 @@ the rest of the settings mentioned as their default values.</p>
 <pre><code><span><span class="co">## constructPathways done.</span></span></code></pre>
 <p>Number of treatments with a minimum duration of greater or equal to 0
 days.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">defaultSettings</span><span class="op">$</span><span class="va">treatmentHistory</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 554</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 6675</span></span></code></pre>
 <p>Number of treatments with a minimum duration of greater or equal to
 60 days.</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">minEra60</span><span class="op">$</span><span class="va">treatmentHistory</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -527,7 +569,7 @@ The length of <code>splitTime</code> must equal the length of
 </table>
 <p>Let’s say we want to assume that the first 60 days of our treatment
 is acute, and beyond that therapy.</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">splitAcuteTherapy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
@@ -546,32 +588,48 @@ is acute, and beyond that therapy.</p>
 <span><span class="co">## Switches: 8352</span></span>
 <span><span class="co">## FRFS Combinations: 4</span></span>
 <span><span class="co">## LRFS Combinations: 1527</span></span></code></pre>
-<pre><code><span><span class="co">## Selected 4 </span></span>
-<span><span class="co">## out of 559 rows</span></span>
+<pre><code><span><span class="co">## Selected 139 </span></span>
+<span><span class="co">## out of 6816 rows</span></span>
 <span><span class="co">## Iteration: 2</span></span>
-<span><span class="co">## Switches: 559</span></span>
-<span><span class="co">## FRFS Combinations: 0</span></span>
-<span><span class="co">## LRFS Combinations: 4</span></span></code></pre>
-<pre><code><span><span class="co">## After combinationWindow: 555</span></span></code></pre>
-<pre><code><span><span class="co">## Time needed to execute combination window 0.0669971704483032</span></span></code></pre>
+<span><span class="co">## Switches: 6816</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 135</span></span></code></pre>
+<pre><code><span><span class="co">## Selected 1 </span></span>
+<span><span class="co">## out of 6682 rows</span></span>
+<span><span class="co">## Iteration: 3</span></span>
+<span><span class="co">## Switches: 6682</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 0</span></span></code></pre>
+<pre><code><span><span class="co">## After combinationWindow: 6682</span></span></code></pre>
+<pre><code><span><span class="co">## Time needed to execute combination window 0.100550532341003</span></span></code></pre>
 <pre><code><span><span class="co">## Order the combinations.</span></span></code></pre>
-<pre><code><span><span class="co">## After filterTreatments: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After filterTreatments: 6679</span></span></code></pre>
 <pre><code><span><span class="co">## Adding drug sequence number.</span></span></code></pre>
-<pre><code><span><span class="co">## After maxPathLength: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After maxPathLength: 6675</span></span></code></pre>
 <pre><code><span><span class="co">## Adding concept names.</span></span></code></pre>
 <pre><code><span><span class="co">## Ordering the combinations.</span></span></code></pre>
 <pre><code><span><span class="co">## constructPathways done.</span></span></code></pre>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">splitAcuteTherapy</span><span class="op">$</span><span class="va">treatmentHistory</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">eventCohortName</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "Acetaminophen (acute)"               </span></span>
-<span><span class="co">## [2] "Acetaminophen (acute)+Amoxicillin"   </span></span>
-<span><span class="co">## [3] "Acetaminophens (therapy)"            </span></span>
-<span><span class="co">## [4] "Acetaminophens (therapy)+Amoxicillin"</span></span>
-<span><span class="co">## [5] "Amoxicillin"                         </span></span>
-<span><span class="co">## [6] "Amoxicillin+Clavulanate"             </span></span>
-<span><span class="co">## [7] "Aspirin"                             </span></span>
-<span><span class="co">## [8] "Clavulanate"</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] "Acetaminophen (acute)"                                        </span></span>
+<span><span class="co">##  [2] "Acetaminophen (acute)+Amoxicillin"                            </span></span>
+<span><span class="co">##  [3] "Acetaminophen (acute)+Amoxicillin+Clavulanate"                </span></span>
+<span><span class="co">##  [4] "Acetaminophen (acute)+Doxylamine"                             </span></span>
+<span><span class="co">##  [5] "Acetaminophen (acute)+PenicillinV"                            </span></span>
+<span><span class="co">##  [6] "Acetaminophens (therapy)"                                     </span></span>
+<span><span class="co">##  [7] "Acetaminophens (therapy)+Acetaminophens (therapy)+Amoxicillin"</span></span>
+<span><span class="co">##  [8] "Acetaminophens (therapy)+Amoxicillin"                         </span></span>
+<span><span class="co">##  [9] "Amoxicillin"                                                  </span></span>
+<span><span class="co">## [10] "Amoxicillin+Aspirin"                                          </span></span>
+<span><span class="co">## [11] "Amoxicillin+Aspirin+Clavulanate"                              </span></span>
+<span><span class="co">## [12] "Amoxicillin+Clavulanate"                                      </span></span>
+<span><span class="co">## [13] "Aspirin"                                                      </span></span>
+<span><span class="co">## [14] "Aspirin+Doxylamine"                                           </span></span>
+<span><span class="co">## [15] "Aspirin+PenicillinV"                                          </span></span>
+<span><span class="co">## [16] "Clavulanate"                                                  </span></span>
+<span><span class="co">## [17] "Doxylamine"                                                   </span></span>
+<span><span class="co">## [18] "PenicillinV"</span></span></code></pre>
 <p>We can see that our Acetaminophen cohorts are split into
 Acetaminophen <strong>(acute)</strong> and <strong>(therapy)</strong>.
 <em>Acute</em> labels all the Acetaminophen cohorts lasting less than
@@ -587,7 +645,7 @@ the start date of our target cohort and on wards, or we can look before
 the end date of our target cohort. By default
 <code>TreatmentPatterns</code> looks from the start date and
 onwards.</p>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">includeEndDate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/computePathways.html">computePathways</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
@@ -605,29 +663,35 @@ onwards.</p>
 <span><span class="co">## Switches: 8345</span></span>
 <span><span class="co">## FRFS Combinations: 4</span></span>
 <span><span class="co">## LRFS Combinations: 1526</span></span></code></pre>
-<pre><code><span><span class="co">## Selected 4 </span></span>
-<span><span class="co">## out of 559 rows</span></span>
+<pre><code><span><span class="co">## Selected 139 </span></span>
+<span><span class="co">## out of 6810 rows</span></span>
 <span><span class="co">## Iteration: 2</span></span>
-<span><span class="co">## Switches: 559</span></span>
-<span><span class="co">## FRFS Combinations: 0</span></span>
-<span><span class="co">## LRFS Combinations: 4</span></span></code></pre>
-<pre><code><span><span class="co">## After combinationWindow: 555</span></span></code></pre>
-<pre><code><span><span class="co">## Time needed to execute combination window 0.0669487357139587</span></span></code></pre>
+<span><span class="co">## Switches: 6810</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 135</span></span></code></pre>
+<pre><code><span><span class="co">## Selected 1 </span></span>
+<span><span class="co">## out of 6676 rows</span></span>
+<span><span class="co">## Iteration: 3</span></span>
+<span><span class="co">## Switches: 6676</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 0</span></span></code></pre>
+<pre><code><span><span class="co">## After combinationWindow: 6676</span></span></code></pre>
+<pre><code><span><span class="co">## Time needed to execute combination window 0.101738047599792</span></span></code></pre>
 <pre><code><span><span class="co">## Order the combinations.</span></span></code></pre>
-<pre><code><span><span class="co">## After filterTreatments: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After filterTreatments: 6673</span></span></code></pre>
 <pre><code><span><span class="co">## Adding drug sequence number.</span></span></code></pre>
-<pre><code><span><span class="co">## After maxPathLength: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After maxPathLength: 6669</span></span></code></pre>
 <pre><code><span><span class="co">## Adding concept names.</span></span></code></pre>
 <pre><code><span><span class="co">## Ordering the combinations.</span></span></code></pre>
 <pre><code><span><span class="co">## constructPathways done.</span></span></code></pre>
-<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span></span>
 <span>  <span class="va">includeEndDate</span><span class="op">$</span><span class="va">treatmentHistory</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">personId</span><span class="op">)</span>,</span>
 <span>  <span class="va">defaultSettings</span><span class="op">$</span><span class="va">treatmentHistory</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">personId</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
-<p>In our example case for Viral Sinusitis it does not appear to matter,
-as the same people are included.</p>
+<pre><code><span><span class="co">## [1] FALSE</span></span></code></pre>
+<p>In our example case for Viral Sinusitis it does appear to matter, as
+the personID’s are not identical.</p>
 </div>
 </div>
 <div class="section level2">
@@ -642,7 +706,7 @@ are allowed to share.</p>
 </h3>
 <p>Let’s say we are only able to share results of groups of subjects
 that have at least 5 subjects in them.</p>
-<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tempDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
@@ -650,13 +714,13 @@ that have at least 5 subjects in them.</p>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/treatmentPathways.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Censoring 1242 pathways with a frequency &lt;5 to 5.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/default/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Censoring 11840 pathways with a frequency &lt;5 to 5.</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/default/countsSex.csv</span></span></code></pre>
 <p>We can also choose between different methods how to handle pathways
 that fall below are specified <code>minCellCount</code>. These types are
 <strong>1</strong>) <code>"cellCount"</code>, <strong>2</strong>)
@@ -664,57 +728,57 @@ that fall below are specified <code>minCellCount</code>. These types are
 <p>We could say we want to censor all pathways that fall below the
 <code>minCellCount</code> to be censored <em>to</em> the
 <code>minCellCount</code>.</p>
-<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">minEra60</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"minEra60_cellCount"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  censorType <span class="op">=</span> <span class="st">"minCellCount"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/treatmentPathways.csv</span></span></code></pre>
 <pre><code><span><span class="co">## Censoring 988 pathways with a frequency &lt;5 to 5.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_cellCount/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_cellCount/countsSex.csv</span></span></code></pre>
 <p>Or we could completely remove them</p>
-<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">minEra60</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"minEra60_remove"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  censorType <span class="op">=</span> <span class="st">"remove"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/treatmentPathways.csv</span></span></code></pre>
 <pre><code><span><span class="co">## Removing 988 pathways with a frequency &lt;5.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_remove/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_remove/countsSex.csv</span></span></code></pre>
 <p>Or finally we can censor them as the mean of all the groups that fall
 below the <code>minCellCount</code>.</p>
-<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">minEra60</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"minEra60_mean"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  censorType <span class="op">=</span> <span class="st">"mean"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/treatmentPathways.csv</span></span></code></pre>
 <pre><code><span><span class="co">## Censoring 988 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/minEra60_mean/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/minEra60_mean/countsSex.csv</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="agewindow">ageWindow<a class="anchor" aria-label="anchor" href="#agewindow"></a>
 </h3>
 <p>We can also specify an age window.</p>
-<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb135"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">splitAcuteTherapy</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"splitAcuteTherapy_ageWindow3"</span><span class="op">)</span>,</span>
@@ -722,15 +786,15 @@ below the <code>minCellCount</code>.</p>
 <span>  censorType <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  ageWindow <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/treatmentPathways.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Censoring 2064 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindow3/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Censoring 13939 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindow3/countsSex.csv</span></span></code></pre>
 <p>Or a collection of ages.</p>
-<div class="sourceCode" id="cb135"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb143"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">splitAcuteTherapy</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"splitAcuteTherapy_ageWindowMultiple"</span><span class="op">)</span>,</span>
@@ -738,20 +802,20 @@ below the <code>minCellCount</code>.</p>
 <span>  censorType <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  ageWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">18</span>, <span class="fl">25</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">50</span>, <span class="fl">60</span>, <span class="fl">150</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/treatmentPathways.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Censoring 1299 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/splitAcuteTherapy_ageWindowMultiple/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Censoring 12106 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/splitAcuteTherapy_ageWindowMultiple/countsSex.csv</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="archivename">archiveName<a class="anchor" aria-label="anchor" href="#archivename"></a>
 </h3>
 <p>Finally we can also specify an <code>archiveName</code> which is the
 name of a zip-file to zip all our output csv-files to.</p>
-<div class="sourceCode" id="cb143"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb151"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/export.html">export</a></span><span class="op">(</span></span>
 <span>  andromeda <span class="op">=</span> <span class="va">includeEndDate</span>,</span>
 <span>  outputPath <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"includeEndDate"</span><span class="op">)</span>,</span>
@@ -760,14 +824,14 @@ name of a zip-file to zip all our output csv-files to.</p>
 <span>  ageWindow <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  archiveName <span class="op">=</span> <span class="st">"output.zip"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/treatmentPathways.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Censoring 1834 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/countsSex.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Zipping files to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/includeEndDate/output.zip</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Censoring 13317 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Zipping files to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/includeEndDate/output.zip</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -777,7 +841,7 @@ name of a zip-file to zip all our output csv-files to.</p>
 <code>export</code>, instead we could use
 <code>executeTreatmentPatterns</code>. Which is an all-in-one function
 that trades full control for convenience.</p>
-<div class="sourceCode" id="cb152"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/executeTreatmentPatterns.html">executeTreatmentPatterns</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
@@ -798,34 +862,40 @@ that trades full control for convenience.</p>
 <span><span class="co">## Switches: 8352</span></span>
 <span><span class="co">## FRFS Combinations: 4</span></span>
 <span><span class="co">## LRFS Combinations: 1527</span></span></code></pre>
-<pre><code><span><span class="co">## Selected 4 </span></span>
-<span><span class="co">## out of 559 rows</span></span>
+<pre><code><span><span class="co">## Selected 139 </span></span>
+<span><span class="co">## out of 6816 rows</span></span>
 <span><span class="co">## Iteration: 2</span></span>
-<span><span class="co">## Switches: 559</span></span>
-<span><span class="co">## FRFS Combinations: 0</span></span>
-<span><span class="co">## LRFS Combinations: 4</span></span></code></pre>
-<pre><code><span><span class="co">## After combinationWindow: 555</span></span></code></pre>
-<pre><code><span><span class="co">## Time needed to execute combination window 0.0687381466229757</span></span></code></pre>
+<span><span class="co">## Switches: 6816</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 135</span></span></code></pre>
+<pre><code><span><span class="co">## Selected 1 </span></span>
+<span><span class="co">## out of 6682 rows</span></span>
+<span><span class="co">## Iteration: 3</span></span>
+<span><span class="co">## Switches: 6682</span></span>
+<span><span class="co">## FRFS Combinations: 1</span></span>
+<span><span class="co">## LRFS Combinations: 0</span></span></code></pre>
+<pre><code><span><span class="co">## After combinationWindow: 6682</span></span></code></pre>
+<pre><code><span><span class="co">## Time needed to execute combination window 0.103039546807607</span></span></code></pre>
 <pre><code><span><span class="co">## Order the combinations.</span></span></code></pre>
-<pre><code><span><span class="co">## After filterTreatments: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After filterTreatments: 6679</span></span></code></pre>
 <pre><code><span><span class="co">## Adding drug sequence number.</span></span></code></pre>
-<pre><code><span><span class="co">## After maxPathLength: 554</span></span></code></pre>
+<pre><code><span><span class="co">## After maxPathLength: 6675</span></span></code></pre>
 <pre><code><span><span class="co">## Adding concept names.</span></span></code></pre>
 <pre><code><span><span class="co">## Ordering the combinations.</span></span></code></pre>
 <pre><code><span><span class="co">## constructPathways done.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/metadata.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/treatmentPathways.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Censoring 1566 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
-<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/summaryStatsTherapyDuration.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/countsYear.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/countsAge.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/countsSex.csv</span></span></code></pre>
-<pre><code><span><span class="co">## Zipping files to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpaa48Ss/all-in-one/TreatmentPatterns-Output.zip</span></span></code></pre>
+<pre><code><span><span class="co">## Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/metadata.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/treatmentPathways.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Censoring 12633 pathways with a frequency &lt;5 to mean.</span></span></code></pre>
+<pre><code><span><span class="co">## Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/summaryStatsTherapyDuration.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/countsYear.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/countsAge.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/countsSex.csv</span></span></code></pre>
+<pre><code><span><span class="co">## Zipping files to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmpye75L2/all-in-one/TreatmentPatterns-Output.zip</span></span></code></pre>
 <p>When using <code>DatabaseConnector</code> we can substitute the
 <code>cdm</code> object with <code>connectionDetails</code>,
 <code>cdmSchema</code>, <code>resultSchema</code>, and
 <code>tempEmulationSchema</code>.</p>
-<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb185"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/executeTreatmentPatterns.html">executeTreatmentPatterns</a></span><span class="op">(</span></span>
 <span>  cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span>
 <span>  cohortTableName <span class="op">=</span> <span class="st">"cohort_table"</span>,</span>
@@ -854,39 +924,26 @@ summaryStatsTherapyDuraion.csv, and <strong>6</strong>) metadata.csv</p>
 </h3>
 <p>The treatmentPathways file contains all the pathways found, with a
 frequency, pairwise stratified by age group, sex and index year.</p>
-<div class="sourceCode" id="cb177"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb186"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">treatmentPathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"treatmentPathways.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">treatmentPathways</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##            path freq  age    sex indexYear</span></span>
-<span><span class="co">## 1 Acetaminophen    5 0-10 female      1951</span></span>
-<span><span class="co">## 2 Acetaminophen    5 0-10 female      1953</span></span>
-<span><span class="co">## 3 Acetaminophen    5 0-10 female      1956</span></span>
-<span><span class="co">## 4 Acetaminophen    5 0-10 female      1957</span></span>
-<span><span class="co">## 5 Acetaminophen    5 0-10 female      1959</span></span>
-<span><span class="co">## 6 Acetaminophen    5 0-10 female      1960</span></span></code></pre>
-<p>We are able to filter based on the strata.</p>
-<div class="sourceCode" id="cb179"><pre class="downlit sourceCode r">
+<span><span class="co">## 1 Acetaminophen    5 0-10 female      1959</span></span>
+<span><span class="co">## 2 Acetaminophen    5 0-10 female      1960</span></span>
+<span><span class="co">## 3 Acetaminophen    5 0-10 female      1963</span></span>
+<span><span class="co">## 4 Acetaminophen    5 0-10 female      1967</span></span>
+<span><span class="co">## 5 Acetaminophen    5 0-10 female      1975</span></span>
+<span><span class="co">## 6 Acetaminophen    5 0-10 female      1976</span></span></code></pre>
+<p>We are able to filter based on the strata, and filter on a frequency
+&gt; 5.</p>
+<div class="sourceCode" id="cb188"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all</span> <span class="op">&lt;-</span> <span class="va">treatmentPathways</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">age</span> <span class="op">==</span> <span class="st">"all"</span>,</span>
 <span>    <span class="va">sex</span> <span class="op">==</span> <span class="st">"all"</span>,</span>
-<span>    <span class="va">indexYear</span> <span class="op">==</span> <span class="st">"all"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">all</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                     path freq age sex indexYear</span></span>
-<span><span class="co">## 1                          Acetaminophen  206 all all       all</span></span>
-<span><span class="co">## 2              Acetaminophen+Amoxicillin    5 all all       all</span></span>
-<span><span class="co">## 3  Acetaminophen-Amoxicillin+Clavulanate    6 all all       all</span></span>
-<span><span class="co">## 4                  Acetaminophen-Aspirin   14 all all       all</span></span>
-<span><span class="co">## 5                            Amoxicillin    5 all all       all</span></span>
-<span><span class="co">## 6                Amoxicillin+Clavulanate   48 all all       all</span></span>
-<span><span class="co">## 7  Amoxicillin+Clavulanate-Acetaminophen    5 all all       all</span></span>
-<span><span class="co">## 8        Amoxicillin+Clavulanate-Aspirin    5 all all       all</span></span>
-<span><span class="co">## 9                                Aspirin  211 all all       all</span></span>
-<span><span class="co">## 10                 Aspirin-Acetaminophen   12 all all       all</span></span>
-<span><span class="co">## 11       Aspirin-Amoxicillin+Clavulanate    6 all all       all</span></span>
-<span><span class="co">## 12                           Clavulanate    5 all all       all</span></span>
-<span><span class="co">## 13                                  None 1646 all all       all</span></span></code></pre>
+<span>    <span class="va">indexYear</span> <span class="op">==</span> <span class="st">"all"</span>,</span>
+<span>    <span class="va">freq</span> <span class="op">&gt;</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <p>We can see the pathways contain the treatment names we provided in
 our event cohorts. Besides that we also see the paths are annoted with a
 <code>+</code> or <code>-</code>. The <code>+</code> indicates two
@@ -906,25 +963,25 @@ switches to <em>Aspirin</em>.</p>
 </h3>
 <p>The countsAge, countsSex, and countsYear contain counts per age, sex,
 and index year.</p>
-<div class="sourceCode" id="cb181"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb189"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"countsAge.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"countsSex.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"countsYear.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   age   n</span></span>
-<span><span class="co">## 1   1 311</span></span>
-<span><span class="co">## 2   2 550</span></span>
-<span><span class="co">## 3   3 340</span></span>
-<span><span class="co">## 4   4 181</span></span>
-<span><span class="co">## 5   5 158</span></span>
-<span><span class="co">## 6   6 107</span></span></code></pre>
-<div class="sourceCode" id="cb183"><pre class="downlit sourceCode r">
+<span><span class="co">## 1   1 151</span></span>
+<span><span class="co">## 2   2 335</span></span>
+<span><span class="co">## 3   3 263</span></span>
+<span><span class="co">## 4   4 185</span></span>
+<span><span class="co">## 5   5 174</span></span>
+<span><span class="co">## 6   6 112</span></span></code></pre>
+<div class="sourceCode" id="cb191"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sex</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      sex    n</span></span>
 <span><span class="co">## 1 FEMALE 1092</span></span>
 <span><span class="co">## 2   MALE 1067</span></span></code></pre>
-<div class="sourceCode" id="cb185"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb193"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   indexYear  n</span></span>
 <span><span class="co">## 1      1950 43</span></span>
@@ -941,11 +998,11 @@ and index year.</p>
 pertaining combination and mono-therapies. Like the mean, median,
 minimum, and maximum durations. The standard deviation of durations, and
 the count of each treatment type.</p>
-<div class="sourceCode" id="cb187"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb195"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"summaryStatsTherapyDuration.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   treatmentType avgDuration medianDuration       sd min max count</span></span>
-<span><span class="co">## 1   combination    89.47692             84 48.59980  35 329  1711</span></span>
-<span><span class="co">## 2   monotherapy    53.97751             44 23.84533  30 119   489</span></span></code></pre>
+<span><span class="co">## 1   combination    16.83003             14 18.30722   1 329  1682</span></span>
+<span><span class="co">## 2   monotherapy    16.52934             14 14.98240 -56 119  5010</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="metadata">metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
@@ -953,23 +1010,23 @@ the count of each treatment type.</p>
 <p>The metadata file is a file that contains information about the
 circumstances the analysis was performed in, and information about R,
 and the CDM.</p>
-<div class="sourceCode" id="cb189"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb197"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">tempDir</span>, <span class="st">"default"</span>, <span class="st">"metadata.csv"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                       cdmSourceName cdmSourceAbbreviation cdmReleaseDate</span></span>
 <span><span class="co">## 1 Synthea synthetic health database               Synthea     2019-05-25</span></span>
 <span><span class="co">##   vocabularyVersion executionStartDate packageVersion</span></span>
-<span><span class="co">## 1    v5.0 18-JAN-19         2023-12-13          2.6.2</span></span>
+<span><span class="co">## 1    v5.0 18-JAN-19         2024-01-25          2.6.3</span></span>
 <span><span class="co">##                            rVersion           platform execution_end_date</span></span>
-<span><span class="co">## 1 R version 4.3.1 (2023-06-16 ucrt) x86_64-w64-mingw32         2023-12-13</span></span></code></pre>
+<span><span class="co">## 1 R version 4.3.1 (2023-06-16 ucrt) x86_64-w64-mingw32         2024-01-25</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="sunburst-plot-sankey-diagram">Sunburst Plot &amp; Sankey Diagram<a class="anchor" aria-label="anchor" href="#sunburst-plot-sankey-diagram"></a>
 </h3>
 <p>From the filtered treatmentPathways file we are able to create a
 sunburst plot.</p>
-<div class="sourceCode" id="cb191"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/createSunburstPlot.html">createSunburstPlot</a></span><span class="op">(</span>treatmentPathways <span class="op">=</span> <span class="va">all</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">400</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sunburst html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a89d3f3220e4dfeadedf" style="width:700px;height:432.632880098888px; position:relative;">
+<div class="sourceCode" id="cb199"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/createSunburstPlot.html">createSunburstPlot</a></span><span class="op">(</span>treatmentPathways <span class="op">=</span> <span class="va">all</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sunburst html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b3ead02604a907faf437" style="width:700px;height:432.632880098888px; position:relative;">
 <div>
 <div class="sunburst-main">
 <div class="sunburst-sequence"></div>
@@ -983,11 +1040,11 @@ sunburst plot.</p>
 </div>
 </div>
 </div>
-<script type="application/json" data-for="htmlwidget-a89d3f3220e4dfeadedf">{"x":{"data":{"children":[{"name":"Acetaminophen","children":[{"name":"Amoxicillin+Clavulanate","size":6,"colname":"X2"},{"name":"Aspirin","size":14,"colname":"X2"}],"size":206,"colname":"X1"},{"name":"Acetaminophen+Amoxicillin","children":[],"size":5,"colname":"X1"},{"name":"Amoxicillin","children":[],"size":5,"colname":"X1"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Acetaminophen","size":5,"colname":"X2"},{"name":"Aspirin","size":5,"colname":"X2"}],"size":48,"colname":"X1"},{"name":"Aspirin","children":[{"name":"Acetaminophen","size":12,"colname":"X2"},{"name":"Amoxicillin+Clavulanate","size":6,"colname":"X2"}],"size":211,"colname":"X1"},{"name":"Clavulanate","children":[],"size":5,"colname":"X1"},{"name":"None","children":[],"size":1646,"colname":"X1"}],"name":"root"},"options":{"legendOrder":null,"colors":null,"valueField":"size","percent":true,"count":false,"explanation":null,"breadcrumb":[],"legend":{"w":400},"sortFunction":"function (a, b) {return a.value - b.value;}","sumNodes":true}},"evals":["options.sortFunction"],"jsHooks":[]}</script><p>Or a Sankey Diagram.</p>
-<div class="sourceCode" id="cb192"><pre class="downlit sourceCode r">
+<script type="application/json" data-for="htmlwidget-b3ead02604a907faf437">{"x":{"data":{"children":[{"name":"Acetaminophen","children":[{"name":"Amoxicillin","children":[],"size":10,"colname":"X2"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Aspirin","children":[],"size":10,"colname":"X3"},{"name":"Doxylamine","children":[{"name":"PenicillinV","children":[],"size":13,"colname":"X4"}],"size":42,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Doxylamine","children":[],"size":14,"colname":"X4"}],"size":36,"colname":"X3"}],"size":104,"colname":"X2"},{"name":"Aspirin","children":[{"name":"Amoxicillin+Clavulanate","children":[{"name":"Doxylamine","children":[],"size":14,"colname":"X4"},{"name":"PenicillinV","children":[],"size":11,"colname":"X4"}],"size":42,"colname":"X3"},{"name":"Doxylamine","children":[],"size":17,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Doxylamine","children":[],"size":13,"colname":"X4"}],"size":20,"colname":"X3"}],"size":17,"colname":"X2"},{"name":"Doxylamine","children":[{"name":"Amoxicillin+Clavulanate","children":[{"name":"Aspirin","children":[],"size":17,"colname":"X4"},{"name":"PenicillinV","children":[{"name":"Aspirin","size":9,"colname":"X5"}],"size":7,"colname":"X4"}],"size":35,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":23,"colname":"X4"}],"size":8,"colname":"X3"}],"size":27,"colname":"X2"},{"name":"PenicillinV","children":[{"name":"Amoxicillin+Clavulanate","children":[{"name":"Aspirin","children":[],"size":18,"colname":"X4"},{"name":"Doxylamine","children":[{"name":"Aspirin","size":7,"colname":"X5"}],"size":18,"colname":"X4"}],"size":55,"colname":"X3"},{"name":"Aspirin","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":17,"colname":"X4"},{"name":"Doxylamine","children":[{"name":"Amoxicillin+Clavulanate","size":8,"colname":"X5"}],"colname":"X4"}],"size":8,"colname":"X3"},{"name":"Doxylamine","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":19,"colname":"X4"}],"size":20,"colname":"X3"}],"size":50,"colname":"X2"}],"size":38,"colname":"X1"},{"name":"Acetaminophen+Doxylamine","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":22,"colname":"X2"},{"name":"PenicillinV","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":7,"colname":"X3"}],"colname":"X2"}],"size":15,"colname":"X1"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","children":[{"name":"PenicillinV","children":[],"size":6,"colname":"X4"}],"colname":"X3"},{"name":"Doxylamine","children":[],"size":10,"colname":"X3"},{"name":"PenicillinV","children":[],"size":16,"colname":"X3"}],"size":23,"colname":"X2"},{"name":"Aspirin","children":[{"name":"Acetaminophen","children":[{"name":"Doxylamine","children":[{"name":"PenicillinV","size":7,"colname":"X5"}],"size":24,"colname":"X4"},{"name":"PenicillinV","children":[],"size":16,"colname":"X4"}],"size":52,"colname":"X3"},{"name":"Acetaminophen+Doxylamine","children":[],"size":17,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Doxylamine","children":[],"size":6,"colname":"X4"}],"colname":"X3"}],"colname":"X2"},{"name":"Doxylamine","children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","children":[],"size":16,"colname":"X4"},{"name":"PenicillinV","children":[{"name":"Aspirin","size":6,"colname":"X5"}],"colname":"X4"}],"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[],"size":9,"colname":"X4"}],"colname":"X3"}],"size":9,"colname":"X2"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","children":[],"size":28,"colname":"X4"},{"name":"Doxylamine","children":[{"name":"Aspirin","size":13,"colname":"X5"}],"colname":"X4"}],"size":34,"colname":"X3"},{"name":"Acetaminophen+Doxylamine","children":[{"name":"Aspirin","children":[],"size":7,"colname":"X4"}],"size":9,"colname":"X3"},{"name":"Doxylamine","children":[{"name":"Acetaminophen","children":[],"size":13,"colname":"X4"}],"colname":"X3"}],"size":18,"colname":"X2"}],"size":25,"colname":"X1"},{"name":"Aspirin","children":[{"name":"Acetaminophen","children":[{"name":"Amoxicillin+Clavulanate","children":[{"name":"PenicillinV","children":[],"size":6,"colname":"X4"}],"colname":"X3"},{"name":"Doxylamine","children":[{"name":"PenicillinV","children":[],"size":9,"colname":"X4"}],"size":22,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Doxylamine","children":[],"size":8,"colname":"X4"}],"size":14,"colname":"X3"}],"size":26,"colname":"X2"},{"name":"Acetaminophen+Doxylamine","children":[],"size":7,"colname":"X2"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Acetaminophen","children":[{"name":"Doxylamine","children":[],"size":11,"colname":"X4"},{"name":"PenicillinV","children":[],"size":8,"colname":"X4"}],"size":24,"colname":"X3"},{"name":"Doxylamine","children":[],"size":16,"colname":"X3"}],"size":18,"colname":"X2"},{"name":"Doxylamine","children":[{"name":"Acetaminophen","children":[{"name":"PenicillinV","children":[{"name":"Amoxicillin+Clavulanate","size":6,"colname":"X5"}],"colname":"X4"}],"colname":"X3"}],"size":9,"colname":"X2"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":18,"colname":"X4"},{"name":"Doxylamine","children":[{"name":"Amoxicillin+Clavulanate","size":9,"colname":"X5"}],"colname":"X4"}],"colname":"X3"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Acetaminophen","children":[],"size":10,"colname":"X4"}],"colname":"X3"},{"name":"Doxylamine","children":[],"size":8,"colname":"X3"}],"size":11,"colname":"X2"}],"size":15,"colname":"X1"},{"name":"Doxylamine","children":[{"name":"Acetaminophen","children":[{"name":"PenicillinV","children":[{"name":"Aspirin","children":[],"size":6,"colname":"X4"}],"colname":"X3"}],"colname":"X2"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Aspirin","children":[],"size":13,"colname":"X3"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[],"size":8,"colname":"X4"}],"colname":"X3"}],"size":8,"colname":"X2"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[],"size":9,"colname":"X3"},{"name":"Amoxicillin+Clavulanate","children":[],"size":6,"colname":"X3"}],"colname":"X2"}],"size":8,"colname":"X1"},{"name":"None","children":[],"size":17,"colname":"X1"},{"name":"PenicillinV","children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","children":[],"size":8,"colname":"X3"}],"size":32,"colname":"X2"},{"name":"Amoxicillin+Clavulanate","children":[{"name":"Acetaminophen","children":[{"name":"Aspirin","children":[],"size":9,"colname":"X4"}],"size":11,"colname":"X3"},{"name":"Aspirin","children":[],"size":16,"colname":"X3"}],"size":27,"colname":"X2"},{"name":"Aspirin","children":[{"name":"Acetaminophen","children":[{"name":"Amoxicillin+Clavulanate","children":[],"size":6,"colname":"X4"}],"colname":"X3"},{"name":"Amoxicillin+Clavulanate","children":[],"size":8,"colname":"X3"}],"colname":"X2"},{"name":"Doxylamine","children":[],"size":6,"colname":"X2"}],"size":6,"colname":"X1"}],"name":"root"},"options":{"legendOrder":null,"colors":null,"valueField":"size","percent":true,"count":false,"explanation":null,"breadcrumb":[],"legend":{"w":300},"sortFunction":"function (a, b) {return a.value - b.value;}","sumNodes":true}},"evals":["options.sortFunction"],"jsHooks":[]}</script><p>Or a Sankey Diagram.</p>
+<div class="sourceCode" id="cb200"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/createSankeyDiagram.html">createSankeyDiagram</a></span><span class="op">(</span><span class="va">all</span><span class="op">)</span></span></code></pre></div>
-<div class="sankeyNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-fc9bb83385676a426fb5" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-fc9bb83385676a426fb5">{"x":{"links":{"source":[0,0,0,1,2,3,3,3,4,4,4,5,6],"target":[7,8,9,9,9,8,9,10,7,9,10,9,9],"value":[0.28,0.64,9.48,0.23,0.23,0.23,2.21,0.23,0.28,9.710000000000001,0.55,0.23,75.70999999999999]},"nodes":{"name":["1.Acetaminophen","1.Acetaminophen+Amoxicillin","1.Amoxicillin","1.Amoxicillin+Clavulanate","1.Aspirin","1.Clavulanate","1.None","2.Amoxicillin+Clavulanate","2.Aspirin","2.Stopped","2.Acetaminophen"],"group":["1.Acetaminophen","1.Acetaminophen+Amoxicillin","1.Amoxicillin","1.Amoxicillin+Clavulanate","1.Aspirin","1.Clavulanate","1.None","2.Amoxicillin+Clavulanate","2.Aspirin","2.Stopped","2.Acetaminophen"]},"options":{"NodeID":"names","NodeGroup":"names","LinkGroup":null,"colourScale":"d3.scaleOrdinal([\"#1f77b4\", \"#ff7f0e\", \"#2ca02c\", \"#d62728\", \"#9467bd\", \"#8c564b\", \"#e377c2\"])","fontSize":7,"fontFamily":null,"nodeWidth":15,"nodePadding":10,"units":"%","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32,"sinksRight":true}},"evals":[],"jsHooks":[]}</script><p>Both plots are interactive in an HTML-environment, and are easy to
+<div class="sankeyNetwork html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b9500f7f67dcd314493a" style="width:700px;height:432.632880098888px;"></div>
+<script type="application/json" data-for="htmlwidget-b9500f7f67dcd314493a">{"x":{"links":{"source":[0,0,0,0,0,0,1,1,1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4,5,6,6,6,6,6,7,8,8,8,8,8,9,9,9,9,9,9,10,10,10,10,11,11,11,11,11,11,12,13,13,13,13,13,14],"target":[7,8,9,10,11,12,8,11,12,9,10,11,12,13,8,10,11,12,13,14,8,11,12,13,12,8,9,10,12,13,15,15,16,17,18,20,15,17,18,19,20,21,15,18,19,20,15,16,17,19,20,21,15,15,16,17,18,19,15],"value":[0.31,6.78,4.15,3.91,6.83,1.18,0.68,0.22,0.46,3.79,1.25,3.78,0.77,1.71,2.39,0.47,1.74,0.46,2.64,0.22,0.9,0.47,0.25,0.19,0.53,1.96,0.44,0.19,0.19,1.24,0.31,5.550000000000001,1.21,2.2,1.8,1.95,0.53,0.53,1.21,2.32,3.26,0.53,1.59,1.24,2.11,0.88,2.45,1.03,1.86,3.76,3.44,0.5,3.84,2.51,0.44,1.27,1.37,0.19,0.22]},"nodes":{"name":["1.Acetaminophen","1.Acetaminophen+Doxylamine","1.Amoxicillin+Clavulanate","1.Aspirin","1.Doxylamine","1.None","1.PenicillinV","2.Amoxicillin","2.Amoxicillin+Clavulanate","2.Aspirin","2.Doxylamine","2.PenicillinV","2.Stopped","2.Acetaminophen","2.Acetaminophen+Doxylamine","3.Stopped","3.Aspirin","3.Doxylamine","3.PenicillinV","3.Amoxicillin+Clavulanate","3.Acetaminophen","3.Acetaminophen+Doxylamine"],"group":["1.Acetaminophen","1.Acetaminophen+Doxylamine","1.Amoxicillin+Clavulanate","1.Aspirin","1.Doxylamine","1.None","1.PenicillinV","2.Amoxicillin","2.Amoxicillin+Clavulanate","2.Aspirin","2.Doxylamine","2.PenicillinV","2.Stopped","2.Acetaminophen","2.Acetaminophen+Doxylamine","3.Stopped","3.Aspirin","3.Doxylamine","3.PenicillinV","3.Amoxicillin+Clavulanate","3.Acetaminophen","3.Acetaminophen+Doxylamine"]},"options":{"NodeID":"names","NodeGroup":"names","LinkGroup":null,"colourScale":"d3.scaleOrdinal([\"#1f77b4\", \"#ff7f0e\", \"#2ca02c\", \"#d62728\", \"#9467bd\", \"#8c564b\", \"#e377c2\", \"#7f7f7f\"])","fontSize":7,"fontFamily":null,"nodeWidth":15,"nodePadding":10,"units":"%","margin":{"top":null,"right":null,"bottom":null,"left":null},"iterations":32,"sinksRight":true}},"evals":[],"jsHooks":[]}</script><p>Both plots are interactive in an HTML-environment, and are easy to
 include in shiny applications.</p>
 </div>
 </div>

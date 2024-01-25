@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.3</span>
       </span>
     </div>
 
@@ -67,7 +67,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.6.2" id="id_-treatmentpatterns-262"># TreatmentPatterns 2.6.2<a class="anchor" aria-label="anchor" href="#id_-treatmentpatterns-262"></a></h2>
+<h2 class="page-header" data-toc-text="2.6.3" id="id_-treatmentpatterns-263"># TreatmentPatterns 2.6.3<a class="anchor" aria-label="anchor" href="#id_-treatmentpatterns-263"></a></h2>
+<ul><li>Fixed issue where there were duplicate rows in the exported treatmentPathways.csv file.</li>
+<li>Added more comprehensive description for parameter <code>ageWindow</code> for <code><a href="../reference/export.html">export()</a></code>.</li>
+<li>Added additional tests validating the counts per pathway being exported by <code><a href="../reference/export.html">export()</a></code>.</li>
+<li>Fixed issue with re-occurring treatments in pathways.</li>
+<li>Added dedicated logical tests for various pathways.</li>
+<li>Added dedicated tests for target-event cohort overlaps.</li>
+<li>Fixed spelling error in outputs, and interaction with them in shiny module.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.6.2" id="id_-treatmentpatterns-262"># TreatmentPatterns 2.6.2<small>2023-12-13</small><a class="anchor" aria-label="anchor" href="#id_-treatmentpatterns-262"></a></h2>
 <ul><li>Fixed spelling mistake ‘summaryStatsTherapyDuraion’ to ‘summaryStatsTherapyDuration’.</li>
 <li>Added error when only one level of data is available in the data when computing a sankey diagram.</li>
 <li>Removed <code>createSankeyDiagram</code>
@@ -78,15 +88,21 @@
 </li>
 <li>Renamed <code>createSunburstPlot2</code> to <code>createSunburstPlot</code>
 </li>
+<li>Fixed issue where target cohorts had to be at least 1 day long to be included when using DatabaseConnector.</li>
+<li>Fixed CRAN error when running examples.</li>
+<li>Renamed <code>cellCount</code> to <code>minCellCount</code> in export documentation.</li>
+<li>Fixed issue where counts of pathways were not computed correctly.</li>
+<li>Fixed spelling error <code>summaryStatsTherapyDuraion</code> to <code>summaryStatsTherapyDuration</code>.</li>
+<li>Fixed issue in <code>export</code> where merging two tables could fail, if one was empty.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.6.1" id="id_-treatmentpatterns-261"># TreatmentPatterns 2.6.1<small>2023-12-11</small><a class="anchor" aria-label="anchor" href="#id_-treatmentpatterns-261"></a></h2>
 <ul><li>Bumped R version to 4.2.1</li>
-<li>Added additional unit-tests for <code>createSunburstPlot2()</code> and <code>createSankeyDiagram2()</code>
+<li>Added additional unit-tests for <code><a href="../reference/createSunburstPlot2.html">createSunburstPlot2()</a></code> and <code><a href="../reference/createSankeyDiagram2.html">createSankeyDiagram2()</a></code>
 </li>
 <li>Updated to use DATEDIFF to compute difference between dates when fetching data from the database.</li>
 <li>Added functionality to choose how groups below the minimum cell count are censored.</li>
-<li>Made some parameters ambiguous for <code>createSankeyDiagram2</code> and <code>createSunburstPlot2()</code> for more control over the figures.</li>
+<li>Made some parameters ambiguous for <code>createSankeyDiagram2</code> and <code><a href="../reference/createSunburstPlot2.html">createSunburstPlot2()</a></code> for more control over the figures.</li>
 <li>Removed <code>addNoPath</code> parameter.</li>
 <li>Renamed <code>minFreq</code> parameter to <code>minCellCount</code>.</li>
 <li>Added Shiny app with exported module classes.</li>
@@ -96,7 +112,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.6.0" id="id_-treatmentpatterns-260"># TreatmentPatterns 2.6.0<small>2023-11-13</small><a class="anchor" aria-label="anchor" href="#id_-treatmentpatterns-260"></a></h2>
-<ul><li>Added <code>createSunburstPlot2()</code> as a replacement of <code><a href="../reference/createSunburstPlot.html">createSunburstPlot()</a></code>. <code>createSunburstPlot2()</code> will fully replace <code><a href="../reference/createSunburstPlot.html">createSunburstPlot()</a></code> in a future version.</li>
+<ul><li>Added <code><a href="../reference/createSunburstPlot2.html">createSunburstPlot2()</a></code> as a replacement of <code><a href="../reference/createSunburstPlot.html">createSunburstPlot()</a></code>. <code><a href="../reference/createSunburstPlot2.html">createSunburstPlot2()</a></code> will fully replace <code><a href="../reference/createSunburstPlot.html">createSunburstPlot()</a></code> in a future version.</li>
 <li>Moved <code>DatabaseConnector</code> and <code>SqlRender</code> to Suggests</li>
 <li>Removed obsolete dependencies: <code>data.table</code>, <code>fs</code>, and <code>glue</code>.</li>
 <li>Internal performance updates.</li>
