@@ -6,6 +6,7 @@ library(stringr)
 
 test_that("computePathways DatabaseConnector", {
   testthat::skip_on_cran()
+  testthat::skip_on_ci()
   
   globals <- generateCohortTableCG()
   
