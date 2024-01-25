@@ -29,6 +29,7 @@ test_that("computePathways DatabaseConnector", {
 })
 
 test_that("computePathways CDMConnector", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   expect_message(
@@ -50,6 +51,7 @@ test_that("computePathways CDMConnector", {
 })
 
 test_that("nrow exitCohorts > 0", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   cohorts <- globals$cohorts %>%
@@ -70,6 +72,7 @@ test_that("nrow exitCohorts > 0", {
 
 # Parameter sweep ----
 test_that("includeTreatments", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
 
   andromeda_startDate <- computePathways(
@@ -113,7 +116,7 @@ test_that("includeTreatments", {
 })
 
 test_that("periodPriorToIndex", {
-  testthat::skip_on_cran()
+  skip_on_cran()
   
   globals <- generateCohortTableCDMC()
   
@@ -145,6 +148,7 @@ test_that("minEraDuration", {
 })
 
 test_that("splitEventCohorts", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   andromeda_empty <- computePathways(
@@ -198,6 +202,7 @@ test_that("splitTime", {
 })
 
 test_that("eraCollapseSize", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
 
   andromeda_0 <- computePathways(
@@ -229,6 +234,7 @@ test_that("eraCollapseSize", {
 })
 
 test_that("combinationWindow", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   expect_error(
@@ -243,6 +249,7 @@ test_that("combinationWindow", {
 })
 
 test_that("minPostCombinationDuration", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   expect_error(
@@ -257,6 +264,7 @@ test_that("minPostCombinationDuration", {
 })
 
 test_that("filterTreatments", {
+  skip_on_cran()
   globals <- generateCohortTableCDMC()
 
   expect_error(
