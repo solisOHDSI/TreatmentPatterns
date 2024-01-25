@@ -169,8 +169,8 @@ test_that("splitEventCohorts", {
   expect_error(
     computePathways(
       cohorts = globals$cohorts,
+      cohortTableName = globals$cohortTableName,
       cdm = globals$cdm,
-      resultSchema = globals$resultSchema,
       splitEventCohorts = "1"
     ),
     "Must be of type.+'integerish'"
