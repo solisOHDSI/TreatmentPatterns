@@ -12,6 +12,7 @@ Description:
     in Markus, Verhamme, Kors, and Rijnbeek (2022) <doi:10.1016/j.cmpb.2022.107081>.
 URL: https://github.com/darwin-eu-dev/TreatmentPatterns
 BugReports: https://github.com/darwin-eu-dev/TreatmentPatterns/issues
+Language: en-US
 Depends:
     R (>= 4.2)
 Imports: 
