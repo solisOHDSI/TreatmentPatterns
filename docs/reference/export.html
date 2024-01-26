@@ -18,7 +18,7 @@ object to sharable csv-files and/or a zip archive."><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">TreatmentPatterns</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.3</span>
       </span>
     </div>
 
@@ -96,8 +96,10 @@ Andromeda object.</p></dd>
 
 
 <dt>ageWindow</dt>
-<dd><p>(<code>integer(1)</code>: <code>10</code>)<br>
-Number of years to bin age groups into.</p></dd>
+<dd><p>(<code>integer(n)</code>: <code>10</code>)<br>
+Number of years to bin age groups into. It may also be a vector of integers.
+I.e. <code>c(0, 18, 150)</code> which will results in age group <code>0-18</code> which includes
+subjects <code>&lt; 19</code>. And age group <code>18-150</code> which includes subjects <code>&gt; 18</code>.</p></dd>
 
 
 <dt>minCellCount</dt>
@@ -166,7 +168,8 @@ If not <code>NULL</code> adds the exported files to a ZIP-file with the specifie
 <span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      cohortId <span class="op">=</span> <span class="st">"cohort_definition_id"</span>,</span></span>
 <span class="r-in"><span>      cohortName <span class="op">=</span> <span class="st">"cohort_name"</span>,</span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"cohortId"</span>, <span class="st">"cohortName"</span>, <span class="st">"type"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">outputEnv</span> <span class="op">&lt;-</span> <span class="fu"><a href="computePathways.html">computePathways</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    cohorts <span class="op">=</span> <span class="va">cohorts</span>,</span></span>
@@ -184,6 +187,31 @@ If not <code>NULL</code> adds the exported files to a ZIP-file with the specifie
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Download completed!</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating 8 cohorts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (1/8) - Acetaminophen)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (1/8) - Acetaminophen) <span style="color: #B2B2B2;">[126ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (2/8) - Amoxicillin)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (2/8) - Amoxicillin) <span style="color: #B2B2B2;">[97ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (3/8) - Aspirin)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (3/8) - Aspirin) <span style="color: #B2B2B2;">[95ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (4/8) - Clavulanate)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (4/8) - Clavulanate) <span style="color: #B2B2B2;">[96ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (5/8) - Death)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (5/8) - Death) <span style="color: #B2B2B2;">[48ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (6/8) - Doxylamine)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (6/8) - Doxylamine) <span style="color: #B2B2B2;">[80ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (7/8) - PenicillinV)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (7/8) - PenicillinV) <span style="color: #B2B2B2;">[107ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Generating cohort (8/8) - ViralSinusitis)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Generating cohort (8/8) - ViralSinusitis) <span style="color: #B2B2B2;">[128ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Construct treatment pathways, this may take a while for larger datasets.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Original number of rows: 8352</span>
@@ -194,28 +222,34 @@ If not <code>NULL</code> adds the exported files to a ZIP-file with the specifie
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Switches: 8352</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> FRFS Combinations: 4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> LRFS Combinations: 1527</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 4 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> out of 559 rows</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 139 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> out of 6816 rows</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration: 2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Switches: 559</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> FRFS Combinations: 0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> LRFS Combinations: 4</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> After combinationWindow: 555</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Time needed to execute combination window 0.0661481976509094</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Switches: 6816</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> FRFS Combinations: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> LRFS Combinations: 135</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Selected 1 </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> out of 6682 rows</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Iteration: 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Switches: 6682</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> FRFS Combinations: 1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> LRFS Combinations: 0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> After combinationWindow: 6682</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Time needed to execute combination window 0.0927278677622477</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Order the combinations.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> After filterTreatments: 554</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> After filterTreatments: 6679</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adding drug sequence number.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> After maxPathLength: 554</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> After maxPathLength: 6675</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Adding concept names.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Ordering the combinations.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> constructPathways done.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/metadata.csv</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/treatmentPathways.csv</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Censoring 1242 pathways with a frequency &lt;5 to 5.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/summaryStatsTherapyDuration.csv</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/countsYear.csv</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/countsAge.csv</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0Qsg7x/countsSex.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing metadata to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/metadata.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing treatmentPathways to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/treatmentPathways.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Censoring 11840 pathways with a frequency &lt;5 to 5.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing summaryStatsTherapyDuration to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/summaryStatsTherapyDuration.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsYearPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/countsYear.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsAgePath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/countsAge.csv</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Writing countsSexPath to C:\Users\MVANKE~1\AppData\Local\Temp\Rtmp0CfUf4/countsSex.csv</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

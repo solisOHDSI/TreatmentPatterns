@@ -1,7 +1,7 @@
 Package: TreatmentPatterns
 Type: Package
 Title: Analyzes Real-World Treatment Patterns of a Study Population of Interest
-Version: 2.6.2
+Version: 2.6.3
 Authors@R: 
     c(person("Aniek", "Markus", , role = c("aut"), comment = c(ORCID = "0000-0001-5779-4794")),
       person("Maarten", "van Kessel", email = "m.l.vankessel@erasmusmc.nl", role = c("cre"), comment = c(ORCID = "0009-0006-8832-6030")))
@@ -12,6 +12,7 @@ Description:
     in Markus, Verhamme, Kors, and Rijnbeek (2022) <doi:10.1016/j.cmpb.2022.107081>.
 URL: https://github.com/darwin-eu-dev/TreatmentPatterns
 BugReports: https://github.com/darwin-eu-dev/TreatmentPatterns/issues
+Language: en-US
 Depends:
     R (>= 4.2)
 Imports: 
