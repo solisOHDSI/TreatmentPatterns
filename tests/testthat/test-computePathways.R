@@ -359,7 +359,7 @@ test_that("minPostCombinationDuration: 30", {
   
   DBI::dbDisconnect(con)
 })
-
+p
 test_that("filterTreatments", {
   skip_on_cran()
   globals <- generateCohortTableCDMC()
