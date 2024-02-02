@@ -17,7 +17,6 @@
 #' @importFrom tidyr pivot_wider
 #' @importFrom googleVis gvisSankey
 #' @importFrom rjson toJSON
-#' @importFrom stringi stri_replace_all_fixed
 ## usethis namespace: end
 NULL
 

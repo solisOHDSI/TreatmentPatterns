@@ -19,7 +19,6 @@ Imports:
     checkmate,
     dplyr,
     stringr,
-    stringi,
     utils,
     rjson,
     googleVis,
