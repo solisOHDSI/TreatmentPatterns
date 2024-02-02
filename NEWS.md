@@ -1,3 +1,7 @@
+# TreatmentPatterns 2.6.5-1
+---------
+* Removed stringi from imports
+
 # TreatmentPatterns 2.6.4
 ---------
 * Fixed issue with minPostCombinationWindow broken by the fix for re-occurring treatments.
