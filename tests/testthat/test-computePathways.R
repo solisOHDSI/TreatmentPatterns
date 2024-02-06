@@ -260,9 +260,9 @@ test_that("minPostCombinationDuration: 30", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     1,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     1,           as.Date("2020-01-01"), as.Date("2020-03-01"),
-    3,                     1,           as.Date("2020-01-10"), as.Date("2020-03-15")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-01"), as.Date("2014-03-01"),
+    3,                     5,           as.Date("2014-01-10"), as.Date("2014-03-15")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -359,7 +359,7 @@ test_that("minPostCombinationDuration: 30", {
   
   DBI::dbDisconnect(con)
 })
-p
+
 test_that("filterTreatments", {
   skip_on_cran()
   globals <- generateCohortTableCDMC()

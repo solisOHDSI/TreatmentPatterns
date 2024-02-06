@@ -14,8 +14,8 @@ test_that("A", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -64,9 +64,9 @@ test_that("A-B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -116,10 +116,10 @@ test_that("A-B-C", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12"),
-    4,                     5,           as.Date("2020-05-14"), as.Date("2020-07-14")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12"),
+    4,                     5,           as.Date("2014-05-14"), as.Date("2014-07-14")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -168,10 +168,10 @@ test_that("A-B+C", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     1,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     1,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    3,                     1,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    4,                     1,           as.Date("2020-03-10"), as.Date("2020-05-10")
+    1,                     1,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     1,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    3,                     1,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    4,                     1,           as.Date("2014-03-10"), as.Date("2014-05-10")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -220,10 +220,10 @@ test_that("A+B-C", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    4,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    4,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -272,10 +272,10 @@ test_that("A-A+B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     1,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     1,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    2,                     1,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    3,                     1,           as.Date("2020-03-10"), as.Date("2020-05-10")
+    1,                     1,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     1,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    2,                     1,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    3,                     1,           as.Date("2014-03-10"), as.Date("2014-05-10")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -324,11 +324,11 @@ test_that("A-B-A-B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     2,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     2,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    3,                     2,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    2,                     2,           as.Date("2020-05-12"), as.Date("2020-07-12"),
-    3,                     2,           as.Date("2020-07-14"), as.Date("2020-09-14")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    3,                     5,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    2,                     5,           as.Date("2014-05-12"), as.Date("2014-07-12"),
+    3,                     5,           as.Date("2014-07-14"), as.Date("2014-09-14")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -377,10 +377,10 @@ test_that("A-B-A", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     3,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     3,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    3,                     3,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    2,                     3,           as.Date("2020-05-12"), as.Date("2020-07-12")
+    1,                     3,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     3,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    3,                     3,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    2,                     3,           as.Date("2014-05-12"), as.Date("2014-07-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -429,10 +429,10 @@ test_that("A-B-B, collapse to A-B", {
 
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     7,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     7,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    3,                     7,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    3,                     7,           as.Date("2020-05-12"), as.Date("2020-06-12")
+    1,                     7,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     7,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    3,                     7,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    3,                     7,           as.Date("2014-05-12"), as.Date("2014-06-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -481,10 +481,10 @@ test_that("A-B-B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     7,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     7,           as.Date("2020-01-03"), as.Date("2020-03-02"),
-    3,                     7,           as.Date("2020-03-10"), as.Date("2020-05-10"),
-    3,                     7,           as.Date("2020-06-12"), as.Date("2020-07-12")
+    1,                     7,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     7,           as.Date("2014-01-03"), as.Date("2014-03-02"),
+    3,                     7,           as.Date("2014-03-10"), as.Date("2014-05-10"),
+    3,                     7,           as.Date("2014-06-12"), as.Date("2014-07-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -533,10 +533,10 @@ test_that("A+B-A", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    2,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    2,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -585,10 +585,10 @@ test_that("A-A-B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     6,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     6,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    2,                     6,           as.Date("2020-04-12"), as.Date("2020-06-12"),
-    3,                     6,           as.Date("2020-06-14"), as.Date("2020-08-14")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    2,                     5,           as.Date("2014-04-12"), as.Date("2014-06-12"),
+    3,                     5,           as.Date("2014-06-14"), as.Date("2014-08-14")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -637,10 +637,10 @@ test_that("A-A-B, collapse to A-B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     6,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     6,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    2,                     6,           as.Date("2020-03-12"), as.Date("2020-05-12"),
-    3,                     6,           as.Date("2020-05-14"), as.Date("2020-06-14")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    2,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12"),
+    3,                     5,           as.Date("2014-05-14"), as.Date("2014-06-14")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -689,11 +689,11 @@ test_that("A+B-A+B, collapse to A+B", {
 
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    2,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12"),
-    3,                     5,           as.Date("2020-03-12"), as.Date("2020-05-12")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    2,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12"),
+    3,                     5,           as.Date("2014-03-12"), as.Date("2014-05-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
@@ -742,11 +742,11 @@ test_that("A+B-A+B", {
   
   cohort_table <- dplyr::tribble(
     ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
-    1,                     5,           as.Date("2020-01-01"), as.Date("2023-01-01"),
-    2,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    3,                     5,           as.Date("2020-01-10"), as.Date("2020-03-10"),
-    2,                     5,           as.Date("2020-04-12"), as.Date("2020-06-12"),
-    3,                     5,           as.Date("2020-04-12"), as.Date("2020-06-12")
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    3,                     5,           as.Date("2014-01-10"), as.Date("2014-03-10"),
+    2,                     5,           as.Date("2014-04-12"), as.Date("2014-06-12"),
+    3,                     5,           as.Date("2014-04-12"), as.Date("2014-06-12")
   )
   
   copy_to(con, cohort_table, overwrite = TRUE)
