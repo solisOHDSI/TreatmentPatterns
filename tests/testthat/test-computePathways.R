@@ -67,6 +67,28 @@ test_that("nrow exitCohorts > 0", {
       cohorts = cohorts,
       cohortTableName = globals$cohortTableName
     ),
+    "After maxPathLength: 554"
+  )
+})
+
+test_that("nrow exitCohorts > 0", {
+  skip_on_cran()
+  globals <- generateCohortTableCG()
+  
+  cohorts <- globals$cohorts %>%
+    mutate(type = case_when(
+      .data$cohortName == "Acetaminophen" ~ "exit",
+      .default = .data$type
+    ))
+  
+  expect_message(
+    computePathways(
+      connectionDetails = globals$connectionDetails,
+      cdmSchema = globals$cdmSchema,
+      resultSchema = globals$resultSchema,
+      cohorts = cohorts,
+      cohortTableName = globals$cohortTableName
+    ),
     "After maxPathLength: 2117"
   )
 })
