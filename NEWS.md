@@ -1,6 +1,7 @@
-# TreatmentPatterns 2.6.5-1
+# TreatmentPatterns 2.6.5-2
 ---------
 * Removed stringi from imports
+* Fixed unit tests that had dummy data outside of observation data.
 
 # TreatmentPatterns 2.6.4
 ---------
