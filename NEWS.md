@@ -1,7 +1,9 @@
-# TreatmentPatterns 2.6.5-2
+# TreatmentPatterns 2.6.5
 ---------
 * Removed stringi from imports
 * Fixed unit tests that had dummy data outside of observation data.
+* Fix for complex edge-case paths with re-occuring treatments
+* Added unit tests for edge-cases
 
 # TreatmentPatterns 2.6.4
 ---------
