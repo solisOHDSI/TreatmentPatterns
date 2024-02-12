@@ -67,7 +67,7 @@ test_that("nrow exitCohorts > 0", {
       cohorts = cohorts,
       cohortTableName = globals$cohortTableName
     ),
-    "After maxPathLength: 554"
+    "After maxPathLength: 2117"
   )
 })
 

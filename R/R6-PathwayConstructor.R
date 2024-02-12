@@ -193,6 +193,8 @@ PathwayConstructor <- R6::R6Class(
         minEraDuration = private$settings$minEraDuration
       )
       
+      private$checkCohortTable()
+      
       private$andromeda$cohortTable <- private$andromeda$cohortTable %>%
         dplyr::rename(
           cohortId = "cohort_definition_id",
@@ -283,6 +285,20 @@ PathwayConstructor <- R6::R6Class(
       minPostCombinationDuration = 30,
       filterTreatments = "First",
       maxPathLength = 5
-    )
+    ),
+    
+    ## Methods ----
+    checkCohortTable = function() {
+      cohortTableHead <- private$andromeda[["cohortTable"]] %>%
+        head() %>%
+        dplyr::collect()
+      
+      assertions <- checkmate::makeAssertCollection()
+      checkmate::assertIntegerish(cohortTableHead$cohort_definition_id, add = assertions)
+      checkmate::assertIntegerish(cohortTableHead$subject_id, add = assertions)
+      checkmate::assertDate(cohortTableHead$cohort_start_date, add = assertions)
+      checkmate::assertDate(cohortTableHead$cohort_end_date, add = assertions)
+      checkmate::reportAssertions(assertions)
+    }
   )
 )

@@ -939,7 +939,7 @@ test_that("A-A+B+C-A+C-C", {
   DBI::dbDisconnect(con)
 })
 
-test_that("A-A+B+C-A+C-C", {
+test_that("A-A+C-C-B+C-C", {
   con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
   
   cohorts <- data.frame(
