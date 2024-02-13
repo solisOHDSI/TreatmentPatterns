@@ -416,6 +416,112 @@ test_that("filterTreatments", {
     cdm = globals$cdm,
     filterTreatments = "All"
   )
+  
+  firstTH <- first$treatmentHistory %>%
+    dplyr::collect()
+  
+  changesTH <- changes$treatmentHistory %>%
+    dplyr::collect()
+  
+  allTH <- all$treatmentHistory %>%
+    dplyr::collect()
+  
+  # Check names
+  expect_identical(
+    sort(names(firstTH)),
+    sort(names(changesTH)),
+    sort(names(allTH))
+  )
+
+  # eventCohortId
+  expect_identical(
+    "character",
+    class(firstTH$eventCohortId),
+    class(changesTH$eventCohortId),
+    class(allTH$eventCohortId)
+  )
+
+  expect_identical(
+    "numeric",
+    class(firstTH$personId),
+    class(changesTH$personId),
+    class(allTH$personId)
+  )
+
+  expect_identical(
+    "numeric",
+    class(firstTH$indexYear),
+    class(changesTH$indexYear),
+    class(allTH$indexYear)
+  )
+
+  expect_identical(
+    "integer",
+    class(firstTH$eventStartDate),
+    class(changesTH$eventStartDate),
+    class(allTH$eventStartDate)
+  )
+
+  expect_identical(
+    "integer",
+    class(firstTH$eventEndDate),
+    class(changesTH$eventStartDate),
+    class(allTH$eventEndDate)
+  )
+
+  expect_identical(
+    "numeric",
+    class(firstTH$age),
+    class(changesTH$age),
+    class(allTH$age)
+  )
+
+  expect_identical(
+    "character",
+    class(firstTH$sex),
+    class(changesTH$sex),
+    class(allTH$sex)
+  )
+
+  expect_identical(
+    "integer",
+    class(firstTH$durationEra),
+    class(changesTH$durationEra),
+    class(allTH$durationEra)
+  )
+
+  expect_identical(
+    "numeric",
+    class(firstTH$sortOrder),
+    class(changesTH$sortOrder),
+    class(allTH$sortOrder)
+  )
+
+  expect_identical(
+    "integer",
+    class(firstTH$eventSeq),
+    class(changesTH$eventSeq),
+    class(allTH$eventSeq)
+  )
+
+  expect_identical(
+    "character",
+    class(firstTH$eventCohortName),
+    class(changesTH$eventCohortName),
+    class(allTH$eventCohortName)
+  )
+  
+  expect_false(any(is.na(firstTH)))
+  expect_false(any(is.na(changesTH)))
+  expect_false(any(is.na(allTH)))
+  
+  expect_false(any(is.null(firstTH)))
+  expect_false(any(is.null(changesTH)))
+  expect_false(any(is.null(allTH)))
+  
+  expect_true(nrow(firstTH) == 554)
+  expect_true(nrow(changesTH) == 555)
+  expect_true(nrow(allTH) == 555)
 
   expect_true(Andromeda::isAndromeda(first))
   expect_true(Andromeda::isAndromeda(changes))

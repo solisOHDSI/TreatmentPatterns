@@ -52,6 +52,14 @@ PathwayConstructor <- R6::R6Class(
     validate = function() {
       private$cdmInterface$validate()
       
+      if (private$settings$minEraDuration > private$settings$minPostCombinationDuration) {
+        warning("The `minPostCombinationDuration` is set lower than the `minEraDuration`, this might result in unexpected behavior")
+      }
+      
+      if (private$settings$minEraDuration > private$settings$combinationWindow) {
+        warning("The `combinationWindow` is set lower than the `minEraDuration`, this might result in unexpected behavior")
+      }
+      
       errorMessages <- checkmate::makeAssertCollection()
       
       checkmate::assertCharacter(
