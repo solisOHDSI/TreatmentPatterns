@@ -1,5 +1,6 @@
 library(testthat)
 library(TreatmentPatterns)
+library(CDMConnector)
 
 test_that("new", {
   skip_on_cran()
