@@ -719,7 +719,7 @@ doFilterTreatments <- function(andromeda, filterTreatments) {
     
     # Remove all rows with same sequential treatments
     andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
-      dplyr::group_by(.data$personId, .data$age, .data$sex, .data$indexYear, .data$eventCohortId, .data$group) %>%
+      dplyr::group_by(.data$personId, .data$age, .data$sex, .data$indexYear, .data$eventCohortId, .data$group, .data$sortOrder) %>%
       dplyr::summarise(
         eventStartDate = min(.data$eventStartDate, na.rm = TRUE),
         eventEndDate = max(.data$eventEndDate, na.rm = TRUE),
