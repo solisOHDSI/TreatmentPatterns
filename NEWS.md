@@ -1,9 +1,11 @@
 # TreatmentPatterns 2.6.5
 ---------
-* Removed stringi from imports
+* Removed stringi from imports.
 * Fixed unit tests that had dummy data outside of observation data.
-* Fix for complex edge-case paths with re-occuring treatments
-* Added unit tests for edge-cases
+* Fix for complex edge-case paths with re-occuring treatments.
+* Added unit tests for edge-cases.
+* Added warning when `minEraDuration` > `minPostCombinationWindow` or `combinationWindow`.
+* Fixed issue when `filterTreatments` was set to `"changes"`, age and sex columns were dropped from output.
 
 # TreatmentPatterns 2.6.4
 ---------
