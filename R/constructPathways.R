@@ -397,9 +397,7 @@ doCombinationWindow <- function(
   # While rows that need modification exist:
   iterations <- 1
   
-  # n <- andromeda$treatmentHistory %>%
-  #   summarise(sum = sum(.data$selectedRows), .groups = "drop") %>%
-  #   dplyr::pull()
+  unflagMinCellCount(andromeda)
   
   while (andromeda$treatmentHistory %>%
          dplyr::filter(.data$selectedRows) %>%
@@ -801,4 +799,18 @@ addLabels <- function(andromeda) {
   andromeda$treatmentHistory <- mem
   rm("mem")
   return(invisible(NULL))
+}
+
+unflagMinCellCount <- function(andromeda, frac = 0.1) {
+  idsToUnflag <- andromeda$treatmentHistory %>%
+    dplyr::group_by(.data$eventCohortId) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::filter(.data$n / max(.data$n) >= frac) %>%
+    dplyr::pull(.data$eventCohortId)
+  
+  andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
+    dplyr::mutate(selectedRows = dplyr::case_when(
+      .data$selectedRows %in% idsToUnflag ~ 0,
+      .default = .data$selectedRows
+    ))
 }

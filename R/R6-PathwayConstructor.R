@@ -64,18 +64,21 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertCharacter(
         x = private$settings$includeTreatments,
+        .var.name = "includeTreatments",
         len = 1,
         add = errorMessages
       )
       
       checkmate::assertSubset(
         x = private$settings$includeTreatments,
+        .var.name = "includeTreatments",
         choices = c("startDate", "endDate"),
         add = errorMessages
       )
       
       checkmate::assertNumeric(
         x = private$settings$periodPriorToIndex,
+        .var.name = "periodPriorToIndex",
         len = 1,
         finite = TRUE,
         null.ok = FALSE,
@@ -84,6 +87,7 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertNumeric(
         x = private$settings$minEraDuration,
+        .var.name = "minEraDuration",
         lower = 0,
         finite = TRUE,
         len = 1,
@@ -93,12 +97,14 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertIntegerish(
         x = private$settings$splitEventCohorts,
+        .var.name = "splitEventCohorts",
         null.ok = TRUE,
         add = errorMessages
       )
       
       checkmate::assertIntegerish(
         x = private$settings$splitTime,
+        .var.name = "splitTime",
         lower = 0,
         null.ok = TRUE,
         add = errorMessages
@@ -106,6 +112,7 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertNumeric(
         x = private$settings$eraCollapseSize,
+        .var.name = "eraCollapseSize",
         lower = 0,
         finite = TRUE,
         len = 1,
@@ -115,8 +122,8 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertNumeric(
         x = private$settings$combinationWindow,
+        .var.name = "combinationWindow",
         lower = 0,
-        finite = TRUE,
         len = 1,
         null.ok = FALSE,
         add = errorMessages
@@ -124,6 +131,7 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertNumeric(
         x = private$settings$minPostCombinationDuration,
+        .var.name = "minPostCombinationDuration",
         lower = 0,
         finite = TRUE,
         len = 1,
@@ -133,18 +141,21 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertCharacter(
         x = private$settings$filterTreatments,
+        .var.name = "filterTreatments",
         len = 1,
         add = errorMessages
       )
       
       checkmate::assertSubset(
         x = private$settings$filterTreatments,
+        .var.name = "filterTreatments",
         choices = c("First", "Changes", "All"),
         add = errorMessages
       )
       
       checkmate::assertNumeric(
         x = private$settings$maxPathLength,
+        .var.name = "maxPathLength",
         lower = 0,
         upper = 5,
         finite = TRUE,
@@ -155,6 +166,7 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertDataFrame(
         x = private$cohorts,
+        .var.name = "cohorts",
         types = c("integerish", "character", "character"),
         any.missing = FALSE,
         all.missing = FALSE,
@@ -166,13 +178,24 @@ PathwayConstructor <- R6::R6Class(
       
       checkmate::assertSubset(
         x = names(private$cohorts),
+        .var.name = "column names of cohorts",
         choices = c("cohortId", "cohortName", "type"),
         add = errorMessages
       )
       
       checkmate::assertSubset(
         x = private$cohorts$type,
+        .var.name = "type column",
         choices = c("event", "target", "exit"),
+        add = errorMessages
+      )
+      
+      checkmate::assertNumeric(
+        x = private$settings$stopCombinationFraction,
+        .var.name = "stopCombinationFraction",
+        lower = 0,
+        upper = 1,
+        len = 1,
         add = errorMessages
       )
       
@@ -241,6 +264,7 @@ PathwayConstructor <- R6::R6Class(
     #' @template param_minPostCombinationDuration
     #' @template param_filterTreatments
     #' @template param_maxPathLength
+    #' @param stopCombinationFraction (`double(1)`) Fraction of when to stop combining treatments.
     #'
     #' @return (`data.frame()`)
     editSettings = function(
@@ -253,7 +277,9 @@ PathwayConstructor <- R6::R6Class(
     combinationWindow = 30,
     minPostCombinationDuration = 30,
     filterTreatments = "First",
-    maxPathLength = 5) {
+    maxPathLength = 5,
+    stopCombinationFraction = 0.01
+    ) {
       settings <- mget(
         x = names(formals()),
         envir = sys.frame(
@@ -292,7 +318,8 @@ PathwayConstructor <- R6::R6Class(
       combinationWindow = 30,
       minPostCombinationDuration = 30,
       filterTreatments = "First",
-      maxPathLength = 5
+      maxPathLength = 5,
+      stopCombinationFraction = 0.01
     ),
     
     ## Methods ----
