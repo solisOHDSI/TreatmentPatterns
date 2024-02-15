@@ -20,6 +20,7 @@
 #' @template param_minPostCombinationDuration
 #' @template param_filterTreatments
 #' @template param_maxPathLength
+#' @param stopCombinationFraction (`numeric(1)`: `0`) Fraction of when to stop combining treatments.
 #'
 #' @return (`Andromeda::andromeda()`)
 #' \link[Andromeda]{andromeda} object containing non-sharable patient level
@@ -90,7 +91,8 @@ computePathways <- function(
     combinationWindow = 30,
     minPostCombinationDuration = 30,
     filterTreatments = "First",
-    maxPathLength = 5) {
+    maxPathLength = 5,
+    stopCombinationFraction = 0) {
   
   cdmInterface <- CDMInterface$new(
     connectionDetails = connectionDetails,
@@ -120,7 +122,8 @@ computePathways <- function(
     combinationWindow = combinationWindow,
     minPostCombinationDuration = minPostCombinationDuration,
     filterTreatments = filterTreatments,
-    maxPathLength = maxPathLength
+    maxPathLength = maxPathLength,
+    stopCombinationFraction = stopCombinationFraction
   )
   pathwayConstructor$construct()
   andromeda <- pathwayConstructor$getAndromeda()

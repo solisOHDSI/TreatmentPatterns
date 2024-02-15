@@ -21,7 +21,8 @@ computePathways(
   combinationWindow = 30,
   minPostCombinationDuration = 30,
   filterTreatments = "First",
-  maxPathLength = 5
+  maxPathLength = 5,
+  stopCombinationFraction = 0
 )
 }
 \arguments{
@@ -88,6 +89,8 @@ event cohorts (‘All’).}
 
 \item{maxPathLength}{(\code{integer(1)}: \code{5})\cr
 Maximum number of steps included in treatment pathway}
+
+\item{stopCombinationFraction}{(\code{numeric(1)}: \code{0}) Fraction of when to stop combining treatments.}
 }
 \value{
 (\code{Andromeda::andromeda()})

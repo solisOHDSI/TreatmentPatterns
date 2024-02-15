@@ -84,7 +84,8 @@ constructPathways <- function(
     doCombinationWindow(
       andromeda = andromeda,
       combinationWindow = settings$combinationWindow,
-      minPostCombinationDuration = settings$minPostCombinationDuration
+      minPostCombinationDuration = settings$minPostCombinationDuration,
+      stopCombinationFraction = settings$stopCombinationFraction
     )
 
     doFilterTreatments(
@@ -383,12 +384,14 @@ doEraCollapse <- function(andromeda, eraCollapseSize) {
 #' @param combinationWindow (`integer(1)`)
 #' @param minPostCombinationDuration (`integer(1)`)
 #' @param andromeda (`Andromeda::andromeda()`)
+#' @param stopCombinationFraction (`double(1)`)
 #'
 #' @return (`invisible(NULL)`)
 doCombinationWindow <- function(
     andromeda,
     combinationWindow,
-    minPostCombinationDuration) {
+    minPostCombinationDuration,
+    stopCombinationFraction) {
   time1 <- Sys.time()
   
   # Find which rows contain some overlap
@@ -397,7 +400,7 @@ doCombinationWindow <- function(
   # While rows that need modification exist:
   iterations <- 1
   
-  unflagMinCellCount(andromeda)
+  unflagMinCellCount(andromeda, stopCombinationFraction)
   
   while (andromeda$treatmentHistory %>%
          dplyr::filter(.data$selectedRows) %>%
@@ -441,6 +444,21 @@ doCombinationWindow <- function(
         .default = 0
       ))
     
+    nFRFS <- andromeda$treatmentHistory %>%
+      dplyr::summarise(sum = sum(.data$combinationFRFS, na.rm = TRUE)) %>%
+      dplyr::pull()
+    
+    nLRFS <- andromeda$treatmentHistory %>%
+      dplyr::summarise(sum = sum(.data$combinationLRFS, na.rm = TRUE)) %>%
+      dplyr::pull()
+    
+    if (sum(nFRFS, nLRFS) == 0) {
+      message("Nothing more to combine")
+      andromeda$treatmentHistory %>%
+        dplyr::mutate(selectedRows = 0)
+      break
+    }
+    
     message(sprintf(
       "Selected %s \nout of %s rows\nIteration: %s\nSwitches: %s\nFRFS Combinations: %s\nLRFS Combinations: %s\n",
       andromeda$treatmentHistory %>%
@@ -453,12 +471,8 @@ doCombinationWindow <- function(
       andromeda$treatmentHistory %>%
         dplyr::summarise(sum = sum(!is.na(.data$switch), na.rm = TRUE)) %>%
         dplyr::pull(),
-      andromeda$treatmentHistory %>%
-        dplyr::summarise(sum = sum(.data$combinationFRFS, na.rm = TRUE)) %>%
-        dplyr::pull(),
-      andromeda$treatmentHistory %>%
-        dplyr::summarise(sum = sum(.data$combinationLRFS, na.rm = TRUE)) %>%
-        dplyr::pull()
+      nFRFS,
+      nLRFS
     ))
     
     sumSwitchComb <- andromeda$treatmentHistory %>%
@@ -801,11 +815,19 @@ addLabels <- function(andromeda) {
   return(invisible(NULL))
 }
 
-unflagMinCellCount <- function(andromeda, frac = 0.1) {
+#' unflagMinCellCount
+#'
+#' @noRd
+#'
+#' @param andromeda (`andromeda()`)
+#' @param stopCombinationFraction (`double(1)`) 
+#'
+#' @return invisible(NULL)
+unflagMinCellCount <- function(andromeda, stopCombinationFraction) {
   idsToUnflag <- andromeda$treatmentHistory %>%
     dplyr::group_by(.data$eventCohortId) %>%
     dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::filter(.data$n / max(.data$n) >= frac) %>%
+    dplyr::filter(.data$n / max(.data$n) >= stopCombinationFraction) %>%
     dplyr::pull(.data$eventCohortId)
   
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%

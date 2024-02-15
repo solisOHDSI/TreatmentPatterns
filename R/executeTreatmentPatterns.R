@@ -100,7 +100,8 @@ executeTreatmentPatterns <- function(
     combinationWindow = combinationWindow,
     minPostCombinationDuration = 30,
     filterTreatments = "First",
-    maxPathLength = 5
+    maxPathLength = 5,
+    stopCombinationFraction = 0
   )
   
   withr::defer({

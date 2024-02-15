@@ -31,7 +31,7 @@ test_that("getSettings", {
   
   res <- pathwayConstructor$getSettings()
 
-  expect_equal(length(res), 13)
+  expect_equal(length(res), 14)
   expect_equal(class(res), "list")
 })
 

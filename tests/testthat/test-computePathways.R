@@ -261,11 +261,13 @@ test_that("combinationWindow", {
   globals <- generateCohortTableCDMC()
   
   expect_error(
-    computePathways(
-      cohorts = globals$cohorts,
-      cohortTableName = globals$cohortTableName,
-      cdm = globals$cdm,
-      combinationWindow = ""
+    suppressWarnings(
+      computePathways(
+        cohorts = globals$cohorts,
+        cohortTableName = globals$cohortTableName,
+        cdm = globals$cdm,
+        combinationWindow = ""
+      )
     ),
     "Must be of type.+'numeric'"
   )

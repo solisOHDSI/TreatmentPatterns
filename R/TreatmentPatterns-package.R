@@ -15,8 +15,6 @@
 #' @importFrom htmlwidgets JS
 #' @importFrom stats sd median
 #' @importFrom tidyr pivot_wider
-#' @importFrom googleVis gvisSankey
-#' @importFrom rjson toJSON
 ## usethis namespace: end
 NULL
 

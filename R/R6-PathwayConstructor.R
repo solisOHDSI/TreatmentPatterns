@@ -278,7 +278,7 @@ PathwayConstructor <- R6::R6Class(
     minPostCombinationDuration = 30,
     filterTreatments = "First",
     maxPathLength = 5,
-    stopCombinationFraction = 0.01
+    stopCombinationFraction = 0
     ) {
       settings <- mget(
         x = names(formals()),
@@ -319,7 +319,7 @@ PathwayConstructor <- R6::R6Class(
       minPostCombinationDuration = 30,
       filterTreatments = "First",
       maxPathLength = 5,
-      stopCombinationFraction = 0.01
+      stopCombinationFraction = 0
     ),
     
     ## Methods ----
