@@ -30,7 +30,7 @@ test_that("computePathways DatabaseConnector", {
 })
 
 test_that("computePathways CDMConnector", {
-  skip_on_cran()
+  testthat::skip_on_cran()
   globals <- generateCohortTableCDMC()
   
   expect_message(
@@ -53,6 +53,7 @@ test_that("computePathways CDMConnector", {
 
 test_that("nrow exitCohorts > 0", {
   skip_on_cran()
+  skip_on_ci()
   globals <- generateCohortTableCDMC()
   
   cohorts <- globals$cohorts %>%
@@ -73,7 +74,7 @@ test_that("nrow exitCohorts > 0", {
 
 test_that("nrow exitCohorts > 0", {
   skip_on_cran()
-  skip_on
+  skip_on_ci()
   globals <- generateCohortTableCG()
   
   cohorts <- globals$cohorts %>%
