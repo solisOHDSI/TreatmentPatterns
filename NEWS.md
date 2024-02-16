@@ -7,6 +7,7 @@
 * Added warning when `minEraDuration` > `minPostCombinationWindow` or `combinationWindow`.
 * Fixed issue when `filterTreatments` was set to `"changes"`, age and sex columns were dropped from output.
 * datatypes of cohort_table are now checked.
+* Removed rjson and goovleVis dependencies.
 
 # TreatmentPatterns 2.6.4
 ---------
