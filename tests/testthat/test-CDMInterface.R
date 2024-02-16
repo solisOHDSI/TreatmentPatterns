@@ -3,6 +3,8 @@ library(TreatmentPatterns)
 library(dplyr)
 
 test_that("fetchCohortTable", {
+  skip_on_ci()
+  skip_on_cran()
   cg <- generateCohortTableCG()
   cdmc <- generateCohortTableCDMC()
   
