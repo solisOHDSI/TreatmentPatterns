@@ -533,3 +533,63 @@ test_that("filterTreatments", {
   Andromeda::close(changes)
   Andromeda::close(all)
 })
+
+test_that("stopCombinationFraction", {
+  con <- DBI::dbConnect(duckdb::duckdb(), dbdir = eunomia_dir())
+  
+  cohorts <- data.frame(
+    cohortId = c(1, 2, 3, 4, 5, 6),
+    cohortName = c("X", "A", "B", "C", "D", "E"),
+    type = c("target", "event", "event", "event", "event", "event")
+  )
+  
+  cohort_table <- dplyr::tribble(
+    ~cohort_definition_id, ~subject_id, ~cohort_start_date,    ~cohort_end_date,
+
+    1,                     1,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     1,           as.Date("2014-01-01"), as.Date("2014-01-10"),
+    3,                     1,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    4,                     1,           as.Date("2014-01-04"), as.Date("2014-01-20"),
+
+    1,                     3,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    2,                     3,           as.Date("2014-01-01"), as.Date("2014-01-10"),
+    3,                     3,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    5,                     3,           as.Date("2014-01-04"), as.Date("2014-01-20"),
+    6,                     3,           as.Date("2014-01-04"), as.Date("2014-02-01"),
+
+    1,                     9,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    3,                     9,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    4,                     9,           as.Date("2014-01-04"), as.Date("2014-01-20"),
+
+    1,                     5,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    3,                     5,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    4,                     5,           as.Date("2014-01-04"), as.Date("2014-01-20"),
+
+    1,                     6,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    3,                     6,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    4,                     6,           as.Date("2014-01-04"), as.Date("2014-01-20"),
+
+    1,                     11,           as.Date("2014-01-01"), as.Date("2015-01-01"),
+    3,                     11,           as.Date("2014-01-04"), as.Date("2014-01-15"),
+    4,                     11,           as.Date("2014-01-04"), as.Date("2014-01-20")
+  )
+  
+  copy_to(con, cohort_table, overwrite = TRUE)
+  
+  cdm <- cdmFromCon(con, cdmSchema = "main", writeSchema = "main", cohortTables = "cohort_table")
+  
+  ## 0.5 ----
+  andromeda <- TreatmentPatterns::computePathways(
+    cohorts = cohorts,
+    cohortTableName = "cohort_table",
+    cdm = cdm,
+    includeTreatments = "startDate",
+    periodPriorToIndex = 0,
+    minEraDuration = 0,
+    combinationWindow = 5,
+    minPostCombinationDuration = 5,
+    stopCombinationFraction = 0.25
+  )
+  
+  andromeda$treatmentHistory %>% collect() %>% arrange(personId) %>% print(n = 100)
+})

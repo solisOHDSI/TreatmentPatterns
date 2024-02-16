@@ -400,12 +400,11 @@ doCombinationWindow <- function(
   # While rows that need modification exist:
   iterations <- 1
   
-  unflagMinCellCount(andromeda, stopCombinationFraction)
-  
   while (andromeda$treatmentHistory %>%
          dplyr::filter(.data$selectedRows) %>%
          dplyr::count() %>%
          dplyr::pull() != 0) {
+    unflagMinCellCount(andromeda, stopCombinationFraction)
     # Which rows have gap previous shorter than combination window OR
     # min(current duration era, previous duration era) -> add column switch
     treatmentHistory <- andromeda$treatmentHistory %>%
@@ -826,13 +825,17 @@ addLabels <- function(andromeda) {
 unflagMinCellCount <- function(andromeda, stopCombinationFraction) {
   idsToUnflag <- andromeda$treatmentHistory %>%
     dplyr::group_by(.data$eventCohortId) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::filter(.data$n / max(.data$n) >= stopCombinationFraction) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+    dplyr::ungroup() %>% 
+    dplyr::mutate(f = .data$n / max(.data$n)) %>%
+    dplyr::filter(.data$f < stopCombinationFraction) %>%
     dplyr::pull(.data$eventCohortId)
+  
+  # idsToUnflag <- idsToUnflag[grep(pattern = "\\+", idsToUnflag)]
   
   andromeda$treatmentHistory <- andromeda$treatmentHistory %>%
     dplyr::mutate(selectedRows = dplyr::case_when(
-      .data$selectedRows %in% idsToUnflag ~ 0,
+      .data$eventCohortId %in% idsToUnflag ~ 0,
       .default = .data$selectedRows
     ))
 }
